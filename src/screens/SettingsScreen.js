@@ -5,9 +5,9 @@ import { getData, getUserData, getCategoriesData } from "../redux/actions/update
 
 export default SettingsScreen = ({ navigation }) => {
     const dispatch = useDispatch();
-    const { data, error } = useSelector((state) => state.personalInfo);
-    const { dataUser, errorUser } = useSelector((state) => state.personalInfo);
-    const { categoriesData, errorCategories } = useSelector((state) => state.personalInfo);
+    const { data, error } = useSelector((state) => state.infoReducer);
+    const { dataUser, errorUser } = useSelector((state) => state.infoReducer);
+    const { categoriesData, errorCategories } = useSelector((state) => state.categoryReducer);
 
     useEffect(() => {
         // Gọi action để lấy dữ liệu từ API khi component được mount

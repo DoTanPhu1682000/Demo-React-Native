@@ -10,8 +10,6 @@ const initialState = {
     error: null,
     dataUser: null,
     errorUser: null,
-    categoriesData: [],
-    errorCategories: null,
 }
 
 export default function actionForReducer(state = initialState, action) {
@@ -26,10 +24,6 @@ export default function actionForReducer(state = initialState, action) {
             return { ...state, dataUser: action.payload, errorUser: null }
         case 'FETCH_USER_DATA_FAILURE':
             return { ...state, dataUser: null, errorUser: action.payload }
-        case 'FETCH_CATEGORIES_DATA_SUCCESS':
-            return { ...state, categoriesData: action.payload, errorCategories: null };
-        case 'FETCH_CATEGORIES_DATA_FAILURE':
-            return { ...state, categoriesData: [], errorCategories: action.payload };
         default:
             return state
     }

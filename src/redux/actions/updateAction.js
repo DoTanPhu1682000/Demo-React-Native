@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { CAP_NHAT_EMAIL, FETCH_DATA_SUCCESS, FETCH_DATA_FAILURE, FETCH_USER_DATA_SUCCESS, FETCH_USER_DATA_FAILURE } from "../reducers/infoReducer"
+import { FETCH_CATEGORIES_DATA_SUCCESS, FETCH_CATEGORIES_DATA_FAILURE } from '../reducers/categoryReducer'
 import { fetchData, fetchUsersData } from '../../api/AppApiHelper';
 
 export const updateEmail = (email) => async dispatch => {
@@ -47,9 +48,9 @@ export const getCategoriesData = () => {
     return async (dispatch) => {
         try {
             const response = await axios.get('https://www.themealdb.com/api/json/v1/1/categories.php')
-            dispatch({ type: 'FETCH_CATEGORIES_DATA_SUCCESS', payload: response.data.categories });
+            dispatch({ type: FETCH_CATEGORIES_DATA_SUCCESS, payload: response.data.categories });
         } catch (error) {
-            dispatch({ type: 'FETCH_CATEGORIES_DATA_FAILURE', payload: error.message });
+            dispatch({ type: FETCH_CATEGORIES_DATA_FAILURE, payload: error.message });
         }
     };
 };

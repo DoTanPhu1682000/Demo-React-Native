@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, Button, TouchableOpacity, TextInput, SafeAreaVi
 import { useDispatch, useSelector } from 'react-redux';
 
 export default ProfileScreen = ({ navigation }) => {
-    const info = useSelector((state) => state.personalInfo)
+    const info = useSelector((state) => state.infoReducer)
     return (
         <SafeAreaView style={{ flex: 1 }}>
             <View style={{ width: '100%', height: '8%', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>

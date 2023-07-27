@@ -12,7 +12,7 @@ const windowHeight = Dimensions.get('window').height;
 export default HomeScreen = () => {
     const navigation = useNavigation()
     const [email, onChangeEmail] = React.useState("")
-    const info = useSelector((state) => state.personalInfo)
+    const info = useSelector((state) => state.infoReducer)
     const dispatch = useDispatch()
     const [response, setResponse] = useState('')
 
@@ -59,11 +59,11 @@ export default HomeScreen = () => {
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
-            <View style={{ width: '100%', height: '8%', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#FFA500' }}>
+            <View style={{ width: '100%', height: '6%', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#FFFFFF' }}>
                 <TouchableOpacity
                     style={{ height: '100%', aspectRatio: 1.5, alignItems: 'center', flexDirection: 'row', marginStart: 12 }}>
                     <Image
-                        style={{ width: 30, height: 30, }}
+                        style={{ width: 24, height: 24, }}
                         source={require('../images/ic_menu.png')} resizeMode="stretch" />
                 </TouchableOpacity>
 
@@ -73,12 +73,30 @@ export default HomeScreen = () => {
                         navigation.navigate('SettingsScreen')
                     }}>
                     <Image
-                        style={{ width: 30, height: 30, }}
+                        style={{ width: 24, height: 24, }}
                         source={require('../images/ic_setting.png')} resizeMode="stretch" />
                 </TouchableOpacity>
             </View>
 
-            <View style={styles.container}>
+            <View style={{ flex: 1, backgroundColor: "#EEEEEE", alignItems: "center", justifyContent: "center" }}>
+                <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                    <TouchableOpacity
+                        style={{ flex: 1, height: 80, flexDirection: 'row', borderRadius: 8, marginTop: 16, marginStart: 16, marginEnd: 16, backgroundColor: '#F68E1E', alignItems: "center", justifyContent: "space-between" }}>
+                        <Text style={{ color: '#FFFFFF', width: 48, marginStart: 10 }}>Tư vấn Online</Text>
+                        <Image
+                            style={{ width: 48, height: 48, marginEnd: 10 }}
+                            source={require('../images/ic_home_dat_lich_online.png')} resizeMode="stretch" />
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                        style={{ flex: 1, height: 80, flexDirection: 'row', borderRadius: 8, marginTop: 16, marginEnd: 16, backgroundColor: '#F68E1E', alignItems: "center", justifyContent: "space-between" }}>
+                        <Text style={{ color: '#FFFFFF', width: 60, marginStart: 10 }}>Đặt lịch tại CSYT</Text>
+                        <Image
+                            style={{ width: 48, height: 48, marginEnd: 10 }}
+                            source={require('../images/ic_home_dat_lich_offline.png')} resizeMode="stretch" />
+                    </TouchableOpacity>
+                </View>
+
                 <Text style={{ fontSize: 24 }}>Home</Text>
                 <Text>Email: {info.email}</Text>
                 <TextInput
