@@ -2,7 +2,7 @@ import React, { Component, useState, useEffect } from "react";
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, SafeAreaView, Dimensions, StatusBar, Image } from "react-native";
 import { useDispatch, useSelector } from 'react-redux';
 import { getAccessToken } from '../redux/actions/updateAction'
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import LoadingDialog from '../component/LoadingDialog'
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -11,8 +11,7 @@ const GET_STARTED = 'GET_STARTED';
 
 export default LoginScreen = ({ navigation }) => {
     const dispatch = useDispatch();
-    const accessToken = useSelector((state) => state.loginReducer.access_token);
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const accessToken = useSelector((state) => state.accessTokenReducer.access_token);
     const [page, setPage] = useState(SIGN_IN)
 
     return (

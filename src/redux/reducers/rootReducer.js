@@ -1,12 +1,14 @@
 import { combineReducers } from "redux";
 import infoReducer from './infoReducer';
 import categoryReducer from './categoryReducer'
-import loginReducer from "./loginReducer"
+import accessTokenReducer from "./accessTokenReducer"
+import refreshTokenReducer from "./refreshTokenReducer"
 
 const rootReducer = combineReducers({
     infoReducer,
     categoryReducer,
-    loginReducer,
+    accessTokenReducer,
+    refreshTokenReducer,
 })
 
 export default (state, action) => rootReducer(state, action)
