@@ -1,7 +1,8 @@
 import axios from 'axios';
 import { CAP_NHAT_EMAIL, FETCH_DATA_SUCCESS, FETCH_DATA_FAILURE, FETCH_USER_DATA_SUCCESS, FETCH_USER_DATA_FAILURE } from "../reducers/infoReducer"
 import { FETCH_CATEGORIES_DATA_SUCCESS, FETCH_CATEGORIES_DATA_FAILURE } from '../reducers/categoryReducer'
-import { fetchData, fetchUsersData } from '../../api/AppApiHelper';
+import { SET_ACCESS_TOKEN } from '../reducers/loginReducer'
+import * as Constants from '../../api/AppApiHelper';
 
 export const updateEmail = (email) => async dispatch => {
     try {
@@ -23,7 +24,7 @@ export const updateEmail = (email) => async dispatch => {
 export const getData = () => {
     return async (dispatch) => {
         try {
-            const response = await fetchData();
+            const response = await Constants.fetchData();
             dispatch({ type: FETCH_DATA_SUCCESS, payload: response.data });
         } catch (error) {
             dispatch({ type: FETCH_DATA_FAILURE, payload: error.message });
@@ -35,7 +36,7 @@ export const getData = () => {
 export const getUserData = () => {
     return async (dispatch) => {
         try {
-            const response = await fetchUsersData();
+            const response = await Constants.fetchUsersData();
             dispatch({ type: FETCH_USER_DATA_SUCCESS, payload: response.data });
         } catch (error) {
             dispatch({ type: FETCH_USER_DATA_FAILURE, payload: error.message });
@@ -51,6 +52,38 @@ export const getCategoriesData = () => {
             dispatch({ type: FETCH_CATEGORIES_DATA_SUCCESS, payload: response.data.categories });
         } catch (error) {
             dispatch({ type: FETCH_CATEGORIES_DATA_FAILURE, payload: error.message });
+        }
+    };
+};
+
+// accessToken
+export const getAccessToken = (navigation, phone, password) => {
+    return async (dispatch) => {
+        try {
+            await axios.post(`${Constants.URL}/${Constants.LOGIN}`,
+                {
+                    username: phone,
+                    password: password,
+                    grant_type: 'password'
+                },
+                {
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'Authorization': 'Basic bWVkaWhvbWU6bWVkaWhvbWVAMTIzNEAjJA=='
+                    }
+                })
+                .then((response) => {
+                    const accessToken = response.data.access_token;
+                    console.log(response.data)
+                    dispatch({ type: SET_ACCESS_TOKEN, payload: accessToken });
+
+                    if (accessToken) {
+                        // Điều hướng đến màn hình HomeScreen
+                        navigation.navigate('HomeTabs')
+                    }
+                })
+        } catch (error) {
+            console.error('Lỗi khi gọi API get-access-token:', error);
         }
     };
 };

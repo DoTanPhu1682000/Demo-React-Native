@@ -1,5 +1,8 @@
-import React, { Component, useState } from "react";
+import React, { Component, useState, useEffect } from "react";
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, SafeAreaView, Dimensions, StatusBar, Image } from "react-native";
+import { useDispatch, useSelector } from 'react-redux';
+import { getAccessToken } from '../redux/actions/updateAction'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -7,7 +10,11 @@ const SIGN_IN = 'SIGN_IN';
 const GET_STARTED = 'GET_STARTED';
 
 export default LoginScreen = ({ navigation }) => {
+    const dispatch = useDispatch();
+    const accessToken = useSelector((state) => state.loginReducer.access_token);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [page, setPage] = useState(SIGN_IN)
+
     return (
         <View style={{ width: '100%', height: '100%' }}>
             <View style={{ width: '100%', height: '25%' }}>
@@ -15,7 +22,7 @@ export default LoginScreen = ({ navigation }) => {
             </View>
 
             <View style={{ width: '100%', height: '50%', backgroundColor: '#F5F5F5' }}>
-                {page === SIGN_IN ? <GreenComponent navigation={navigation} /> : <YellowComponent />}
+                {page === SIGN_IN ? <GreenComponent navigation={navigation} dispatch={dispatch} accessToken={accessToken} /> : <YellowComponent />}
             </View>
 
             <View style={{ flex: 1, backgroundColor: '#F5F5F5' }}>
@@ -72,8 +79,6 @@ const BlueComponent = () => {
 }
 
 const YellowComponent = () => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
     const [pwdHidden, setPWDHidden] = useState(true);
     return (
         <View style={{ width: '100%', height: '100%', justifyContent: 'center' }}>
@@ -130,14 +135,14 @@ const YellowComponent = () => {
     );
 }
 
-const GreenComponent = ({ navigation }) => {
+const GreenComponent = ({ navigation, dispatch, accessToken }) => {
     const navigateToHomeScreen = () => {
-        // Điều hướng đến màn hình HomeScreen
-        navigation.navigate('HomeTabs')
+        dispatch(getAccessToken(navigation, phone, password))
     }
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const [phone, setPhone] = useState('0392719775');
+    const [password, setPassword] = useState('123456');
     const [pwdHidden, setPWDHidden] = useState(true);
+
     return (
         <View style={{ width: '100%', height: '100%', justifyContent: 'center' }}>
             <Text style={{ fontSize: 24, marginStart: 30, color: '#1F2D3D' }}>Login in your account</Text>
@@ -148,9 +153,9 @@ const GreenComponent = ({ navigation }) => {
                 <TextInput
                     style={{ height: '100%', flex: 1, marginStart: 12, fontSize: 16 }}
                     autoCapitalize='none'
-                    placeholder="E-mail"
-                    onChangeText={setEmail}
-                    value={email} />
+                    placeholder="Phone"
+                    onChangeText={setPhone}
+                    value={phone} />
             </View>
             {/* Password */}
             <View style={{ width: windowWidth - 60, height: 60, marginStart: 30, marginTop: 20, backgroundColor: '#FFFFFF', flexDirection: 'row', alignItems: 'center', borderRadius: 12 }}>

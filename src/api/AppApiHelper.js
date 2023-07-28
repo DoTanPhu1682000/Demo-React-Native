@@ -14,6 +14,7 @@ export const KEY_FILES = 'files';
 export const URL = 'https://sandboxapi.365medihome.com.vn';
 export const URL_MOVIES = 'https://api.themoviedb.org/3/movie/popular?api_key=e7631ffcb8e766993e5ec0c1f4245f93';
 
+// Test
 const api = axios.create({
     baseURL: 'https://testapi.jasonwatmore.com/products',
 });
