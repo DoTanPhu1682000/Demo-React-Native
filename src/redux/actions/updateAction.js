@@ -1,10 +1,12 @@
+import React, { Component, useState, useEffect } from "react";
+import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
 import * as Constants from '../../api/AppApiHelper';
-import { useSelector } from 'react-redux';
 import { CAP_NHAT_EMAIL, FETCH_DATA_SUCCESS, FETCH_DATA_FAILURE, FETCH_USER_DATA_SUCCESS, FETCH_USER_DATA_FAILURE } from "../reducers/infoReducer"
 import { FETCH_CATEGORIES_DATA_SUCCESS, FETCH_CATEGORIES_DATA_FAILURE } from '../reducers/categoryReducer'
 import { SET_ACCESS_TOKEN_SUCCESS, SET_ACCESS_TOKEN_FAILURE } from '../reducers/accessTokenReducer'
 import { REFRESH_TOKEN_REQUEST, REFRESH_TOKEN_SUCCESS, REFRESH_TOKEN_FAILURE } from '../reducers/refreshTokenReducer'
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const updateEmail = (email) => async dispatch => {
     try {
@@ -75,11 +77,15 @@ export const getAccessToken = (navigation, phone, password) => {
                     }
                 })
                 .then((response) => {
-                    const accessToken = response.data.access_token;
                     console.log(response.data)
+                    // Lưu accessToken vào Redux store
+                    const accessToken = response.data.access_token;
                     dispatch({ type: SET_ACCESS_TOKEN_SUCCESS, payload: accessToken });
 
                     if (accessToken) {
+                        // Lưu refreshToken vào AsyncStorage
+                        AsyncStorage.setItem('KEY_REFRESH_TOKEN', response.data.refresh_token)
+
                         // Điều hướng đến màn hình HomeScreen
                         navigation.navigate('HomeTabs')
                     }
@@ -97,10 +103,19 @@ export const getRefreshToken = () => {
             // Gửi action refresh token request để hiển thị loading hoặc thực hiện các logic tương ứng
             dispatch({ type: REFRESH_TOKEN_REQUEST });
 
+            // Lấy refreshToken từ AsyncStorage
+            const refreshToken = await AsyncStorage.getItem('KEY_REFRESH_TOKEN');
+
+            // if (!refreshToken) {
+            //     // Nếu không tìm thấy refreshToken, đăng xuất người dùng
+            //     dispatch({ type: LOGOUT_SUCCESS });
+            //     return;
+            // }
+
             await axios.post(`${Constants.URL}/${Constants.LOGIN}`,
                 {
                     grant_type: 'refresh_token',
-                    refresh_token: '7d875a0a-a707-451a-87bf-4ab4c52c1a78',
+                    refresh_token: refreshToken,
                 },
                 {
                     headers: {
@@ -109,13 +124,20 @@ export const getRefreshToken = () => {
                     }
                 })
                 .then((response) => {
+                    console.log(response.data)
+                    // Lưu refresh Token mới
+                    AsyncStorage.setItem('KEY_REFRESH_TOKEN', response.data.refresh_token)
+
                     // Nếu API gọi thành công, cập nhật token mới vào Redux store
                     const newToken = response.data.refresh_token;
-                    console.log(response.data)
                     dispatch({ type: REFRESH_TOKEN_SUCCESS, payload: newToken });
+
+                    // Trả về newToken để sử dụng cho các yêu cầu API tiếp theo (nếu cần)
+                    return newToken
                 })
         } catch (error) {
             dispatch({ type: REFRESH_TOKEN_FAILURE, payload: error });
+            throw error
         }
     };
 };
