@@ -3,12 +3,8 @@ import * as Constants from '../../api/AppApiHelper';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { CAP_NHAT_EMAIL, FETCH_DATA_SUCCESS, FETCH_DATA_FAILURE, FETCH_USER_DATA_SUCCESS, FETCH_USER_DATA_FAILURE } from "../reducers/infoReducer"
 import { FETCH_CATEGORIES_DATA_SUCCESS, FETCH_CATEGORIES_DATA_FAILURE } from '../reducers/categoryReducer'
-import { SET_ACCESS_TOKEN_SUCCESS, SET_ACCESS_TOKEN_FAILURE } from '../reducers/accessTokenReducer'
-import { REFRESH_TOKEN_REQUEST, REFRESH_TOKEN_SUCCESS, REFRESH_TOKEN_FAILURE } from '../reducers/refreshTokenReducer'
+import { SET_ACCESS_TOKEN_SUCCESS, SET_ACCESS_TOKEN_FAILURE, REFRESH_TOKEN_REQUEST, REFRESH_TOKEN_SUCCESS, REFRESH_TOKEN_FAILURE } from '../reducers/tokenReducer'
 import { SET_PATIENT_RECORD_REQUEST, SET_PATIENT_RECORD_SUCCESS, SET_PATIENT_RECORD_FAILURE } from '../reducers/patientRecordReducer'
-
-const KEY_ACCESS_TOKEN = 'KEY_ACCESS_TOKEN';
-const KEY_REFRESH_TOKEN = 'KEY_REFRESH_TOKEN';
 
 export const updateEmail = (email) => async dispatch => {
     try {
@@ -85,31 +81,32 @@ export const getAccessToken = (navigation, phone, password) => {
                     const accessToken = response.data.access_token;
                     dispatch({ type: SET_ACCESS_TOKEN_SUCCESS, payload: accessToken });
 
-                    if (accessToken) {
-                        // Lưu accessToken vào AsyncStorage
-                        AsyncStorage.setItem(KEY_ACCESS_TOKEN, response.data.access_token)
-                        // Lưu refreshToken vào AsyncStorage
-                        AsyncStorage.setItem(KEY_REFRESH_TOKEN, response.data.refresh_token)
+                    // Lưu refreshToken vào Redux store
+                    const refreshToken = response.data.refresh_token;
+                    dispatch({ type: REFRESH_TOKEN_SUCCESS, payload: refreshToken });
 
+                    if (accessToken) {
                         // Điều hướng đến màn hình HomeScreen
                         navigation.navigate('HomeTabs')
                     }
                 })
         } catch (error) {
             dispatch({ type: SET_ACCESS_TOKEN_FAILURE, payload: error });
+            console.log(error);
         }
     };
 };
 
 // refreshToken
 export const getRefreshToken = () => {
-    return async (dispatch) => {
+    return async (dispatch, useSelector) => {
         try {
             // Gửi action refresh token request để hiển thị loading hoặc thực hiện các logic tương ứng
             dispatch({ type: REFRESH_TOKEN_REQUEST });
 
-            // Lấy refreshToken từ AsyncStorage
-            const refreshToken = await AsyncStorage.getItem(KEY_REFRESH_TOKEN);
+            // Lấy refreshToken từ Redux Store
+            const token = useSelector((state) => state.tokenReducer.refresh_token);
+            const refreshToken = token.tokenReducer.refresh_token
 
             await axios.post(`${Constants.URL}/${Constants.LOGIN}`,
                 {
@@ -124,21 +121,20 @@ export const getRefreshToken = () => {
                 })
                 .then((response) => {
                     console.log(response.data)
-                    // Lưu accessToken mới vào AsyncStorage
-                    AsyncStorage.setItem(KEY_ACCESS_TOKEN, response.data.access_token)
-                    // Lưu refreshToken mới vào AsyncStorage
-                    AsyncStorage.setItem(KEY_REFRESH_TOKEN, response.data.refresh_token)
+                    // Lưu accessToken mới vào Redux store
+                    const accessToken = response.data.access_token;
+                    dispatch({ type: SET_ACCESS_TOKEN_SUCCESS, payload: accessToken });
 
-                    // Nếu API gọi thành công, cập nhật token mới vào Redux store
-                    const newToken = response.data.access_token;
-                    dispatch({ type: REFRESH_TOKEN_SUCCESS, payload: newToken });
+                    // Lưu refreshToken mới vào Redux store
+                    const refreshToken = response.data.refresh_token;
+                    dispatch({ type: REFRESH_TOKEN_SUCCESS, payload: refreshToken });
 
                     // Trả về newToken để sử dụng cho các yêu cầu API tiếp theo (nếu cần)
-                    return newToken
+                    return accessToken
                 })
         } catch (error) {
             dispatch({ type: REFRESH_TOKEN_FAILURE, payload: error });
-            throw error
+            console.log(error);
         }
     };
 };
@@ -150,13 +146,10 @@ export const getPatientRecord = () => {
             // Gửi action request để hiển thị loading hoặc thực hiện các logic tương ứng
             dispatch({ type: SET_PATIENT_RECORD_REQUEST });
 
-            // Lấy access_token từ AsyncStorage
-            // const accessToken = await AsyncStorage.getItem(KEY_ACCESS_TOKEN);
-
             // Lấy access_token từ Redux store
             const access_token = useSelector((state) => state.accessTokenReducer.access_token);
             const accessToken = access_token.accessTokenReducer.access_token
-            console.log(accessToken)
+            console.log("accessToken getPatientRecord: ", accessToken)
 
             await axios.get(`${Constants.URL}/${Constants.PATIENT_RECORD_BY_USER_KEY}`,
                 {
@@ -165,10 +158,42 @@ export const getPatientRecord = () => {
                         'Authorization': `Bearer ${accessToken}`,
                     }
                 })
-                .then((response) => {
+                .then(async (response) => {
                     console.log(response.data)
                     dispatch({ type: SET_PATIENT_RECORD_SUCCESS, payload: response.data.patient_record });
                 })
+                .catch(async (error) => {
+                    if (error.response && error.response.status === 401) {
+                        // Xử lý khi API trả về lỗi 401 (Unauthorized)
+                        console.log("Lỗi 401: Unauthorized");
+                        try {
+                            // Thực hiện gọi hàm để refresh access_token
+                            await dispatch(getRefreshToken());
+                            // Sau khi access_token mới đã được lưu vào Redux store, tiếp tục gọi lại API getPatientRecord
+                            const newAccessToken = useSelector((state) => state.accessTokenReducer.access_token);
+                            const newToken = newAccessToken.accessTokenReducer.access_token;
+                            console.log("New accessToken getPatientRecord: ", newToken);
+
+                            // Tiếp tục gọi lại API getPatientRecord sau khi có access_token mới
+                            const response = await axios.get(`${Constants.URL}/${Constants.PATIENT_RECORD_BY_USER_KEY}`, {
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'Authorization': `Bearer ${newToken}`,
+                                }
+                            });
+                            console.log(response.data);
+                            dispatch({ type: SET_PATIENT_RECORD_SUCCESS, payload: response.data.patient_record });
+                        } catch (refreshError) {
+                            // Xử lý khi refresh access_token cũng gặp lỗi
+                            console.log("Lỗi khi refresh access_token: ", refreshError);
+                            dispatch({ type: SET_PATIENT_RECORD_FAILURE, payload: refreshError });
+                        }
+                    } else {
+                        // Xử lý khi xảy ra lỗi khác
+                        dispatch({ type: SET_PATIENT_RECORD_FAILURE, payload: error });
+                        console.log("lỗi khác: ", error);
+                    }
+                });
         } catch (error) {
             dispatch({ type: SET_PATIENT_RECORD_FAILURE, payload: error });
             console.log(error)

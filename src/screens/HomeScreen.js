@@ -2,7 +2,7 @@ import React, { Component, useState, useEffect } from "react";
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, SafeAreaView, Dimensions, ScrollView, Image, FlatList } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from 'react-redux';
-import { updateEmail } from '../redux/actions/updateAction'
+import { updateEmail, getAccessToken } from '../redux/actions/updateAction'
 import * as Constants from "../api/AppApiHelper";
 import axios from "axios";
 
@@ -24,29 +24,10 @@ export default HomeScreen = () => {
         }
     }, [])
 
-    // Call API 365 Medihome
-    const data = {
-        username: '0356709238',
-        password: '123456',
-        grant_type: 'password'
+    const login = () => {
+        dispatch(getAccessToken(navigation, '0356709238', '123456'))
     }
 
-    const login = async () => {
-        try {
-            const res = await axios.post(`${Constants.URL}/${Constants.LOGIN}`, data, {
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'Authorization': 'Basic bWVkaWhvbWU6bWVkaWhvbWVAMTIzNEAjJA=='
-                }
-            })
-            console.log(res.data)
-            setResponse(JSON.stringify(res.data))
-        } catch (error) {
-            setResponse(JSON.stringify(error.message))
-        }
-    }
-
-    //
     const navigateToHoSoKhamScreen = () => {
         navigation.navigate('HoSoKhamScreen')
     }
