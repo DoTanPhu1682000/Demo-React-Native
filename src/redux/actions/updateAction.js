@@ -147,8 +147,8 @@ export const getPatientRecord = () => {
             dispatch({ type: SET_PATIENT_RECORD_REQUEST });
 
             // Lấy access_token từ Redux store
-            const access_token = useSelector((state) => state.accessTokenReducer.access_token);
-            const accessToken = access_token.accessTokenReducer.access_token
+            const access_token = useSelector((state) => state.tokenReducer.access_token);
+            const accessToken = access_token.tokenReducer.access_token
             console.log("accessToken getPatientRecord: ", accessToken)
 
             await axios.get(`${Constants.URL}/${Constants.PATIENT_RECORD_BY_USER_KEY}`,
@@ -160,7 +160,7 @@ export const getPatientRecord = () => {
                 })
                 .then(async (response) => {
                     console.log(response.data)
-                    dispatch({ type: SET_PATIENT_RECORD_SUCCESS, payload: response.data.patient_record });
+                    dispatch({ type: SET_PATIENT_RECORD_SUCCESS, payload: response.data });
                 })
                 .catch(async (error) => {
                     if (error.response && error.response.status === 401) {
@@ -170,8 +170,8 @@ export const getPatientRecord = () => {
                             // Thực hiện gọi hàm để refresh access_token
                             await dispatch(getRefreshToken());
                             // Sau khi access_token mới đã được lưu vào Redux store, tiếp tục gọi lại API getPatientRecord
-                            const newAccessToken = useSelector((state) => state.accessTokenReducer.access_token);
-                            const newToken = newAccessToken.accessTokenReducer.access_token;
+                            const newAccessToken = useSelector((state) => state.tokenReducer.access_token);
+                            const newToken = newAccessToken.tokenReducer.access_token;
                             console.log("New accessToken getPatientRecord: ", newToken);
 
                             // Tiếp tục gọi lại API getPatientRecord sau khi có access_token mới
@@ -182,7 +182,7 @@ export const getPatientRecord = () => {
                                 }
                             });
                             console.log(response.data);
-                            dispatch({ type: SET_PATIENT_RECORD_SUCCESS, payload: response.data.patient_record });
+                            dispatch({ type: SET_PATIENT_RECORD_SUCCESS, payload: response.data });
                         } catch (refreshError) {
                             // Xử lý khi refresh access_token cũng gặp lỗi
                             console.log("Lỗi khi refresh access_token: ", refreshError);

@@ -5,7 +5,6 @@ import { getRefreshToken } from '../redux/actions/updateAction'
 
 export default ProfileScreen = ({ navigation }) => {
     const dispatch = useDispatch();
-    const refreshToken = useSelector((state) => state.refreshTokenReducer.refresh_token)
     const info = useSelector((state) => state.infoReducer)
 
     const handlerRefreshToken = () => {

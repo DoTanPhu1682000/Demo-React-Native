@@ -11,7 +11,6 @@ const GET_STARTED = 'GET_STARTED';
 
 export default LoginScreen = ({ navigation }) => {
     const dispatch = useDispatch();
-    const accessToken = useSelector((state) => state.accessTokenReducer.access_token);
     const [page, setPage] = useState(SIGN_IN)
 
     return (
@@ -21,7 +20,7 @@ export default LoginScreen = ({ navigation }) => {
             </View>
 
             <View style={{ width: '100%', height: '50%', backgroundColor: '#F5F5F5' }}>
-                {page === SIGN_IN ? <GreenComponent navigation={navigation} dispatch={dispatch} accessToken={accessToken} /> : <YellowComponent />}
+                {page === SIGN_IN ? <GreenComponent navigation={navigation} dispatch={dispatch} /> : <YellowComponent />}
             </View>
 
             <View style={{ flex: 1, backgroundColor: '#F5F5F5' }}>
@@ -134,7 +133,7 @@ const YellowComponent = () => {
     );
 }
 
-const GreenComponent = ({ navigation, dispatch, accessToken }) => {
+const GreenComponent = ({ navigation, dispatch }) => {
     const navigateToHomeScreen = () => {
         dispatch(getAccessToken(navigation, phone, password))
     }
