@@ -29,3 +29,4 @@ export const fetchData = () => {
 
 // ApiEndPoints
 export const LOGIN = 'auth/oauth/token'
+export const PATIENT_RECORD_BY_USER_KEY = 'patient/patient-record/by-user-key'

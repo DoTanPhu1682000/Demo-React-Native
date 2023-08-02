@@ -24,20 +24,9 @@ export default HomeScreen = () => {
         }
     }, [])
 
-    // Call API Movies
-    const callGetURL = async () => {
-        try {
-            const res = await axios.get(`${Constants.URL_MOVIES}`)
-            console.log(res.data)
-            setResponse(JSON.stringify(res.data))
-        } catch (error) {
-            setResponse(JSON.stringify(error.message))
-        }
-    }
-
     // Call API 365 Medihome
     const data = {
-        username: '0392719775',
+        username: '0356709238',
         password: '123456',
         grant_type: 'password'
     }
@@ -55,6 +44,11 @@ export default HomeScreen = () => {
         } catch (error) {
             setResponse(JSON.stringify(error.message))
         }
+    }
+
+    //
+    const navigateToHoSoKhamScreen = () => {
+        navigation.navigate('HoSoKhamScreen')
     }
 
     return (
@@ -81,7 +75,8 @@ export default HomeScreen = () => {
             <View style={{ flex: 1, backgroundColor: "#EEEEEE", alignItems: "center", justifyContent: "center" }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
                     <TouchableOpacity
-                        style={{ flex: 1, height: 80, flexDirection: 'row', borderRadius: 8, marginTop: 16, marginStart: 16, marginEnd: 16, backgroundColor: '#F68E1E', alignItems: "center", justifyContent: "space-between" }}>
+                        style={{ flex: 1, height: 80, flexDirection: 'row', borderRadius: 8, marginTop: 16, marginStart: 16, marginEnd: 16, backgroundColor: '#F68E1E', alignItems: "center", justifyContent: "space-between" }}
+                        onPress={() => navigateToHoSoKhamScreen()}>
                         <Text style={{ color: '#FFFFFF', width: 48, marginStart: 10 }}>Tư vấn Online</Text>
                         <Image
                             style={{ width: 48, height: 48, marginEnd: 10 }}
@@ -89,7 +84,8 @@ export default HomeScreen = () => {
                     </TouchableOpacity>
 
                     <TouchableOpacity
-                        style={{ flex: 1, height: 80, flexDirection: 'row', borderRadius: 8, marginTop: 16, marginEnd: 16, backgroundColor: '#F68E1E', alignItems: "center", justifyContent: "space-between" }}>
+                        style={{ flex: 1, height: 80, flexDirection: 'row', borderRadius: 8, marginTop: 16, marginEnd: 16, backgroundColor: '#F68E1E', alignItems: "center", justifyContent: "space-between" }}
+                        onPress={() => navigateToHoSoKhamScreen()}>
                         <Text style={{ color: '#FFFFFF', width: 60, marginStart: 10 }}>Đặt lịch tại CSYT</Text>
                         <Image
                             style={{ width: 48, height: 48, marginEnd: 10 }}
@@ -115,12 +111,6 @@ export default HomeScreen = () => {
                     style={{ width: 200, height: 40, borderWidth: 1, borderRadius: 12, marginTop: 24, justifyContent: 'center', alignItems: 'center', backgroundColor: '#4D8D6E' }}
                     onPress={() => login()}>
                     <Text style={{ color: '#FFFFFF' }}>Login</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                    style={{ width: 200, height: 40, borderWidth: 1, borderRadius: 12, marginTop: 24, justifyContent: 'center', alignItems: 'center', backgroundColor: '#4D8D6E' }}
-                    onPress={() => callGetURL()}>
-                    <Text style={{ color: '#FFFFFF' }}>Get Api Movies</Text>
                 </TouchableOpacity>
 
                 <ScrollView style={{ width: windowWidth - 60, height: 20, borderWidth: 1, margin: 30 }}>

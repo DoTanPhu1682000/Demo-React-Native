@@ -138,7 +138,7 @@ const GreenComponent = ({ navigation, dispatch, accessToken }) => {
     const navigateToHomeScreen = () => {
         dispatch(getAccessToken(navigation, phone, password))
     }
-    const [phone, setPhone] = useState('0392719775');
+    const [phone, setPhone] = useState('0356709238');
     const [password, setPassword] = useState('123456');
     const [pwdHidden, setPWDHidden] = useState(true);
 

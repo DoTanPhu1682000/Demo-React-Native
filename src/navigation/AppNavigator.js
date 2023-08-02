@@ -2,15 +2,16 @@ import * as React from 'react';
 import { Image } from "react-native";
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import LoginScreen from "../screens/LoginScreen";
-import HomeScreen from "../screens/HomeScreen";
-import SettingsScreen from "../screens/SettingsScreen";
-import ProfileScreen from "../screens/ProfileScreen";
 import 'react-native-gesture-handler';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Provider } from 'react-redux';
 import { store } from '../redux/store';
+import LoginScreen from "../screens/LoginScreen";
+import HomeScreen from "../screens/HomeScreen";
+import SettingsScreen from "../screens/SettingsScreen";
+import ProfileScreen from "../screens/ProfileScreen";
+import HoSoKhamScreen from "../screens/common/HoSoKhamScreen"
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -62,6 +63,7 @@ export default function AppNavigator() {
                 <Stack.Navigator initialRouteName='LoginScreen' screenOptions={{ headerShown: false }}>
                     <Stack.Screen name="LoginScreen" component={LoginScreen} />
                     <Stack.Screen name="HomeTabs" component={HomeTabs} />
+                    <Stack.Screen name="HoSoKhamScreen" component={HoSoKhamScreen} />
                 </Stack.Navigator>
             </NavigationContainer>
         </Provider>
