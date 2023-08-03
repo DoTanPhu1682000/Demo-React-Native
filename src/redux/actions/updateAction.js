@@ -6,6 +6,23 @@ import { FETCH_CATEGORIES_DATA_SUCCESS, FETCH_CATEGORIES_DATA_FAILURE } from '..
 import { SET_ACCESS_TOKEN_SUCCESS, SET_ACCESS_TOKEN_FAILURE, REFRESH_TOKEN_REQUEST, REFRESH_TOKEN_SUCCESS, REFRESH_TOKEN_FAILURE } from '../reducers/tokenReducer'
 import { SET_PATIENT_RECORD_REQUEST, SET_PATIENT_RECORD_SUCCESS, SET_PATIENT_RECORD_FAILURE } from '../reducers/patientRecordReducer'
 
+const KEY_ACCESS_TOKEN = 'KEY_ACCESS_TOKEN';
+const KEY_REFRESH_TOKEN = 'KEY_REFRESH_TOKEN';
+
+const APPLICATION_JSON = 'application/json';
+const APPLICATION_FORM_URL_ENCODE = 'application/x-www-form-urlencoded';
+const KEY_CONTENT_TYPE = 'Content-Type';
+const KEY_AUTHORIZATION = 'Authorization';
+const KEY_LANGUAGE = 'lang';
+const KEY_PAGE_SIZE = 'page_size';
+const KEY_PAGE_NUMBER = 'page_number';
+const KEY_PATIENT_RECORD_ID = 'patient_record_id';
+const KEY_FILES = 'files';
+
+const getKeyAuthorization = () => {
+    return 'Basic bWVkaWhvbWU6bWVkaWhvbWVAMTIzNEAjJA==';
+}
+
 export const updateEmail = (email) => async dispatch => {
     try {
         // 1. Side-effect gọi lên server hoặc làm gì đấy bất đồng bộ (dùng middleware redux-thunk giúp bạn làm việc này)
@@ -71,18 +88,22 @@ export const getAccessToken = (navigation, phone, password) => {
                 },
                 {
                     headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                        'Authorization': 'Basic bWVkaWhvbWU6bWVkaWhvbWVAMTIzNEAjJA=='
+                        [KEY_CONTENT_TYPE]: APPLICATION_FORM_URL_ENCODE,
+                        [KEY_AUTHORIZATION]: getKeyAuthorization(),
                     }
                 })
-                .then((response) => {
+                .then(async (response) => {
                     console.log(response.data)
-                    // Lưu accessToken vào Redux store
+                    // Lưu accessToken vào AsyncStorage
                     const accessToken = response.data.access_token;
-                    dispatch({ type: SET_ACCESS_TOKEN_SUCCESS, payload: accessToken });
+                    await AsyncStorage.setItem(KEY_ACCESS_TOKEN, accessToken);
 
-                    // Lưu refreshToken vào Redux store
+                    // Lưu refreshToken vào AsyncStorage
                     const refreshToken = response.data.refresh_token;
+                    await AsyncStorage.setItem(KEY_REFRESH_TOKEN, refreshToken);
+
+                    // Cập nhật state trong Redux Store
+                    dispatch({ type: SET_ACCESS_TOKEN_SUCCESS, payload: accessToken });
                     dispatch({ type: REFRESH_TOKEN_SUCCESS, payload: refreshToken });
 
                     if (accessToken) {
@@ -99,14 +120,14 @@ export const getAccessToken = (navigation, phone, password) => {
 
 // refreshToken
 export const getRefreshToken = () => {
-    return async (dispatch, useSelector) => {
+    return async (dispatch) => {
         try {
             // Gửi action refresh token request để hiển thị loading hoặc thực hiện các logic tương ứng
             dispatch({ type: REFRESH_TOKEN_REQUEST });
 
-            // Lấy refreshToken từ Redux Store
-            const token = useSelector((state) => state.tokenReducer.refresh_token);
-            const refreshToken = token.tokenReducer.refresh_token
+            // Lấy refreshToken từ AsyncStorage
+            const refreshToken = await AsyncStorage.getItem(KEY_REFRESH_TOKEN);
+            console.log("getRefreshToken - refreshToken 0: ", refreshToken);
 
             await axios.post(`${Constants.URL}/${Constants.LOGIN}`,
                 {
@@ -115,18 +136,22 @@ export const getRefreshToken = () => {
                 },
                 {
                     headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                        'Authorization': 'Basic bWVkaWhvbWU6bWVkaWhvbWVAMTIzNEAjJA=='
+                        [KEY_CONTENT_TYPE]: APPLICATION_FORM_URL_ENCODE,
+                        [KEY_AUTHORIZATION]: getKeyAuthorization(),
                     }
                 })
-                .then((response) => {
+                .then(async (response) => {
                     console.log(response.data)
-                    // Lưu accessToken mới vào Redux store
+                    // Lưu accessToken mới vào AsyncStorage
                     const accessToken = response.data.access_token;
-                    dispatch({ type: SET_ACCESS_TOKEN_SUCCESS, payload: accessToken });
+                    await AsyncStorage.setItem(KEY_ACCESS_TOKEN, accessToken);
 
-                    // Lưu refreshToken mới vào Redux store
+                    // Lưu refreshToken mới vào AsyncStorage
                     const refreshToken = response.data.refresh_token;
+                    await AsyncStorage.setItem(KEY_REFRESH_TOKEN, refreshToken);
+
+                    // Cập nhật state trong Redux Store
+                    dispatch({ type: SET_ACCESS_TOKEN_SUCCESS, payload: accessToken });
                     dispatch({ type: REFRESH_TOKEN_SUCCESS, payload: refreshToken });
 
                     // Trả về newToken để sử dụng cho các yêu cầu API tiếp theo (nếu cần)
@@ -197,6 +222,30 @@ export const getPatientRecord = () => {
         } catch (error) {
             dispatch({ type: SET_PATIENT_RECORD_FAILURE, payload: error });
             console.log(error)
+        }
+    };
+};
+
+// getUserLoginQrCode
+export const getUserLoginQrCode = () => {
+    return async (dispatch) => {
+        try {
+            // Lấy access_token từ AsyncStorage
+            const accessToken = await AsyncStorage.getItem(KEY_ACCESS_TOKEN);
+            console.log("getUserLoginQrCode accessToken: ", accessToken);
+
+            await axios.get('https://sandboxapi.365medihome.com.vn/auth/user/get-login-qrcode',
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${accessToken}`,
+                    }
+                })
+                .then((response) => {
+                    console.log(response.data)
+                })
+        } catch (error) {
+            console.log(error);
         }
     };
 };

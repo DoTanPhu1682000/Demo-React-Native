@@ -2,9 +2,7 @@ import React, { Component, useState, useEffect } from "react";
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, SafeAreaView, Dimensions, ScrollView, Image, FlatList } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from 'react-redux';
-import { updateEmail, getAccessToken } from '../../redux/actions/updateAction'
-import * as Constants from "../../api/AppApiHelper";
-import axios from "axios";
+import { updateEmail, getAccessToken, getRefreshToken, getPatientRecord, getUserLoginQrCode } from '../../redux/actions/updateAction'
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -26,6 +24,18 @@ export default HomeScreen = () => {
 
     const login = () => {
         dispatch(getAccessToken(navigation, '0356709238', '123456'))
+    }
+
+    const refreshToken = () => {
+        dispatch(getRefreshToken())
+    }
+
+    const callPatientRecord = () => {
+        dispatch(getPatientRecord())
+    }
+
+    const callUserLoginQrCode = () => {
+        dispatch(getUserLoginQrCode())
     }
 
     const navigateToHoSoKhamScreen = () => {
@@ -94,6 +104,24 @@ export default HomeScreen = () => {
                     <Text style={{ color: '#FFFFFF' }}>Login</Text>
                 </TouchableOpacity>
 
+                <TouchableOpacity
+                    style={{ width: 200, height: 40, borderWidth: 1, borderRadius: 12, marginTop: 24, justifyContent: 'center', alignItems: 'center', backgroundColor: '#4D8D6E' }}
+                    onPress={() => refreshToken()}>
+                    <Text style={{ color: '#FFFFFF' }}>refresh</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                    style={{ width: 200, height: 40, borderWidth: 1, borderRadius: 12, marginTop: 24, justifyContent: 'center', alignItems: 'center', backgroundColor: '#4D8D6E' }}
+                    onPress={() => callPatientRecord()}>
+                    <Text style={{ color: '#FFFFFF' }}>call getPatientRecord</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                    style={{ width: 200, height: 40, borderWidth: 1, borderRadius: 12, marginTop: 24, justifyContent: 'center', alignItems: 'center', backgroundColor: '#4D8D6E' }}
+                    onPress={() => callUserLoginQrCode()}>
+                    <Text style={{ color: '#FFFFFF' }}>call getUserLoginQrCode</Text>
+                </TouchableOpacity>
+
                 <ScrollView style={{ width: windowWidth - 60, height: 20, borderWidth: 1, margin: 30 }}>
                     <Text style={{ fontSize: 12, color: '#1F2D3D' }}>{response}</Text>
                 </ScrollView>
@@ -101,12 +129,3 @@ export default HomeScreen = () => {
         </SafeAreaView>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: "#fff",
-        alignItems: "center",
-        justifyContent: "center"
-    }
-});

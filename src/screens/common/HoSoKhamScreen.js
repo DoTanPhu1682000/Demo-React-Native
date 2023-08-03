@@ -45,11 +45,11 @@ export default HoSoKhamScreen = () => {
                         </View>
                         <View style={{ flexDirection: 'row' }}>
                             {item.patient_record.patient_gender === true ? (
-                                <Text style={{ color: colors.ink400, fontSize: 14 }}>Nam - </Text>
+                                <Text style={[styles.P1, { color: colors.ink400 }]}>Nam - </Text>
                             ) : (
-                                <Text style={{ color: colors.ink400, fontSize: 14 }}>Nữ - </Text>
+                                <Text style={[styles.P1, { color: colors.ink400 }]}>Nữ - </Text>
                             )}
-                            <Text style={{ color: colors.ink400, fontSize: 14 }}>{formattedDOB}</Text>
+                            <Text style={[styles.P1, { color: colors.ink400 }]}>{formattedDOB}</Text>
                         </View>
                     </View>
                 </TouchableOpacity>
