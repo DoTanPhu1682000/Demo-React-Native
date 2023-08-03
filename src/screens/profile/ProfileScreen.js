@@ -1,7 +1,7 @@
 import React, { Component, useState, useEffect } from "react";
 import { StyleSheet, Text, View, Button, TouchableOpacity, TextInput, SafeAreaView, Dimensions, ImageBackground, Image } from "react-native";
 import { useDispatch, useSelector } from 'react-redux';
-import { getRefreshToken } from '../redux/actions/updateAction'
+import { getRefreshToken } from '../../redux/actions/updateAction'
 
 export default ProfileScreen = ({ navigation }) => {
     const dispatch = useDispatch();
@@ -21,7 +21,7 @@ export default ProfileScreen = ({ navigation }) => {
                     }}>
                     <Image
                         style={{ width: 24, height: 24, }}
-                        source={require('../images/ic_menu.png')} resizeMode="stretch" />
+                        source={require('../../images/ic_menu.png')} resizeMode="stretch" />
                 </TouchableOpacity>
 
                 <TouchableOpacity
@@ -31,7 +31,7 @@ export default ProfileScreen = ({ navigation }) => {
                     }}>
                     <Image
                         style={{ width: 24, height: 24, }}
-                        source={require('../images/ic_setting.png')} resizeMode="stretch" />
+                        source={require('../../images/ic_setting.png')} resizeMode="stretch" />
                 </TouchableOpacity>
             </View>
 

@@ -2,8 +2,8 @@ import React, { Component, useState, useEffect } from "react";
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, SafeAreaView, Dimensions, ScrollView, Image, FlatList } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from 'react-redux';
-import { updateEmail, getAccessToken } from '../redux/actions/updateAction'
-import * as Constants from "../api/AppApiHelper";
+import { updateEmail, getAccessToken } from '../../redux/actions/updateAction'
+import * as Constants from "../../api/AppApiHelper";
 import axios from "axios";
 
 const windowWidth = Dimensions.get('window').width;
@@ -39,7 +39,7 @@ export default HomeScreen = () => {
                     style={{ height: '100%', aspectRatio: 1.5, alignItems: 'center', flexDirection: 'row', marginStart: 12 }}>
                     <Image
                         style={{ width: 24, height: 24, }}
-                        source={require('../images/ic_menu.png')} resizeMode="stretch" />
+                        source={require('../../images/ic_menu.png')} resizeMode="stretch" />
                 </TouchableOpacity>
 
                 <TouchableOpacity
@@ -49,7 +49,7 @@ export default HomeScreen = () => {
                     }}>
                     <Image
                         style={{ width: 24, height: 24, }}
-                        source={require('../images/ic_setting.png')} resizeMode="stretch" />
+                        source={require('../../images/ic_setting.png')} resizeMode="stretch" />
                 </TouchableOpacity>
             </View>
 
@@ -61,7 +61,7 @@ export default HomeScreen = () => {
                         <Text style={{ color: '#FFFFFF', width: 48, marginStart: 10 }}>Tư vấn Online</Text>
                         <Image
                             style={{ width: 48, height: 48, marginEnd: 10 }}
-                            source={require('../images/ic_home_dat_lich_online.png')} resizeMode="stretch" />
+                            source={require('../../images/ic_home_dat_lich_online.png')} resizeMode="stretch" />
                     </TouchableOpacity>
 
                     <TouchableOpacity
@@ -70,7 +70,7 @@ export default HomeScreen = () => {
                         <Text style={{ color: '#FFFFFF', width: 60, marginStart: 10 }}>Đặt lịch tại CSYT</Text>
                         <Image
                             style={{ width: 48, height: 48, marginEnd: 10 }}
-                            source={require('../images/ic_home_dat_lich_offline.png')} resizeMode="stretch" />
+                            source={require('../../images/ic_home_dat_lich_offline.png')} resizeMode="stretch" />
                     </TouchableOpacity>
                 </View>
 

@@ -1,8 +1,10 @@
 import React, { Component, useState, useEffect } from "react";
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, SafeAreaView, Dimensions, StatusBar, Image } from "react-native";
 import { useDispatch, useSelector } from 'react-redux';
-import { getAccessToken } from '../redux/actions/updateAction'
-import LoadingDialog from '../component/LoadingDialog'
+import { getAccessToken } from '../../redux/actions/updateAction'
+import LoadingDialog from '../../component/LoadingDialog'
+import colors from '../../configs/colors/colors'
+import styles from '../../configs/styles/styles'
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -44,14 +46,14 @@ const BlueComponent = () => {
             <View style={{ width: windowWidth - 60, height: 50, marginStart: 30, marginTop: 16, flexDirection: 'row' }}>
                 <TouchableOpacity
                     style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', backgroundColor: '#FFFFFF', borderRadius: 8 }}>
-                    <Image source={require('../images/ic_google.png')} resizeMode="stretch"
+                    <Image source={require('../../images/ic_google.png')} resizeMode="stretch"
                         style={{ width: 30, height: 30 }} />
                     <Text style={{ color: '#1F2D3D', marginStart: 12 }}>Google</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
                     style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', backgroundColor: '#FFFFFF', borderRadius: 8, marginStart: 12 }}>
-                    <Image source={require('../images/ic_facebook.png')} resizeMode="stretch"
+                    <Image source={require('../../images/ic_facebook.png')} resizeMode="stretch"
                         style={{ width: 30, height: 30 }} />
                     <Text style={{ color: '#1F2D3D', marginStart: 12 }}>Facebook</Text>
                 </TouchableOpacity>
@@ -60,14 +62,14 @@ const BlueComponent = () => {
             <View style={{ width: windowWidth - 60, height: 50, marginStart: 30, marginTop: 16, flexDirection: 'row' }}>
                 <TouchableOpacity
                     style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', backgroundColor: '#FFFFFF', borderRadius: 8 }}>
-                    <Image source={require('../images/ic_twitter.png')} resizeMode="stretch"
+                    <Image source={require('../../images/ic_twitter.png')} resizeMode="stretch"
                         style={{ width: 30, height: 30 }} />
                     <Text style={{ color: '#1F2D3D', marginStart: 12 }}>Twitter</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
                     style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', backgroundColor: '#FFFFFF', borderRadius: 8, marginStart: 12 }}>
-                    <Image source={require('../images/ic_discord.png')} resizeMode="stretch"
+                    <Image source={require('../../images/ic_discord.png')} resizeMode="stretch"
                         style={{ width: 30, height: 30 }} />
                     <Text style={{ color: '#1F2D3D', marginStart: 12 }}>Discord   </Text>
                 </TouchableOpacity>
@@ -83,7 +85,7 @@ const YellowComponent = () => {
             <Text style={{ fontSize: 24, marginStart: 30, color: '#1F2D3D' }}>Become part of the future</Text>
             {/* Email */}
             <View style={{ width: windowWidth - 60, height: 60, marginStart: 30, marginTop: 12, backgroundColor: '#FFFFFF', flexDirection: 'row', alignItems: 'center', borderRadius: 12 }}>
-                <Image source={require('../images/ic_gmail.png')} resizeMode="stretch"
+                <Image source={require('../../images/ic_gmail.png')} resizeMode="stretch"
                     style={{ width: 28, height: 28, marginStart: 12 }} />
                 <TextInput
                     style={{ height: '100%', flex: 1, marginStart: 12, fontSize: 16 }}
@@ -92,7 +94,7 @@ const YellowComponent = () => {
             </View>
             {/* Password */}
             <View style={{ width: windowWidth - 60, height: 60, marginStart: 30, marginTop: 12, backgroundColor: '#FFFFFF', flexDirection: 'row', alignItems: 'center', borderRadius: 12 }}>
-                <Image source={require('../images/ic_lock.png')} resizeMode="stretch"
+                <Image source={require('../../images/ic_lock.png')} resizeMode="stretch"
                     style={{ width: 28, height: 28, marginStart: 12 }} />
                 <TextInput
                     style={{ height: '100%', flex: 1, marginStart: 12, fontSize: 16 }}
@@ -101,13 +103,13 @@ const YellowComponent = () => {
                     secureTextEntry={pwdHidden ? true : false} />
                 <TouchableOpacity style={{ height: '100%', aspectRatio: 1, justifyContent: 'center', alignItems: "center" }}
                     onPress={() => setPWDHidden(!pwdHidden)}>
-                    <Image source={require('../images/ic_password.png')} resizeMode="stretch"
+                    <Image source={require('../../images/ic_password.png')} resizeMode="stretch"
                         style={{ width: 28, height: 28 }} />
                 </TouchableOpacity>
             </View>
             {/* Repeat password */}
             <View style={{ width: windowWidth - 60, height: 60, marginStart: 30, marginTop: 12, backgroundColor: '#FFFFFF', flexDirection: 'row', alignItems: 'center', borderRadius: 12 }}>
-                <Image source={require('../images/ic_lock.png')} resizeMode="stretch"
+                <Image source={require('../../images/ic_lock.png')} resizeMode="stretch"
                     style={{ width: 28, height: 28, marginStart: 12 }} />
                 <TextInput
                     style={{ height: '100%', flex: 1, marginStart: 12, fontSize: 16 }}
@@ -116,7 +118,7 @@ const YellowComponent = () => {
                     secureTextEntry={pwdHidden ? true : false} />
                 <TouchableOpacity style={{ height: '100%', aspectRatio: 1, justifyContent: 'center', alignItems: "center" }}
                     onPress={() => setPWDHidden(!pwdHidden)}>
-                    <Image source={require('../images/ic_password.png')} resizeMode="stretch"
+                    <Image source={require('../../images/ic_password.png')} resizeMode="stretch"
                         style={{ width: 28, height: 28 }} />
                 </TouchableOpacity>
             </View>
@@ -146,7 +148,7 @@ const GreenComponent = ({ navigation, dispatch }) => {
             <Text style={{ fontSize: 24, marginStart: 30, color: '#1F2D3D' }}>Login in your account</Text>
             {/* Email */}
             <View style={{ width: windowWidth - 60, height: 60, marginStart: 30, marginTop: 20, backgroundColor: '#FFFFFF', flexDirection: 'row', alignItems: 'center', borderRadius: 12 }}>
-                <Image source={require('../images/ic_gmail.png')} resizeMode="stretch"
+                <Image source={require('../../images/ic_gmail.png')} resizeMode="stretch"
                     style={{ width: 28, height: 28, marginStart: 12 }} />
                 <TextInput
                     style={{ height: '100%', flex: 1, marginStart: 12, fontSize: 16 }}
@@ -157,7 +159,7 @@ const GreenComponent = ({ navigation, dispatch }) => {
             </View>
             {/* Password */}
             <View style={{ width: windowWidth - 60, height: 60, marginStart: 30, marginTop: 20, backgroundColor: '#FFFFFF', flexDirection: 'row', alignItems: 'center', borderRadius: 12 }}>
-                <Image source={require('../images/ic_lock.png')} resizeMode="stretch"
+                <Image source={require('../../images/ic_lock.png')} resizeMode="stretch"
                     style={{ width: 28, height: 28, marginStart: 12 }} />
                 <TextInput
                     style={{ height: '100%', flex: 1, marginStart: 12, fontSize: 16 }}
@@ -168,7 +170,7 @@ const GreenComponent = ({ navigation, dispatch }) => {
                     secureTextEntry={pwdHidden ? true : false} />
                 <TouchableOpacity style={{ height: '100%', aspectRatio: 1, justifyContent: 'center', alignItems: "center" }}
                     onPress={() => setPWDHidden(!pwdHidden)}>
-                    <Image source={require('../images/ic_password.png')} resizeMode="stretch"
+                    <Image source={require('../../images/ic_password.png')} resizeMode="stretch"
                         style={{ width: 28, height: 28 }} />
                 </TouchableOpacity>
             </View>

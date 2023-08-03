@@ -1,7 +1,7 @@
 import React, { Component, useState, useEffect } from "react";
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, SafeAreaView, Dimensions, ScrollView, Image, FlatList } from "react-native";
 import { useDispatch, useSelector } from 'react-redux';
-import { getData, getUserData, getCategoriesData } from "../redux/actions/updateAction";
+import { getData, getUserData, getCategoriesData } from "../../redux/actions/updateAction";
 
 export default SettingsScreen = ({ navigation }) => {
     const dispatch = useDispatch();
@@ -34,7 +34,7 @@ export default SettingsScreen = ({ navigation }) => {
                     }}>
                     <Image
                         style={{ width: 24, height: 24, }}
-                        source={require('../images/ic_back.png')} resizeMode="stretch" />
+                        source={require('../../images/ic_back.png')} resizeMode="stretch" />
                 </TouchableOpacity>
             </View>
 

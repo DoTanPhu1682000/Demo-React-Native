@@ -7,10 +7,10 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Provider } from 'react-redux';
 import { store } from '../redux/store';
-import LoginScreen from "../screens/LoginScreen";
-import HomeScreen from "../screens/HomeScreen";
-import SettingsScreen from "../screens/SettingsScreen";
-import ProfileScreen from "../screens/ProfileScreen";
+import LoginScreen from "../screens/login/LoginScreen";
+import HomeScreen from "../screens/home/HomeScreen";
+import SettingsScreen from "../screens/settings/SettingsScreen";
+import ProfileScreen from "../screens/profile/ProfileScreen";
 import HoSoKhamScreen from "../screens/common/HoSoKhamScreen"
 
 const Stack = createNativeStackNavigator();
