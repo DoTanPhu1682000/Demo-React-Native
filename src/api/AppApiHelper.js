@@ -3,16 +3,16 @@ import axios from 'axios';
 export const URL = 'https://sandboxapi.365medihome.com.vn';
 
 // Test
-const api = axios.create({
+const apiTest = axios.create({
     baseURL: 'https://testapi.jasonwatmore.com/products',
 });
 
 export const fetchUsersData = () => {
-    return api.get('');
+    return apiTest.get('');
 };
 
 export const fetchData = () => {
-    return api.get('/1');
+    return apiTest.get('/1');
 };
 
 // ApiEndPoints

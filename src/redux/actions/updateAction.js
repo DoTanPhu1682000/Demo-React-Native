@@ -76,6 +76,54 @@ export const getCategoriesData = () => {
     };
 };
 
+const api = axios.create({
+    baseURL: `${Constants.URL}`,
+    timeout: 10000, // Thời gian tối đa để chờ phản hồi từ API
+    headers: {
+        [KEY_CONTENT_TYPE]: APPLICATION_JSON,
+    },
+});
+
+// Thêm interceptor để tự động thêm Authorization header với accessToken mỗi khi gửi yêu cầu
+api.interceptors.request.use(
+    async (config) => {
+        const accessToken = await AsyncStorage.getItem(KEY_ACCESS_TOKEN);
+        console.log("==> api accessToken: ", accessToken);
+        if (accessToken) {
+            config.headers.Authorization = `Bearer ${accessToken}`;
+        }
+        return config;
+    },
+    (error) => {
+        return Promise.reject(error);
+    }
+);
+
+// Thêm interceptor để xử lý lỗi 401 và tự động làm mới accessToken
+api.interceptors.response.use(
+    (response) => {
+        return response;
+    },
+    async (error) => {
+        const originalRequest = error.config;
+        if (error.response && error.response.status === 401 && !originalRequest._retry) {
+            originalRequest._retry = true;
+            try {
+                // Gọi hàm để làm mới accessToken
+                await getRefreshToken();
+                // Sau khi làm mới token thành công, gọi lại yêu cầu ban đầu với access token mới
+                const newAccessToken = await AsyncStorage.getItem(KEY_ACCESS_TOKEN);
+                console.log("==> api newAccessToken: ", newAccessToken);
+                originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+                return axios(originalRequest);
+            } catch (refreshError) {
+                return Promise.reject(refreshError);
+            }
+        }
+        return Promise.reject(error);
+    }
+);
+
 // accessToken
 export const login = async (phone, password) => {
     try {
@@ -137,57 +185,14 @@ export const getRefreshToken = async () => {
 
 // getPatientRecord
 export const getPatientRecord = () => {
-    return async (dispatch, useSelector) => {
+    return async (dispatch) => {
         try {
             // Gửi action request để hiển thị loading hoặc thực hiện các logic tương ứng
             dispatch({ type: SET_PATIENT_RECORD_REQUEST });
 
-            // Lấy accessToken từ AsyncStorage
-            const accessToken = await AsyncStorage.getItem(KEY_ACCESS_TOKEN);
-            console.log("==> getPatientRecord accessToken: ", accessToken);
-
-            await axios.get(`${Constants.URL}/${Constants.PATIENT_RECORD_BY_USER_KEY}`,
-                {
-                    headers: {
-                        [KEY_CONTENT_TYPE]: APPLICATION_JSON,
-                        [KEY_AUTHORIZATION]: `Bearer ${accessToken}`,
-                    }
-                })
-                .then(async (response) => {
-                    console.log(response.data)
-                    dispatch({ type: SET_PATIENT_RECORD_SUCCESS, payload: response.data });
-                })
-                .catch(async (error) => {
-                    if (error.response && error.response.status === 401) {
-                        // Xử lý khi API trả về lỗi 401 (Unauthorized)
-                        console.log("Lỗi 401: Unauthorized");
-                        try {
-                            // Thực hiện gọi hàm để refresh access_token
-                            await dispatch(getRefreshToken());
-                            // Sau khi access_token mới đã được lưu vào Redux store, tiếp tục gọi lại API getPatientRecord
-                            const newToken = await AsyncStorage.getItem(KEY_ACCESS_TOKEN);
-                            console.log("New accessToken getPatientRecord: ", newToken);
-
-                            // Tiếp tục gọi lại API getPatientRecord sau khi có access_token mới
-                            const response = await axios.get(`${Constants.URL}/${Constants.PATIENT_RECORD_BY_USER_KEY}`, {
-                                headers: {
-                                    [KEY_CONTENT_TYPE]: APPLICATION_JSON,
-                                    [KEY_AUTHORIZATION]: `Bearer ${accessToken}`,
-                                }
-                            });
-                            console.log(response.data);
-                            dispatch({ type: SET_PATIENT_RECORD_SUCCESS, payload: response.data });
-                        } catch (refreshError) {
-                            // Xử lý khi refresh access_token cũng gặp lỗi
-                            console.log("Lỗi khi refresh access_token: ", refreshError);
-                            dispatch({ type: SET_PATIENT_RECORD_FAILURE, payload: refreshError });
-                        }
-                    } else {
-                        // Xử lý khi xảy ra lỗi khác
-                        dispatch({ type: SET_PATIENT_RECORD_FAILURE, payload: error });
-                        console.log("lỗi khác: ", error);
-                    }
-                });
+            const response = await api.get(`/${Constants.PATIENT_RECORD_BY_USER_KEY}`)
+            console.log(response.data);
+            dispatch({ type: SET_PATIENT_RECORD_SUCCESS, payload: response.data });
         } catch (error) {
             dispatch({ type: SET_PATIENT_RECORD_FAILURE, payload: error });
             console.log(error)
