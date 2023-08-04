@@ -1,15 +1,10 @@
 import React, { Component, useState, useEffect } from "react";
 import { StyleSheet, Text, View, Button, TouchableOpacity, TextInput, SafeAreaView, Dimensions, ImageBackground, Image } from "react-native";
 import { useDispatch, useSelector } from 'react-redux';
-import { getRefreshToken } from '../../redux/actions/updateAction'
 
 export default ProfileScreen = ({ navigation }) => {
     const dispatch = useDispatch();
     const info = useSelector((state) => state.infoReducer)
-
-    const handlerRefreshToken = () => {
-        dispatch(getRefreshToken())
-    }
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
@@ -38,12 +33,6 @@ export default ProfileScreen = ({ navigation }) => {
             <View style={styles.container}>
                 <Text style={{ fontSize: 24 }}>Profile</Text>
                 <Text>Email: {info.email}</Text>
-
-                <TouchableOpacity
-                    style={{ width: 200, height: 40, borderWidth: 1, borderRadius: 12, marginTop: 24, justifyContent: 'center', alignItems: 'center', backgroundColor: '#4D8D6E' }}
-                    onPress={() => handlerRefreshToken()}>
-                    <Text style={{ color: '#FFFFFF' }}>Refresh Token</Text>
-                </TouchableOpacity>
             </View>
         </SafeAreaView>
     );

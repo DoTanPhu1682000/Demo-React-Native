@@ -77,91 +77,62 @@ export const getCategoriesData = () => {
 };
 
 // accessToken
-export const getAccessToken = (navigation, phone, password) => {
-    return async (dispatch) => {
-        try {
-            await axios.post(`${Constants.URL}/${Constants.LOGIN}`,
-                {
-                    username: phone,
-                    password: password,
-                    grant_type: 'password'
-                },
-                {
-                    headers: {
-                        [KEY_CONTENT_TYPE]: APPLICATION_FORM_URL_ENCODE,
-                        [KEY_AUTHORIZATION]: getKeyAuthorization(),
-                    }
-                })
-                .then(async (response) => {
-                    console.log(response.data)
-                    // Lưu accessToken vào AsyncStorage
-                    const accessToken = response.data.access_token;
-                    await AsyncStorage.setItem(KEY_ACCESS_TOKEN, accessToken);
+export const login = async (phone, password) => {
+    try {
+        const response = await axios.post(`${Constants.URL}/${Constants.LOGIN}`, {
+            username: phone,
+            password: password,
+            grant_type: 'password',
+        }, {
+            headers: {
+                [KEY_CONTENT_TYPE]: APPLICATION_FORM_URL_ENCODE,
+                [KEY_AUTHORIZATION]: getKeyAuthorization(),
+            },
+        });
 
-                    // Lưu refreshToken vào AsyncStorage
-                    const refreshToken = response.data.refresh_token;
-                    await AsyncStorage.setItem(KEY_REFRESH_TOKEN, refreshToken);
+        console.log(response.data);
+        // Xử lý kết quả phản hồi và lưu accessToken và refreshToken vào AsyncStorage
+        const accessToken = response.data.access_token;
+        const refreshToken = response.data.refresh_token;
+        await AsyncStorage.setItem(KEY_ACCESS_TOKEN, accessToken);
+        await AsyncStorage.setItem(KEY_REFRESH_TOKEN, refreshToken);
 
-                    // Cập nhật state trong Redux Store
-                    dispatch({ type: SET_ACCESS_TOKEN_SUCCESS, payload: accessToken });
-                    dispatch({ type: REFRESH_TOKEN_SUCCESS, payload: refreshToken });
-
-                    if (accessToken) {
-                        // Điều hướng đến màn hình HomeScreen
-                        navigation.navigate('HomeTabs')
-                    }
-                })
-        } catch (error) {
-            dispatch({ type: SET_ACCESS_TOKEN_FAILURE, payload: error });
-            console.log(error);
-        }
-    };
+        return response.data;
+    } catch (error) {
+        console.log('Error login:', error);
+    }
 };
 
 // refreshToken
-export const getRefreshToken = () => {
-    return async (dispatch) => {
-        try {
-            // Gửi action refresh token request để hiển thị loading hoặc thực hiện các logic tương ứng
-            dispatch({ type: REFRESH_TOKEN_REQUEST });
+export const getRefreshToken = async () => {
+    try {
+        // lấy refreshToken từ AsyncStorage
+        const refreshToken = await AsyncStorage.getItem(KEY_REFRESH_TOKEN);
+        console.log("==> getRefreshToken:", refreshToken);
 
-            // Lấy refreshToken từ AsyncStorage
-            const refreshToken = await AsyncStorage.getItem(KEY_REFRESH_TOKEN);
-            console.log("getRefreshToken - refreshToken 0: ", refreshToken);
-
-            await axios.post(`${Constants.URL}/${Constants.LOGIN}`,
-                {
-                    grant_type: 'refresh_token',
-                    refresh_token: refreshToken,
+        const response = await axios.post(`${Constants.URL}/${Constants.LOGIN}`,
+            {
+                grant_type: 'refresh_token',
+                refresh_token: refreshToken,
+            },
+            {
+                headers: {
+                    [KEY_CONTENT_TYPE]: APPLICATION_FORM_URL_ENCODE,
+                    [KEY_AUTHORIZATION]: getKeyAuthorization(),
                 },
-                {
-                    headers: {
-                        [KEY_CONTENT_TYPE]: APPLICATION_FORM_URL_ENCODE,
-                        [KEY_AUTHORIZATION]: getKeyAuthorization(),
-                    }
-                })
-                .then(async (response) => {
-                    console.log(response.data)
-                    // Lưu accessToken mới vào AsyncStorage
-                    const accessToken = response.data.access_token;
-                    await AsyncStorage.setItem(KEY_ACCESS_TOKEN, accessToken);
+            }
+        );
 
-                    // Lưu refreshToken mới vào AsyncStorage
-                    const refreshToken = response.data.refresh_token;
-                    await AsyncStorage.setItem(KEY_REFRESH_TOKEN, refreshToken);
+        console.log(response.data);
+        // Xử lý kết quả phản hồi và lưu accessToken và refreshToken mới vào AsyncStorage
+        await AsyncStorage.setItem(KEY_ACCESS_TOKEN, response.data.access_token);
+        await AsyncStorage.setItem(KEY_REFRESH_TOKEN, response.data.refresh_token);
 
-                    // Cập nhật state trong Redux Store
-                    dispatch({ type: SET_ACCESS_TOKEN_SUCCESS, payload: accessToken });
-                    dispatch({ type: REFRESH_TOKEN_SUCCESS, payload: refreshToken });
-
-                    // Trả về newToken để sử dụng cho các yêu cầu API tiếp theo (nếu cần)
-                    return accessToken
-                })
-        } catch (error) {
-            dispatch({ type: REFRESH_TOKEN_FAILURE, payload: error });
-            console.log(error);
-        }
-    };
+        return response.data;
+    } catch (error) {
+        // Xử lý lỗi nếu có
+        console.log('Error getRefreshToken:', error);
+    }
 };
 
 // getPatientRecord
@@ -171,16 +142,15 @@ export const getPatientRecord = () => {
             // Gửi action request để hiển thị loading hoặc thực hiện các logic tương ứng
             dispatch({ type: SET_PATIENT_RECORD_REQUEST });
 
-            // Lấy access_token từ Redux store
-            const access_token = useSelector((state) => state.tokenReducer.access_token);
-            const accessToken = access_token.tokenReducer.access_token
-            console.log("accessToken getPatientRecord: ", accessToken)
+            // Lấy accessToken từ AsyncStorage
+            const accessToken = await AsyncStorage.getItem(KEY_ACCESS_TOKEN);
+            console.log("==> getPatientRecord accessToken: ", accessToken);
 
             await axios.get(`${Constants.URL}/${Constants.PATIENT_RECORD_BY_USER_KEY}`,
                 {
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${accessToken}`,
+                        [KEY_CONTENT_TYPE]: APPLICATION_JSON,
+                        [KEY_AUTHORIZATION]: `Bearer ${accessToken}`,
                     }
                 })
                 .then(async (response) => {
@@ -195,15 +165,14 @@ export const getPatientRecord = () => {
                             // Thực hiện gọi hàm để refresh access_token
                             await dispatch(getRefreshToken());
                             // Sau khi access_token mới đã được lưu vào Redux store, tiếp tục gọi lại API getPatientRecord
-                            const newAccessToken = useSelector((state) => state.tokenReducer.access_token);
-                            const newToken = newAccessToken.tokenReducer.access_token;
+                            const newToken = await AsyncStorage.getItem(KEY_ACCESS_TOKEN);
                             console.log("New accessToken getPatientRecord: ", newToken);
 
                             // Tiếp tục gọi lại API getPatientRecord sau khi có access_token mới
                             const response = await axios.get(`${Constants.URL}/${Constants.PATIENT_RECORD_BY_USER_KEY}`, {
                                 headers: {
-                                    'Content-Type': 'application/json',
-                                    'Authorization': `Bearer ${newToken}`,
+                                    [KEY_CONTENT_TYPE]: APPLICATION_JSON,
+                                    [KEY_AUTHORIZATION]: `Bearer ${accessToken}`,
                                 }
                             });
                             console.log(response.data);
@@ -230,15 +199,15 @@ export const getPatientRecord = () => {
 export const getUserLoginQrCode = () => {
     return async (dispatch) => {
         try {
-            // Lấy access_token từ AsyncStorage
+            // Lấy accessToken từ AsyncStorage
             const accessToken = await AsyncStorage.getItem(KEY_ACCESS_TOKEN);
-            console.log("getUserLoginQrCode accessToken: ", accessToken);
+            console.log("==> getUserLoginQrCode accessToken: ", accessToken);
 
             await axios.get('https://sandboxapi.365medihome.com.vn/auth/user/get-login-qrcode',
                 {
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${accessToken}`,
+                        [KEY_CONTENT_TYPE]: APPLICATION_JSON,
+                        [KEY_AUTHORIZATION]: `Bearer ${accessToken}`,
                     }
                 })
                 .then((response) => {

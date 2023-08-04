@@ -1,7 +1,7 @@
 import React, { Component, useState, useEffect } from "react";
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, SafeAreaView, Dimensions, StatusBar, Image } from "react-native";
 import { useDispatch, useSelector } from 'react-redux';
-import { getAccessToken } from '../../redux/actions/updateAction'
+import { login } from '../../redux/actions/updateAction'
 import LoadingDialog from '../../component/LoadingDialog'
 import colors from '../../configs/colors/colors'
 import styles from '../../configs/styles/styles'
@@ -12,7 +12,6 @@ const SIGN_IN = 'SIGN_IN';
 const GET_STARTED = 'GET_STARTED';
 
 export default LoginScreen = ({ navigation }) => {
-    const dispatch = useDispatch();
     const [page, setPage] = useState(SIGN_IN)
 
     return (
@@ -22,7 +21,7 @@ export default LoginScreen = ({ navigation }) => {
             </View>
 
             <View style={{ width: '100%', height: '50%', backgroundColor: '#F5F5F5' }}>
-                {page === SIGN_IN ? <GreenComponent navigation={navigation} dispatch={dispatch} /> : <YellowComponent />}
+                {page === SIGN_IN ? <GreenComponent navigation={navigation} /> : <YellowComponent />}
             </View>
 
             <View style={{ flex: 1, backgroundColor: '#F5F5F5' }}>
@@ -135,9 +134,18 @@ const YellowComponent = () => {
     );
 }
 
-const GreenComponent = ({ navigation, dispatch }) => {
+const GreenComponent = ({ navigation }) => {
     const navigateToHomeScreen = () => {
-        dispatch(getAccessToken(navigation, phone, password))
+        login(phone, password)
+            .then((response) => {
+                if (response.access_token !== null) {
+                    // Điều hướng đến màn hình HomeScreen
+                    navigation.navigate('HomeTabs')
+                }
+            })
+            .catch((error) => {
+                console.log('Error:', error);
+            });
     }
     const [phone, setPhone] = useState('0356709238');
     const [password, setPassword] = useState('123456');

@@ -2,7 +2,7 @@ import React, { Component, useState, useEffect } from "react";
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, SafeAreaView, Dimensions, ScrollView, Image, FlatList } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from 'react-redux';
-import { updateEmail, getAccessToken, getRefreshToken, getPatientRecord, getUserLoginQrCode } from '../../redux/actions/updateAction'
+import { updateEmail, login, getRefreshToken, getPatientRecord, getUserLoginQrCode } from '../../redux/actions/updateAction'
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -22,12 +22,12 @@ export default HomeScreen = () => {
         }
     }, [])
 
-    const login = () => {
-        dispatch(getAccessToken(navigation, '0356709238', '123456'))
+    const callLogin = () => {
+        login('0356709238', '123456')
     }
 
-    const refreshToken = () => {
-        dispatch(getRefreshToken())
+    const refresh = () => {
+        getRefreshToken()
     }
 
     const callPatientRecord = () => {
@@ -100,13 +100,13 @@ export default HomeScreen = () => {
 
                 <TouchableOpacity
                     style={{ width: 200, height: 40, borderWidth: 1, borderRadius: 12, marginTop: 24, justifyContent: 'center', alignItems: 'center', backgroundColor: '#4D8D6E' }}
-                    onPress={() => login()}>
+                    onPress={() => callLogin()}>
                     <Text style={{ color: '#FFFFFF' }}>Login</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
                     style={{ width: 200, height: 40, borderWidth: 1, borderRadius: 12, marginTop: 24, justifyContent: 'center', alignItems: 'center', backgroundColor: '#4D8D6E' }}
-                    onPress={() => refreshToken()}>
+                    onPress={() => refresh()}>
                     <Text style={{ color: '#FFFFFF' }}>refresh</Text>
                 </TouchableOpacity>
 
