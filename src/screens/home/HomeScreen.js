@@ -23,7 +23,7 @@ export default HomeScreen = () => {
     }, [])
 
     const callLogin = () => {
-        login('0356709238', '123456')
+        login('0392719775', '123456')
     }
 
     const refresh = () => {

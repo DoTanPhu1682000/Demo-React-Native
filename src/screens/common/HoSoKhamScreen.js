@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getPatientRecord } from '../../redux/actions/updateAction'
 import formatDate from '../../utils/CalendarUtil'
 import colors from '../../configs/colors/colors'
-import styles from '../../configs/styles/styles'
+import stylesBase from '../../configs/styles/styles'
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -24,6 +24,11 @@ export default HoSoKhamScreen = () => {
         }
     }, [])
 
+    const navigateToHoSoKhamAddScreen = () => {
+        // Điều hướng đến màn hình HomeScreen
+        navigation.navigate('HoSoKhamAddScreen')
+    }
+
     const renderItem = ({ item }) => {
         const formattedDOB = formatDate(item.patient_record.patient_dob);
 
@@ -36,7 +41,7 @@ export default HoSoKhamScreen = () => {
 
                     <View style={{ justifyContent: 'center', }}>
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <Text style={[styles.H5Strong, { color: colors.ink500 }]}>{item.patient_record.patient_name}</Text>
+                            <Text style={[stylesBase.H5Strong, { color: colors.ink500 }]}>{item.patient_record.patient_name}</Text>
                             {item.patient_record.default_record === true ? (
                                 <Image
                                     style={{ width: 16, height: 16, justifyContent: 'center', marginStart: 12 }}
@@ -45,11 +50,11 @@ export default HoSoKhamScreen = () => {
                         </View>
                         <View style={{ flexDirection: 'row' }}>
                             {item.patient_record.patient_gender === true ? (
-                                <Text style={[styles.P1, { color: colors.ink400 }]}>Nam - </Text>
+                                <Text style={[stylesBase.P1, { color: colors.ink400 }]}>Nam - </Text>
                             ) : (
-                                <Text style={[styles.P1, { color: colors.ink400 }]}>Nữ - </Text>
+                                <Text style={[stylesBase.P1, { color: colors.ink400 }]}>Nữ - </Text>
                             )}
-                            <Text style={[styles.P1, { color: colors.ink400 }]}>{formattedDOB}</Text>
+                            <Text style={[stylesBase.P1, { color: colors.ink400 }]}>{formattedDOB}</Text>
                         </View>
                     </View>
                 </TouchableOpacity>
@@ -71,7 +76,7 @@ export default HoSoKhamScreen = () => {
                         source={require('../../images/ic_back.png')} resizeMode="stretch" />
                 </TouchableOpacity>
 
-                <Text style={[styles.H5Strong, { color: colors.ink500 }]}>Chọn hồ sơ</Text>
+                <Text style={[stylesBase.H5Strong, { color: colors.ink500 }]}>Chọn hồ sơ</Text>
 
                 <TouchableOpacity
                     style={{ height: '100%', aspectRatio: 1.5, alignItems: 'center', flexDirection: 'row', justifyContent: 'flex-end', marginEnd: 12 }}>
@@ -88,6 +93,13 @@ export default HoSoKhamScreen = () => {
                     renderItem={renderItem}
                     keyExtractor={(item) => item.id.toString()} />
             </View>
+
+            <TouchableOpacity style={{ position: 'absolute', bottom: 20, right: 16 }}
+                onPress={navigateToHoSoKhamAddScreen}>
+                <Image
+                    style={{ width: 64, height: 64, }}
+                    source={require('../../images/ic_add_user_patient_record.png')} resizeMode="stretch" />
+            </TouchableOpacity>
         </SafeAreaView>
     );
 }

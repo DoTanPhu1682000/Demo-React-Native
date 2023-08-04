@@ -12,6 +12,7 @@ import HomeScreen from "../screens/home/HomeScreen";
 import SettingsScreen from "../screens/settings/SettingsScreen";
 import ProfileScreen from "../screens/profile/ProfileScreen";
 import HoSoKhamScreen from "../screens/common/HoSoKhamScreen"
+import HoSoKhamAddScreen from "../screens/common/add/HoSoKhamAddScreen"
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -64,6 +65,7 @@ export default function AppNavigator() {
                     <Stack.Screen name="LoginScreen" component={LoginScreen} />
                     <Stack.Screen name="HomeTabs" component={HomeTabs} />
                     <Stack.Screen name="HoSoKhamScreen" component={HoSoKhamScreen} />
+                    <Stack.Screen name="HoSoKhamAddScreen" component={HoSoKhamAddScreen} />
                 </Stack.Navigator>
             </NavigationContainer>
         </Provider>

@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { login } from '../../redux/actions/updateAction'
 import LoadingDialog from '../../component/LoadingDialog'
 import colors from '../../configs/colors/colors'
-import styles from '../../configs/styles/styles'
+import stylesBase from '../../configs/styles/styles'
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -147,7 +147,7 @@ const GreenComponent = ({ navigation }) => {
                 console.log('Error:', error);
             });
     }
-    const [phone, setPhone] = useState('0356709238');
+    const [phone, setPhone] = useState('0392719775');
     const [password, setPassword] = useState('123456');
     const [pwdHidden, setPWDHidden] = useState(true);
 

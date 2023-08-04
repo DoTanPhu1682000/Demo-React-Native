@@ -1,7 +1,7 @@
 import { StyleSheet } from 'react-native';
 
 // Định nghĩa các style cho Header và đoạn văn bản
-const styles = StyleSheet.create({
+const stylesBase = StyleSheet.create({
     // Header Styles
     H1: {
         fontSize: 32,
@@ -115,4 +115,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default styles;
+export default stylesBase;

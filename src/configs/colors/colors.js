@@ -1,6 +1,5 @@
 // Base colors
 const colors = {
-	white: '#FFFFFF',
 	primary: '#F68E1E',
 	primary500: '#F68E1E',
 	primary400: '#F6A349',
@@ -47,6 +46,10 @@ const colors = {
 	purple300: '#D6A6E8',
 	purple200: '#E4C4F0',
 	purple100: '#F9F1FC',
+	white: '#FFFFFF',
+	transparent: '#00000000',
+	sBackground: '#F2F4F9',
+	sLine: '#EBEFFB',
 };
 
 export default colors;
