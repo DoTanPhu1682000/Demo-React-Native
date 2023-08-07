@@ -1,5 +1,5 @@
 import React, { Component, useState, useEffect } from "react";
-import { StyleSheet, Text, View, TouchableOpacity, TextInput, SafeAreaView, Dimensions, ScrollView, Image, FlatList } from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, SafeAreaView, Dimensions, ScrollView, Image, FlatList, StatusBar } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from 'react-redux';
 import { getPatientRecord } from '../../redux/actions/updateAction'
@@ -34,6 +34,7 @@ export default HoSoKhamScreen = () => {
 
         return (
             <View>
+                <StatusBar barStyle="dark-content" backgroundColor={colors.white} />
                 <TouchableOpacity style={{ flexDirection: 'row', marginBottom: 16, backgroundColor: colors.white, borderRadius: 8 }}>
                     <Image
                         style={{ width: 60, height: 60, margin: 12, }}

@@ -1,8 +1,10 @@
 import React, { Component, useState, useEffect } from "react";
-import { StyleSheet, Text, View, TouchableOpacity, TextInput, SafeAreaView, Dimensions, ScrollView, Image, FlatList } from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, SafeAreaView, Dimensions, ScrollView, Image, FlatList, StatusBar } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from 'react-redux';
 import { updateEmail, login, getRefreshToken, getPatientRecord, getUserLoginQrCode } from '../../redux/actions/updateAction'
+import colors from '../../configs/colors/colors'
+import stylesBase from '../../configs/styles/styles'
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -44,6 +46,7 @@ export default HomeScreen = () => {
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
+            <StatusBar barStyle="dark-content" backgroundColor={colors.white} />
             <View style={{ width: '100%', height: '6%', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#FFFFFF' }}>
                 <TouchableOpacity
                     style={{ height: '100%', aspectRatio: 1.5, alignItems: 'center', flexDirection: 'row', marginStart: 12 }}>
