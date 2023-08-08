@@ -1,7 +1,7 @@
 import { combineReducers } from "redux";
 import infoReducer from './infoReducer';
 import categoryReducer from './categoryReducer'
-import tokenReducer from "./tokenReducer"
+import loginInfoReducer from "./loginInfoReducer"
 import patientRecordReducer from "./patientRecordReducer"
 import patientRecordAddReducer from "./patientRecordAddReducer"
 import patientRecordDefaultReducer from "./patientRecordDefaultReducer"
@@ -9,7 +9,7 @@ import patientRecordDefaultReducer from "./patientRecordDefaultReducer"
 const rootReducer = combineReducers({
     infoReducer,
     categoryReducer,
-    tokenReducer,
+    loginInfoReducer,
     patientRecordReducer,
     patientRecordAddReducer,
     patientRecordDefaultReducer,

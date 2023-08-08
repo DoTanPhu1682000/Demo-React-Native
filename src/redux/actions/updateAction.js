@@ -3,13 +3,15 @@ import * as Constants from '../../api/AppApiHelper';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { CAP_NHAT_EMAIL, FETCH_DATA_SUCCESS, FETCH_DATA_FAILURE, FETCH_USER_DATA_SUCCESS, FETCH_USER_DATA_FAILURE } from "../reducers/infoReducer"
 import { FETCH_CATEGORIES_DATA_SUCCESS, FETCH_CATEGORIES_DATA_FAILURE } from '../reducers/categoryReducer'
-import { SET_ACCESS_TOKEN_SUCCESS, SET_ACCESS_TOKEN_FAILURE, REFRESH_TOKEN_REQUEST, REFRESH_TOKEN_SUCCESS, REFRESH_TOKEN_FAILURE } from '../reducers/tokenReducer'
+import { SET_LOGIN_PHONE_SUCCESS } from '../reducers/loginInfoReducer'
 import { SET_PATIENT_RECORD_REQUEST, SET_PATIENT_RECORD_SUCCESS, SET_PATIENT_RECORD_FAILURE } from '../reducers/patientRecordReducer'
 import { SET_PATIENT_RECORD_ADD_REQUEST, SET_PATIENT_RECORD_ADD_SUCCESS, SET_PATIENT_RECORD_ADD_FAILURE } from '../reducers/patientRecordAddReducer'
 import { SET_PATIENT_RECORD_DEFAULT_REQUEST, SET_PATIENT_RECORD_DEFAULT_SUCCESS, SET_PATIENT_RECORD_DEFAULT_FAILURE } from '../reducers/patientRecordDefaultReducer'
 
 const KEY_ACCESS_TOKEN = 'KEY_ACCESS_TOKEN';
 const KEY_REFRESH_TOKEN = 'KEY_REFRESH_TOKEN';
+const KEY_USER_KEY = 'KEY_USER_KEY';
+const KEY_LOGIN_PHONE = 'KEY_LOGIN_PHONE';
 
 const APPLICATION_JSON = 'application/json';
 const APPLICATION_FORM_URL_ENCODE = 'application/x-www-form-urlencoded';
@@ -146,6 +148,9 @@ export const login = async (phone, password) => {
         const refreshToken = response.data.refresh_token;
         await AsyncStorage.setItem(KEY_ACCESS_TOKEN, accessToken);
         await AsyncStorage.setItem(KEY_REFRESH_TOKEN, refreshToken);
+        // lưu userKey và phone vào AsyncStorage
+        await AsyncStorage.setItem(KEY_USER_KEY, response.data.user_key);
+        await AsyncStorage.setItem(KEY_LOGIN_PHONE, phone);
 
         return response.data;
     } catch (error) {
@@ -177,6 +182,7 @@ export const getRefreshToken = async () => {
         // Xử lý kết quả phản hồi và lưu accessToken và refreshToken mới vào AsyncStorage
         await AsyncStorage.setItem(KEY_ACCESS_TOKEN, response.data.access_token);
         await AsyncStorage.setItem(KEY_REFRESH_TOKEN, response.data.refresh_token);
+        await AsyncStorage.setItem(KEY_USER_KEY, response.data.user_key);
 
         return response.data;
     } catch (error) {
@@ -203,10 +209,27 @@ export const getPatientRecord = () => {
 };
 
 // getPatientRecordAdd
-export const getPatientRecordAdd = (jsonObject) => {
+export const getPatientRecordAdd = () => {
     return async (dispatch) => {
         try {
             dispatch({ type: SET_PATIENT_RECORD_ADD_REQUEST });
+
+            const userKey = await AsyncStorage.getItem(KEY_USER_KEY);
+
+            const item = {
+                "patient_dob": "2000-08-02",
+                "patient_gender": true,
+                "patient_name": "ĐỖ LONG",
+                "patient_ethic": "25",
+                "patient_phone_number": "0392719775",
+            };
+
+            let jsonObject = {};
+            jsonObject = {
+                "patient_record": item,
+                "user_key": userKey,
+            };
+            console.log(jsonObject);
 
             const response = await api.post(`/${Constants.PATIENT_RECORD_CREATE}`, jsonObject)
             console.log(response.data);
@@ -236,35 +259,6 @@ export const getPatientRecordDefault = (code) => {
             console.log(error)
         }
     };
-};
-
-//
-export const insert = async (list, isDefault, hoTen, gioiTinh, ngaySinh, isQuocTichVN, phone) => {
-    try {
-        console.log(list, isDefault, hoTen, gioiTinh, ngaySinh, isQuocTichVN, phone);
-        const item = {
-            patientDob: ngaySinh,
-            patientGender: gioiTinh,
-            patientName: hoTen,
-            patientEthic: isQuocTichVN ? "25" : "55",
-            patientPhoneNumber: phone,
-        };
-
-        let jsonObject = {};
-        jsonObject = item;
-
-        // Call createPatientRecord
-        const response = await api.post(`/${Constants.PATIENT_RECORD_CREATE}`, jsonObject);
-        console.log(response.data);
-        const patientRecordDto = response.data;
-        const patientRecord = patientRecordDto.patientRecord;
-
-        if (isDefault && patientRecord?.code) {
-            await api.put(`/${Constants.PATIENT_RECORD_SET_DEFAULT}`, { code: patientRecord.code });
-        }
-    } catch (error) {
-        console.log(error);
-    }
 };
 
 // getUserLoginQrCode

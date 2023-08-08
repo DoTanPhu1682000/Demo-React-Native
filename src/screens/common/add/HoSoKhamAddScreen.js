@@ -2,7 +2,7 @@ import React, { Component, useState, useEffect } from "react";
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, SafeAreaView, Dimensions, ScrollView, Image, FlatList, StatusBar } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from 'react-redux';
-import { getPatientRecordAdd, getPatientRecordDefault, insert } from '../../../redux/actions/updateAction'
+import { getPatientRecordAdd } from '../../../redux/actions/updateAction'
 import colors from '../../../configs/colors/colors'
 import stylesBase from '../../../configs/styles/styles'
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -14,7 +14,6 @@ const windowHeight = Dimensions.get('window').height;
 export default HoSoKhamAddScreen = () => {
     const navigation = useNavigation();
     const dispatch = useDispatch();
-    const patientRecord = useSelector((state) => state.patientRecordReducer.patientRecord)
     const [selectedPatientRecord, setSelectedPatientRecord] = useState(false)
     const [selectedName, setSelectedName] = useState('');
     const [selectedGender, setSelectedGender] = useState('male');
@@ -57,7 +56,8 @@ export default HoSoKhamAddScreen = () => {
     const formattedDate = format(selectedDate, 'dd/MM/yyyy');
 
     const handleButtonSave = async () => {
-        insert(null, false, "NGÔ VIỆT", true, "2019-03-02", true, "0392719775")
+        dispatch(getPatientRecordAdd())
+        // console.log(phone);
     };
 
     return (
