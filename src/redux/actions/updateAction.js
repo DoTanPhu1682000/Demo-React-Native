@@ -5,6 +5,8 @@ import { CAP_NHAT_EMAIL, FETCH_DATA_SUCCESS, FETCH_DATA_FAILURE, FETCH_USER_DATA
 import { FETCH_CATEGORIES_DATA_SUCCESS, FETCH_CATEGORIES_DATA_FAILURE } from '../reducers/categoryReducer'
 import { SET_ACCESS_TOKEN_SUCCESS, SET_ACCESS_TOKEN_FAILURE, REFRESH_TOKEN_REQUEST, REFRESH_TOKEN_SUCCESS, REFRESH_TOKEN_FAILURE } from '../reducers/tokenReducer'
 import { SET_PATIENT_RECORD_REQUEST, SET_PATIENT_RECORD_SUCCESS, SET_PATIENT_RECORD_FAILURE } from '../reducers/patientRecordReducer'
+import { SET_PATIENT_RECORD_ADD_REQUEST, SET_PATIENT_RECORD_ADD_SUCCESS, SET_PATIENT_RECORD_ADD_FAILURE } from '../reducers/patientRecordAddReducer'
+import { SET_PATIENT_RECORD_DEFAULT_REQUEST, SET_PATIENT_RECORD_DEFAULT_SUCCESS, SET_PATIENT_RECORD_DEFAULT_FAILURE } from '../reducers/patientRecordDefaultReducer'
 
 const KEY_ACCESS_TOKEN = 'KEY_ACCESS_TOKEN';
 const KEY_REFRESH_TOKEN = 'KEY_REFRESH_TOKEN';
@@ -198,6 +200,71 @@ export const getPatientRecord = () => {
             console.log(error)
         }
     };
+};
+
+// getPatientRecordAdd
+export const getPatientRecordAdd = (jsonObject) => {
+    return async (dispatch) => {
+        try {
+            dispatch({ type: SET_PATIENT_RECORD_ADD_REQUEST });
+
+            const response = await api.post(`/${Constants.PATIENT_RECORD_CREATE}`, jsonObject)
+            console.log(response.data);
+            dispatch({ type: SET_PATIENT_RECORD_ADD_SUCCESS, payload: response.data });
+        } catch (error) {
+            dispatch({ type: SET_PATIENT_RECORD_ADD_FAILURE, payload: error });
+            console.log(error)
+        }
+    };
+};
+
+// getPatientRecordDefault
+export const getPatientRecordDefault = (code) => {
+    return async (dispatch) => {
+        try {
+            dispatch({ type: SET_PATIENT_RECORD_DEFAULT_REQUEST });
+
+            const requestPayload = {
+                code: code,
+            };
+
+            const response = await api.put(`/${Constants.PATIENT_RECORD_SET_DEFAULT}`, requestPayload)
+            console.log(response.data);
+            dispatch({ type: SET_PATIENT_RECORD_DEFAULT_SUCCESS, payload: response.data });
+        } catch (error) {
+            dispatch({ type: SET_PATIENT_RECORD_DEFAULT_FAILURE, payload: error });
+            console.log(error)
+        }
+    };
+};
+
+//
+export const insert = async (list, isDefault, hoTen, gioiTinh, ngaySinh, isQuocTichVN, phone) => {
+    try {
+        console.log(list, isDefault, hoTen, gioiTinh, ngaySinh, isQuocTichVN, phone);
+        const item = {
+            patientDob: ngaySinh,
+            patientGender: gioiTinh,
+            patientName: hoTen,
+            patientEthic: isQuocTichVN ? "25" : "55",
+            patientPhoneNumber: phone,
+        };
+
+        let jsonObject = {};
+        jsonObject = item;
+
+        // Call createPatientRecord
+        const response = await api.post(`/${Constants.PATIENT_RECORD_CREATE}`, jsonObject);
+        console.log(response.data);
+        const patientRecordDto = response.data;
+        const patientRecord = patientRecordDto.patientRecord;
+
+        if (isDefault && patientRecord?.code) {
+            await api.put(`/${Constants.PATIENT_RECORD_SET_DEFAULT}`, { code: patientRecord.code });
+        }
+    } catch (error) {
+        console.log(error);
+    }
 };
 
 // getUserLoginQrCode

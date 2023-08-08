@@ -2,7 +2,7 @@ import React, { Component, useState, useEffect } from "react";
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, SafeAreaView, Dimensions, ScrollView, Image, FlatList, StatusBar } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from 'react-redux';
-import { getPatientRecord } from '../../../redux/actions/updateAction'
+import { getPatientRecordAdd, getPatientRecordDefault, insert } from '../../../redux/actions/updateAction'
 import colors from '../../../configs/colors/colors'
 import stylesBase from '../../../configs/styles/styles'
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -14,11 +14,18 @@ const windowHeight = Dimensions.get('window').height;
 export default HoSoKhamAddScreen = () => {
     const navigation = useNavigation();
     const dispatch = useDispatch();
+    const patientRecord = useSelector((state) => state.patientRecordReducer.patientRecord)
     const [selectedPatientRecord, setSelectedPatientRecord] = useState(false)
+    const [selectedName, setSelectedName] = useState('');
     const [selectedGender, setSelectedGender] = useState('male');
-    const [selectedNation, setSelectedNation] = useState('vn');
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [showDatePicker, setShowDatePicker] = useState(false);
+    const [selectedEmail, setSelectedEmail] = useState('');
+    const [selectedHeight, setSelectedHeight] = useState('');
+    const [selectedWeight, setSelectedWeight] = useState('');
+    const [selectedPhone, setSelectedPhone] = useState('');
+    const [selectedNation, setSelectedNation] = useState('vn');
+    const [selectedAddress, setSelectedAddress] = useState('');
 
     useEffect(() => {
         console.log("Create HoSoKhamAddScreen")
@@ -49,6 +56,10 @@ export default HoSoKhamAddScreen = () => {
 
     const formattedDate = format(selectedDate, 'dd/MM/yyyy');
 
+    const handleButtonSave = async () => {
+        insert(null, false, "NGÔ VIỆT", true, "2019-03-02", true, "0392719775")
+    };
+
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: colors.sBackground, }}>
             <StatusBar barStyle="dark-content" backgroundColor={colors.white} />
@@ -73,7 +84,7 @@ export default HoSoKhamAddScreen = () => {
             </View>
 
             <ScrollView>
-                <View style={{ flex: 1, backgroundColor: colors.sBackground, marginTop: 8, marginBottom: 20 }}>
+                <View style={{ flex: 1, backgroundColor: colors.sBackground, marginTop: 8, marginBottom: 20, }}>
                     {/* Chọn làm hồ sơ chính */}
                     <TouchableOpacity
                         style={{ flexDirection: 'row', backgroundColor: colors.white, alignItems: 'center' }}
@@ -97,9 +108,8 @@ export default HoSoKhamAddScreen = () => {
                                 autoCapitalize='none'
                                 placeholder="Nhập tên hồ sơ"
                                 placeholderTextColor='#B3C3D4'
-                            // onChangeText={setPassword}
-                            // value={password}
-                            />
+                                onChangeText={setSelectedName}
+                                value={selectedName} />
 
                             {/* Giới tính */}
                             <View style={{ width: '100%', height: 1, backgroundColor: colors.sLine, }} />
@@ -163,9 +173,8 @@ export default HoSoKhamAddScreen = () => {
                                 autoCapitalize='none'
                                 placeholder="Nhập email"
                                 placeholderTextColor='#B3C3D4'
-                            // onChangeText={setPassword}
-                            // value={password}
-                            />
+                                onChangeText={setSelectedEmail}
+                                value={selectedEmail} />
 
                             {/* Chiều cao & Cân nặng */}
                             <View style={{ width: '100%', height: 1, backgroundColor: colors.sLine }} />
@@ -177,9 +186,8 @@ export default HoSoKhamAddScreen = () => {
                                         autoCapitalize='none'
                                         placeholder="Nhập chiều cao"
                                         placeholderTextColor='#B3C3D4'
-                                    // onChangeText={setPassword}
-                                    // value={password}
-                                    />
+                                        onChangeText={setSelectedHeight}
+                                        value={selectedHeight} />
                                 </View>
                                 <View style={{ width: 1, backgroundColor: colors.sLine, marginTop: 12, marginBottom: 12 }} />
                                 <View style={{ flexDirection: 'column', flex: 1, marginStart: 12 }}>
@@ -189,9 +197,8 @@ export default HoSoKhamAddScreen = () => {
                                         autoCapitalize='none'
                                         placeholder="Nhập cân nặng"
                                         placeholderTextColor='#B3C3D4'
-                                    // onChangeText={setPassword}
-                                    // value={password}
-                                    />
+                                        onChangeText={setSelectedWeight}
+                                        value={selectedWeight} />
                                 </View>
                             </View>
 
@@ -203,9 +210,8 @@ export default HoSoKhamAddScreen = () => {
                                 autoCapitalize='none'
                                 placeholder="Nhập số điện thoại"
                                 placeholderTextColor='#B3C3D4'
-                            // onChangeText={setPassword}
-                            // value={password}
-                            />
+                                onChangeText={setSelectedPhone}
+                                value={selectedPhone} />
 
                             {/* Quốc gia */}
                             <View style={{ width: '100%', height: 1, backgroundColor: colors.sLine, }} />
@@ -249,13 +255,21 @@ export default HoSoKhamAddScreen = () => {
                                 autoCapitalize='none'
                                 placeholder="Nhập địa chỉ"
                                 placeholderTextColor='#B3C3D4'
-                            // onChangeText={setPassword}
-                            // value={password}
-                            />
+                                onChangeText={setSelectedAddress}
+                                value={selectedAddress} />
                         </View>
                     </View>
                 </View>
             </ScrollView>
+
+            {/* Button Lưu lại */}
+            <View style={{ backgroundColor: colors.white, }}>
+                <TouchableOpacity
+                    style={{ width: windowWidth - 32, marginTop: 12, marginStart: 16, alignItems: 'center', backgroundColor: colors.primary, borderRadius: 8 }}
+                    onPress={() => handleButtonSave()}>
+                    <Text style={[stylesBase.H5, { color: colors.white, paddingTop: 12, paddingBottom: 12 }]}>Lưu lại</Text>
+                </TouchableOpacity>
+            </View>
         </SafeAreaView>
     );
 }
