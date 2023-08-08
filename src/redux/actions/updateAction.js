@@ -1,8 +1,7 @@
 import axios from 'axios';
 import * as Constants from '../../api/AppApiHelper';
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { CAP_NHAT_EMAIL, FETCH_DATA_SUCCESS, FETCH_DATA_FAILURE, FETCH_USER_DATA_SUCCESS, FETCH_USER_DATA_FAILURE } from "../reducers/infoReducer"
-import { FETCH_CATEGORIES_DATA_SUCCESS, FETCH_CATEGORIES_DATA_FAILURE } from '../reducers/categoryReducer'
+import { CAP_NHAT_EMAIL } from "../reducers/infoReducer"
 import { SET_LOGIN_PHONE_SUCCESS } from '../reducers/loginInfoReducer'
 import { SET_PATIENT_RECORD_REQUEST, SET_PATIENT_RECORD_SUCCESS, SET_PATIENT_RECORD_FAILURE } from '../reducers/patientRecordReducer'
 import { SET_PATIENT_RECORD_ADD_REQUEST, SET_PATIENT_RECORD_ADD_SUCCESS, SET_PATIENT_RECORD_ADD_FAILURE } from '../reducers/patientRecordAddReducer'
@@ -43,42 +42,6 @@ export const updateEmail = (email) => async dispatch => {
 
     }
 }
-
-// {"id": 1,"name": "Commodore 64"}
-export const getData = () => {
-    return async (dispatch) => {
-        try {
-            const response = await Constants.fetchData();
-            dispatch({ type: FETCH_DATA_SUCCESS, payload: response.data });
-        } catch (error) {
-            dispatch({ type: FETCH_DATA_FAILURE, payload: error.message });
-        }
-    };
-};
-
-// [{"id": 1, "name": "Commodore 64"}, {"id": 2, "name": "Atari 2600"}, {"id": 3, "name": "Sega Master System"}, {"id": 4, "name": "Super Nintendo"}]
-export const getUserData = () => {
-    return async (dispatch) => {
-        try {
-            const response = await Constants.fetchUsersData();
-            dispatch({ type: FETCH_USER_DATA_SUCCESS, payload: response.data });
-        } catch (error) {
-            dispatch({ type: FETCH_USER_DATA_FAILURE, payload: error.message });
-        }
-    };
-};
-
-// {"categories": [{"idCategory": "1", "strCategory": "Beef"}, {"idCategory": "2", "strCategory": "Chicken"}]}
-export const getCategoriesData = () => {
-    return async (dispatch) => {
-        try {
-            const response = await axios.get('https://www.themealdb.com/api/json/v1/1/categories.php')
-            dispatch({ type: FETCH_CATEGORIES_DATA_SUCCESS, payload: response.data.categories });
-        } catch (error) {
-            dispatch({ type: FETCH_CATEGORIES_DATA_FAILURE, payload: error.message });
-        }
-    };
-};
 
 const api = axios.create({
     baseURL: `${Constants.URL}`,
