@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, TouchableOpacity, TextInput, SafeAreaView, Dime
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from 'react-redux';
 import { getPatientRecord } from '../../redux/actions/updateAction'
-import formatDate from '../../utils/CalendarUtil'
+import { formatDate } from '../../utils/CalendarUtil'
 import colors from '../../configs/colors/colors'
 import stylesBase from '../../configs/styles/styles'
 

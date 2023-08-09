@@ -3,10 +3,12 @@ import { StyleSheet, Text, View, TouchableOpacity, TextInput, SafeAreaView, Dime
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from 'react-redux';
 import { getPatientRecordAdd } from '../../../redux/actions/updateAction'
+import { formatISODateToServerDate } from '../../../utils/CalendarUtil'
 import colors from '../../../configs/colors/colors'
 import stylesBase from '../../../configs/styles/styles'
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { format } from 'date-fns';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -14,20 +16,32 @@ const windowHeight = Dimensions.get('window').height;
 export default HoSoKhamAddScreen = () => {
     const navigation = useNavigation();
     const dispatch = useDispatch();
-    const [selectedPatientRecord, setSelectedPatientRecord] = useState(false)
+    const [selectedDefaultRecord, setSelectedDefaultRecord] = useState(false)
     const [selectedName, setSelectedName] = useState('');
-    const [selectedGender, setSelectedGender] = useState('male');
+    const [selectedGender, setSelectedGender] = useState(true);
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [selectedEmail, setSelectedEmail] = useState('');
     const [selectedHeight, setSelectedHeight] = useState('');
     const [selectedWeight, setSelectedWeight] = useState('');
     const [selectedPhone, setSelectedPhone] = useState('');
-    const [selectedNation, setSelectedNation] = useState('vn');
+    const [selectedEthic, setSelectedEthic] = useState(true);
     const [selectedAddress, setSelectedAddress] = useState('');
 
     useEffect(() => {
         console.log("Create HoSoKhamAddScreen")
+        const fetchStoredPhone = async () => {
+            try {
+                const phoneFromStorage = await AsyncStorage.getItem("KEY_LOGIN_PHONE");
+                if (phoneFromStorage !== null) {
+                    setSelectedPhone(phoneFromStorage);
+                }
+            } catch (error) {
+                console.error("Error fetching phone from AsyncStorage:", error);
+            }
+        };
+
+        fetchStoredPhone();
 
         return () => {
             console.log("Destroy HoSoKhamAddScreen")
@@ -35,7 +49,7 @@ export default HoSoKhamAddScreen = () => {
     }, [])
 
     const handleSelectPatientRecord = () => {
-        setSelectedPatientRecord(!selectedPatientRecord);
+        setSelectedDefaultRecord(!selectedDefaultRecord);
     };
 
     const handleSelectGender = (value) => {
@@ -43,8 +57,10 @@ export default HoSoKhamAddScreen = () => {
     };
 
     const handleSelectNation = (value) => {
-        setSelectedNation(value);
+        setSelectedEthic(value);
     };
+
+    const formattedDate = format(selectedDate, 'dd/MM/yyyy');
 
     const handleDateChange = (event, date) => {
         setShowDatePicker(false);
@@ -53,11 +69,18 @@ export default HoSoKhamAddScreen = () => {
         }
     };
 
-    const formattedDate = format(selectedDate, 'dd/MM/yyyy');
-
     const handleButtonSave = async () => {
-        dispatch(getPatientRecordAdd())
-        // console.log(phone);
+        const formattedSelectedDate = formatISODateToServerDate(selectedDate)
+        const height = parseInt(selectedHeight) || 0;
+        const weight = parseInt(selectedWeight) || 0;
+
+        // const jsonObject = {
+        //     selectedDefaultRecord, selectedName, selectedGender, formattedSelectedDate, selectedEmail,
+        //     height, weight, selectedPhone, selectedEthic, selectedAddress
+        // }
+        // console.log(jsonObject);
+        dispatch(getPatientRecordAdd(selectedDefaultRecord, selectedName, selectedGender, formattedSelectedDate, selectedEmail,
+            height, weight, selectedPhone, selectedEthic, selectedAddress))
     };
 
     return (
@@ -89,7 +112,7 @@ export default HoSoKhamAddScreen = () => {
                     <TouchableOpacity
                         style={{ flexDirection: 'row', backgroundColor: colors.white, alignItems: 'center' }}
                         onPress={() => handleSelectPatientRecord()}>
-                        {selectedPatientRecord ?
+                        {selectedDefaultRecord ?
                             <Image
                                 style={{ width: 24, height: 24, marginStart: 16, marginEnd: 8 }}
                                 source={require('../../../images/ic_square_check.png')} resizeMode="stretch" />
@@ -107,7 +130,7 @@ export default HoSoKhamAddScreen = () => {
                                 style={[stylesBase.H3Strong, { color: colors.ink500, }]}
                                 autoCapitalize='none'
                                 placeholder="Nhập tên hồ sơ"
-                                placeholderTextColor='#B3C3D4'
+                                placeholderTextColor={colors.ink200}
                                 onChangeText={setSelectedName}
                                 value={selectedName} />
 
@@ -117,8 +140,8 @@ export default HoSoKhamAddScreen = () => {
                             <View style={{ flexDirection: 'row', marginTop: 4, marginBottom: 12 }}>
                                 <TouchableOpacity
                                     style={{ flexDirection: 'row', alignItems: 'center', }}
-                                    onPress={() => handleSelectGender('male')}>
-                                    {selectedGender === 'male' ?
+                                    onPress={() => handleSelectGender(true)}>
+                                    {selectedGender === true ?
                                         <Image
                                             style={{ width: 24, height: 24, marginEnd: 8 }}
                                             source={require('../../../images/ic_circle_check.png')} resizeMode="stretch" />
@@ -132,8 +155,8 @@ export default HoSoKhamAddScreen = () => {
 
                                 <TouchableOpacity
                                     style={{ flexDirection: 'row', alignItems: 'center', marginStart: 12 }}
-                                    onPress={() => handleSelectGender('female')}>
-                                    {selectedGender === 'female' ?
+                                    onPress={() => handleSelectGender(false)}>
+                                    {selectedGender === false ?
                                         <Image
                                             style={{ width: 24, height: 24, marginEnd: 8 }}
                                             source={require('../../../images/ic_circle_check.png')} resizeMode="stretch" />
@@ -172,7 +195,7 @@ export default HoSoKhamAddScreen = () => {
                                 style={[stylesBase.H3Strong, { color: colors.ink500, }]}
                                 autoCapitalize='none'
                                 placeholder="Nhập email"
-                                placeholderTextColor='#B3C3D4'
+                                placeholderTextColor={colors.ink200}
                                 onChangeText={setSelectedEmail}
                                 value={selectedEmail} />
 
@@ -185,7 +208,8 @@ export default HoSoKhamAddScreen = () => {
                                         style={[stylesBase.H3Strong, { color: colors.ink500, }]}
                                         autoCapitalize='none'
                                         placeholder="Nhập chiều cao"
-                                        placeholderTextColor='#B3C3D4'
+                                        placeholderTextColor={colors.ink200}
+                                        keyboardType="numeric"
                                         onChangeText={setSelectedHeight}
                                         value={selectedHeight} />
                                 </View>
@@ -196,7 +220,8 @@ export default HoSoKhamAddScreen = () => {
                                         style={[stylesBase.H3Strong, { color: colors.ink500, }]}
                                         autoCapitalize='none'
                                         placeholder="Nhập cân nặng"
-                                        placeholderTextColor='#B3C3D4'
+                                        placeholderTextColor={colors.ink200}
+                                        keyboardType="numeric"
                                         onChangeText={setSelectedWeight}
                                         value={selectedWeight} />
                                 </View>
@@ -205,22 +230,16 @@ export default HoSoKhamAddScreen = () => {
                             {/* Số điện thoại */}
                             <View style={{ width: '100%', height: 1, backgroundColor: colors.sLine }} />
                             <Text style={[stylesBase.H5, { color: colors.ink400, marginTop: 12 }]}>Số điện thoại</Text>
-                            <TextInput
-                                style={[stylesBase.H3Strong, { color: colors.ink500, }]}
-                                autoCapitalize='none'
-                                placeholder="Nhập số điện thoại"
-                                placeholderTextColor='#B3C3D4'
-                                onChangeText={setSelectedPhone}
-                                value={selectedPhone} />
+                            <Text style={[stylesBase.H3Strong, { color: colors.ink500, marginTop: 12 }]}>{selectedPhone}</Text>
 
                             {/* Quốc gia */}
-                            <View style={{ width: '100%', height: 1, backgroundColor: colors.sLine, }} />
+                            <View style={{ width: '100%', height: 1, backgroundColor: colors.sLine, marginTop: 12 }} />
                             <Text style={[stylesBase.H5, { color: colors.ink400, marginTop: 12 }]}>Quốc gia</Text>
                             <View style={{ flexDirection: 'row', marginTop: 4, marginBottom: 12 }}>
                                 <TouchableOpacity
                                     style={{ flexDirection: 'row', alignItems: 'center', }}
-                                    onPress={() => handleSelectNation('vn')}>
-                                    {selectedNation === 'vn' ?
+                                    onPress={() => handleSelectNation(true)}>
+                                    {selectedEthic === true ?
                                         <Image
                                             style={{ width: 24, height: 24, marginEnd: 8 }}
                                             source={require('../../../images/ic_circle_check.png')} resizeMode="stretch" />
@@ -234,8 +253,8 @@ export default HoSoKhamAddScreen = () => {
 
                                 <TouchableOpacity
                                     style={{ flexDirection: 'row', alignItems: 'center', marginStart: 12 }}
-                                    onPress={() => handleSelectNation('foreign')}>
-                                    {selectedNation === 'foreign' ?
+                                    onPress={() => handleSelectNation(false)}>
+                                    {selectedEthic === false ?
                                         <Image
                                             style={{ width: 24, height: 24, marginEnd: 8 }}
                                             source={require('../../../images/ic_circle_check.png')} resizeMode="stretch" />
@@ -254,7 +273,7 @@ export default HoSoKhamAddScreen = () => {
                                 style={[stylesBase.H3Strong, { color: colors.ink500, }]}
                                 autoCapitalize='none'
                                 placeholder="Nhập địa chỉ"
-                                placeholderTextColor='#B3C3D4'
+                                placeholderTextColor={colors.ink200}
                                 onChangeText={setSelectedAddress}
                                 value={selectedAddress} />
                         </View>

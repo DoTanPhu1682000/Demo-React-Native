@@ -10,7 +10,6 @@ import { SET_PATIENT_RECORD_DEFAULT_REQUEST, SET_PATIENT_RECORD_DEFAULT_SUCCESS,
 const KEY_ACCESS_TOKEN = 'KEY_ACCESS_TOKEN';
 const KEY_REFRESH_TOKEN = 'KEY_REFRESH_TOKEN';
 const KEY_USER_KEY = 'KEY_USER_KEY';
-const KEY_LOGIN_PHONE = 'KEY_LOGIN_PHONE';
 
 const APPLICATION_JSON = 'application/json';
 const APPLICATION_FORM_URL_ENCODE = 'application/x-www-form-urlencoded';
@@ -111,9 +110,7 @@ export const login = async (phone, password) => {
         const refreshToken = response.data.refresh_token;
         await AsyncStorage.setItem(KEY_ACCESS_TOKEN, accessToken);
         await AsyncStorage.setItem(KEY_REFRESH_TOKEN, refreshToken);
-        // lưu userKey và phone vào AsyncStorage
         await AsyncStorage.setItem(KEY_USER_KEY, response.data.user_key);
-        await AsyncStorage.setItem(KEY_LOGIN_PHONE, phone);
 
         return response.data;
     } catch (error) {
@@ -172,7 +169,8 @@ export const getPatientRecord = () => {
 };
 
 // getPatientRecordAdd
-export const getPatientRecordAdd = () => {
+export const getPatientRecordAdd = (defaultRecord, patientName, patientGender, patientDob, patientEmail,
+    patientHeight, patientWeight, patientPhoneNumber, patientEthic, patientAddress) => {
     return async (dispatch) => {
         try {
             dispatch({ type: SET_PATIENT_RECORD_ADD_REQUEST });
@@ -180,11 +178,16 @@ export const getPatientRecordAdd = () => {
             const userKey = await AsyncStorage.getItem(KEY_USER_KEY);
 
             const item = {
-                "patient_dob": "2000-08-02",
-                "patient_gender": true,
-                "patient_name": "ĐỖ LONG",
-                "patient_ethic": "25",
-                "patient_phone_number": "0392719775",
+                "patient_name": patientName,
+                "patient_gender": patientGender,
+                "patient_dob": patientDob,
+                "patient_email": patientEmail,
+                "patient_height": patientHeight,
+                "patient_weight": patientWeight,
+                "patient_phone_number": patientPhoneNumber,
+                "patient_ethic": patientEthic ? "25" : "55",
+                "patient_nationality": "084",
+                "patient_address": patientAddress,
             };
 
             let jsonObject = {};
@@ -192,11 +195,21 @@ export const getPatientRecordAdd = () => {
                 "patient_record": item,
                 "user_key": userKey,
             };
-            console.log(jsonObject);
 
             const response = await api.post(`/${Constants.PATIENT_RECORD_CREATE}`, jsonObject)
             console.log(response.data);
-            dispatch({ type: SET_PATIENT_RECORD_ADD_SUCCESS, payload: response.data });
+
+            const patientRecord = response.data.patient_record;
+            if (defaultRecord === true && patientRecord.code) {
+                try {
+                    await dispatch(getPatientRecordDefault(patientRecord.code))
+                    dispatch({ type: SET_PATIENT_RECORD_ADD_SUCCESS, payload: response.data });
+                } catch (error) {
+                    //ignore
+                }
+            } else {
+                dispatch({ type: SET_PATIENT_RECORD_ADD_SUCCESS, payload: response.data });
+            }
         } catch (error) {
             dispatch({ type: SET_PATIENT_RECORD_ADD_FAILURE, payload: error });
             console.log(error)
@@ -210,11 +223,7 @@ export const getPatientRecordDefault = (code) => {
         try {
             dispatch({ type: SET_PATIENT_RECORD_DEFAULT_REQUEST });
 
-            const requestPayload = {
-                code: code,
-            };
-
-            const response = await api.put(`/${Constants.PATIENT_RECORD_SET_DEFAULT}`, requestPayload)
+            const response = await api.put(`/${Constants.PATIENT_RECORD_SET_DEFAULT}/${code}`)
             console.log(response.data);
             dispatch({ type: SET_PATIENT_RECORD_DEFAULT_SUCCESS, payload: response.data });
         } catch (error) {

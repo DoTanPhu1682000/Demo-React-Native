@@ -5,6 +5,7 @@ import { login } from '../../redux/actions/updateAction'
 import LoadingDialog from '../../component/LoadingDialog'
 import colors from '../../configs/colors/colors'
 import stylesBase from '../../configs/styles/styles'
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -137,8 +138,9 @@ const YellowComponent = () => {
 const GreenComponent = ({ navigation }) => {
     const navigateToHomeScreen = () => {
         login(phone, password)
-            .then((response) => {
+            .then(async (response) => {
                 if (response.access_token !== null) {
+                    await AsyncStorage.setItem("KEY_LOGIN_PHONE", phone);
                     // Điều hướng đến màn hình HomeScreen
                     navigation.navigate('HomeTabs')
                 }
@@ -147,7 +149,7 @@ const GreenComponent = ({ navigation }) => {
                 console.log('Error:', error);
             });
     }
-    const [phone, setPhone] = useState('0392719775');
+    const [phone, setPhone] = useState('0356709237');
     const [password, setPassword] = useState('123456');
     const [pwdHidden, setPWDHidden] = useState(true);
 
