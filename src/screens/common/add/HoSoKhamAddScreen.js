@@ -2,7 +2,7 @@ import React, { Component, useState, useEffect } from "react";
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, SafeAreaView, Dimensions, ScrollView, Image, FlatList, StatusBar } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from 'react-redux';
-import { getPatientRecordAdd } from '../../../redux/actions/updateAction'
+import { getPatientRecord, getPatientRecordAdd } from '../../../redux/actions/updateAction'
 import { formatISODateToServerDate } from '../../../utils/CalendarUtil'
 import colors from '../../../configs/colors/colors'
 import stylesBase from '../../../configs/styles/styles'
@@ -79,8 +79,12 @@ export default HoSoKhamAddScreen = () => {
         //     height, weight, selectedPhone, selectedEthic, selectedAddress
         // }
         // console.log(jsonObject);
-        dispatch(getPatientRecordAdd(selectedDefaultRecord, selectedName, selectedGender, formattedSelectedDate, selectedEmail,
+        await dispatch(getPatientRecordAdd(selectedDefaultRecord, selectedName, selectedGender, formattedSelectedDate, selectedEmail,
             height, weight, selectedPhone, selectedEthic, selectedAddress))
+
+        // Cập nhật lại danh sách và quay lại màn hình đầu tiên
+        await dispatch(getPatientRecord());
+        navigation.navigate('HoSoKhamScreen')
     };
 
     return (

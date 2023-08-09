@@ -2,10 +2,7 @@ import axios from 'axios';
 import * as Constants from '../../api/AppApiHelper';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { CAP_NHAT_EMAIL } from "../reducers/infoReducer"
-import { SET_LOGIN_PHONE_SUCCESS } from '../reducers/loginInfoReducer'
 import { SET_PATIENT_RECORD_REQUEST, SET_PATIENT_RECORD_SUCCESS, SET_PATIENT_RECORD_FAILURE } from '../reducers/patientRecordReducer'
-import { SET_PATIENT_RECORD_ADD_REQUEST, SET_PATIENT_RECORD_ADD_SUCCESS, SET_PATIENT_RECORD_ADD_FAILURE } from '../reducers/patientRecordAddReducer'
-import { SET_PATIENT_RECORD_DEFAULT_REQUEST, SET_PATIENT_RECORD_DEFAULT_SUCCESS, SET_PATIENT_RECORD_DEFAULT_FAILURE } from '../reducers/patientRecordDefaultReducer'
 
 const KEY_ACCESS_TOKEN = 'KEY_ACCESS_TOKEN';
 const KEY_REFRESH_TOKEN = 'KEY_REFRESH_TOKEN';
@@ -173,7 +170,7 @@ export const getPatientRecordAdd = (defaultRecord, patientName, patientGender, p
     patientHeight, patientWeight, patientPhoneNumber, patientEthic, patientAddress) => {
     return async (dispatch) => {
         try {
-            dispatch({ type: SET_PATIENT_RECORD_ADD_REQUEST });
+            dispatch({ type: SET_PATIENT_RECORD_REQUEST });
 
             const userKey = await AsyncStorage.getItem(KEY_USER_KEY);
 
@@ -203,15 +200,15 @@ export const getPatientRecordAdd = (defaultRecord, patientName, patientGender, p
             if (defaultRecord === true && patientRecord.code) {
                 try {
                     await dispatch(getPatientRecordDefault(patientRecord.code))
-                    dispatch({ type: SET_PATIENT_RECORD_ADD_SUCCESS, payload: response.data });
+                    dispatch({ type: SET_PATIENT_RECORD_SUCCESS, payload: response.data });
                 } catch (error) {
                     //ignore
                 }
             } else {
-                dispatch({ type: SET_PATIENT_RECORD_ADD_SUCCESS, payload: response.data });
+                dispatch({ type: SET_PATIENT_RECORD_SUCCESS, payload: response.data });
             }
         } catch (error) {
-            dispatch({ type: SET_PATIENT_RECORD_ADD_FAILURE, payload: error });
+            dispatch({ type: SET_PATIENT_RECORD_FAILURE, payload: error });
             console.log(error)
         }
     };
@@ -221,13 +218,13 @@ export const getPatientRecordAdd = (defaultRecord, patientName, patientGender, p
 export const getPatientRecordDefault = (code) => {
     return async (dispatch) => {
         try {
-            dispatch({ type: SET_PATIENT_RECORD_DEFAULT_REQUEST });
+            dispatch({ type: SET_PATIENT_RECORD_REQUEST });
 
             const response = await api.put(`/${Constants.PATIENT_RECORD_SET_DEFAULT}/${code}`)
             console.log(response.data);
-            dispatch({ type: SET_PATIENT_RECORD_DEFAULT_SUCCESS, payload: response.data });
+            dispatch({ type: SET_PATIENT_RECORD_SUCCESS, payload: response.data });
         } catch (error) {
-            dispatch({ type: SET_PATIENT_RECORD_DEFAULT_FAILURE, payload: error });
+            dispatch({ type: SET_PATIENT_RECORD_FAILURE, payload: error });
             console.log(error)
         }
     };
