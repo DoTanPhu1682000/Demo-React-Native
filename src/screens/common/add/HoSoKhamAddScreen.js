@@ -52,7 +52,7 @@ export default HoSoKhamAddScreen = () => {
         setSelectedDefaultRecord(!selectedDefaultRecord);
     };
 
-    const handleTextName = (newText) => {
+    const handleNameChange = (newText) => {
         const uppercaseText = newText.toUpperCase();
         setSelectedName(uppercaseText);
     };
@@ -152,7 +152,7 @@ export default HoSoKhamAddScreen = () => {
                                 autoCapitalize='characters'
                                 placeholder="Nhập tên hồ sơ"
                                 placeholderTextColor={colors.ink200}
-                                onChangeText={handleTextName}
+                                onChangeText={handleNameChange}
                                 value={selectedName} />
 
                             {/* Giới tính */}
