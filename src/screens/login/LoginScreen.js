@@ -149,7 +149,7 @@ const GreenComponent = ({ navigation }) => {
                 console.log('Error:', error);
             });
     }
-    const [phone, setPhone] = useState('0356709237');
+    const [phone, setPhone] = useState('0356709123');
     const [password, setPassword] = useState('123456');
     const [pwdHidden, setPWDHidden] = useState(true);
 

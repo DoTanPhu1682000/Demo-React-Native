@@ -14,15 +14,36 @@ export default HoSoKhamScreen = () => {
     const navigation = useNavigation();
     const dispatch = useDispatch();
     const patientRecord = useSelector((state) => state.patientRecordReducer.patientRecord)
+    const [refreshing, setRefreshing] = useState(false);
 
     useEffect(() => {
         console.log("Create HoSoKhamScreen")
-        dispatch(getPatientRecord())
+        // Lắng nghe sự kiện focus để tự động refresh dữ liệu
+        const unsubscribe = navigation.addListener('focus', () => {
+            refreshData();
+        });
 
         return () => {
             console.log("Destroy HoSoKhamScreen")
+            unsubscribe();
         }
     }, [])
+
+    const refreshData = async () => {
+        setRefreshing(true);
+        await dispatch(getPatientRecord()); // Gọi API để cập nhật dữ liệu
+        setRefreshing(false);
+    };
+
+    // const sortedPatientRecord = [...patientRecord].sort((a, b) => {
+    //     if (b.patient_record.default_record && !a.patient_record.default_record) {
+    //         return 1;
+    //     }
+    //     if (!b.patient_record.default_record && a.patient_record.default_record) {
+    //         return -1;
+    //     }
+    //     return 0;
+    // });
 
     const navigateToHoSoKhamAddScreen = () => {
         // Điều hướng đến màn hình HomeScreen
@@ -92,7 +113,10 @@ export default HoSoKhamScreen = () => {
                     data={patientRecord}
                     style={{ width: windowWidth - 32, marginTop: 16 }}
                     renderItem={renderItem}
-                    keyExtractor={(item) => item.id.toString()} />
+                    keyExtractor={(item) => item.id.toString()}
+                    onRefresh={refreshData} // Gọi lại API khi kéo xuống để refresh
+                    refreshing={refreshing} // Trạng thái của refresh indicator
+                />
             </View>
 
             <TouchableOpacity style={{ position: 'absolute', bottom: 20, right: 16 }}

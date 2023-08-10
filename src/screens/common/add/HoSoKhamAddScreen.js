@@ -99,7 +99,7 @@ export default HoSoKhamAddScreen = () => {
                 height, weight, selectedPhone, selectedEthic, address))
 
             // Cập nhật lại danh sách và quay lại màn hình đầu tiên
-            await dispatch(getPatientRecord());
+            // await dispatch(getPatientRecord());
             navigation.navigate('HoSoKhamScreen')
         }
     };
