@@ -5,16 +5,16 @@ import { useDispatch, useSelector } from 'react-redux';
 import { updateEmail, login, getRefreshToken, getPatientRecord, getUserLoginQrCode } from '../../redux/actions/updateAction'
 import colors from '../../configs/colors/colors'
 import stylesBase from '../../configs/styles/styles'
+import Toast from 'react-native-toast-message';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
 export default HomeScreen = () => {
     const navigation = useNavigation()
-    const [email, onChangeEmail] = React.useState("")
-    const info = useSelector((state) => state.infoReducer)
     const dispatch = useDispatch()
-    const [response, setResponse] = useState('')
+    const info = useSelector((state) => state.infoReducer)
+    const [email, onChangeEmail] = React.useState("")
 
     useEffect(() => {
         console.log("Mới vào màn hình")
@@ -38,6 +38,17 @@ export default HomeScreen = () => {
 
     const callUserLoginQrCode = () => {
         dispatch(getUserLoginQrCode())
+    }
+
+    const handleShowToast = () => {
+        Toast.show({
+            type: 'success', // Loại toast (success, error, info)
+            text1: 'Lưu thành công',
+            visibilityTime: 2000,
+            autoHide: true,
+            position: 'bottom',
+            bottomOffset: 60,
+        });
     }
 
     const navigateToHoSoKhamScreen = () => {
@@ -66,7 +77,7 @@ export default HomeScreen = () => {
                 </TouchableOpacity>
             </View>
 
-            <View style={{ flex: 1, backgroundColor: "#EEEEEE", alignItems: "center", justifyContent: "center" }}>
+            <View style={{ flex: 1, backgroundColor: "#EEEEEE", alignItems: "center", }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
                     <TouchableOpacity
                         style={{ flex: 1, height: 80, flexDirection: 'row', borderRadius: 8, marginTop: 16, marginStart: 16, marginEnd: 16, backgroundColor: '#F68E1E', alignItems: "center", justifyContent: "space-between" }}
@@ -125,9 +136,12 @@ export default HomeScreen = () => {
                     <Text style={{ color: '#FFFFFF' }}>call getUserLoginQrCode</Text>
                 </TouchableOpacity>
 
-                <ScrollView style={{ width: windowWidth - 60, height: 20, borderWidth: 1, margin: 30 }}>
-                    <Text style={{ fontSize: 12, color: '#1F2D3D' }}>{response}</Text>
-                </ScrollView>
+                <TouchableOpacity
+                    style={{ width: 200, height: 40, borderWidth: 1, borderRadius: 12, marginTop: 24, justifyContent: 'center', alignItems: 'center', backgroundColor: '#4D8D6E' }}
+                    onPress={() => handleShowToast()}>
+                    <Text style={{ color: '#FFFFFF' }}>show Toast</Text>
+                </TouchableOpacity>
+
             </View>
         </SafeAreaView>
     );

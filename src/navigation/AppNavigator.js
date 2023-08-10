@@ -7,6 +7,7 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Provider } from 'react-redux';
 import { store } from '../redux/store';
+import Toast from 'react-native-toast-message';
 import LoginScreen from "../screens/login/LoginScreen";
 import HomeScreen from "../screens/home/HomeScreen";
 import SettingsScreen from "../screens/settings/SettingsScreen";
@@ -68,6 +69,8 @@ export default function AppNavigator() {
                     <Stack.Screen name="HoSoKhamAddScreen" component={HoSoKhamAddScreen} />
                 </Stack.Navigator>
             </NavigationContainer>
+            {/* bắt buộc Toast phải nằm dưới NavigationContainer */}
+            <Toast />
         </Provider>
     );
 }

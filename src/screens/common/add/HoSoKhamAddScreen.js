@@ -48,15 +48,20 @@ export default HoSoKhamAddScreen = () => {
         }
     }, [])
 
-    const handleSelectPatientRecord = () => {
+    const handleSelectDefaultRecord = () => {
         setSelectedDefaultRecord(!selectedDefaultRecord);
+    };
+
+    const handleTextName = (newText) => {
+        const uppercaseText = newText.toUpperCase();
+        setSelectedName(uppercaseText);
     };
 
     const handleSelectGender = (value) => {
         setSelectedGender(value);
     };
 
-    const handleSelectNation = (value) => {
+    const handleSelectEthic = (value) => {
         setSelectedEthic(value);
     };
 
@@ -70,21 +75,33 @@ export default HoSoKhamAddScreen = () => {
     };
 
     const handleButtonSave = async () => {
+        // chuyển ngày sinh
         const formattedSelectedDate = formatISODateToServerDate(selectedDate)
+
+        // nếu không nhập cân nặng or chiều cao giá trị mặc định là 0
         const height = parseInt(selectedHeight) || 0;
         const weight = parseInt(selectedWeight) || 0;
 
-        // const jsonObject = {
-        //     selectedDefaultRecord, selectedName, selectedGender, formattedSelectedDate, selectedEmail,
-        //     height, weight, selectedPhone, selectedEthic, selectedAddress
-        // }
-        // console.log(jsonObject);
-        await dispatch(getPatientRecordAdd(selectedDefaultRecord, selectedName, selectedGender, formattedSelectedDate, selectedEmail,
-            height, weight, selectedPhone, selectedEthic, selectedAddress))
+        // Loại bỏ khoảng trắng đằng sau
+        const name = selectedName.trim();
+        const address = selectedAddress.trim();
 
-        // Cập nhật lại danh sách và quay lại màn hình đầu tiên
-        await dispatch(getPatientRecord());
-        navigation.navigate('HoSoKhamScreen')
+        if (name === '' || address === '') {
+            console.log("Không được để trống");
+        } else {
+            // const jsonObject = {
+            //     selectedDefaultRecord, name, selectedGender, formattedSelectedDate, selectedEmail,
+            //     height, weight, selectedPhone, selectedEthic, address
+            // }
+            // console.log(jsonObject);
+
+            await dispatch(getPatientRecordAdd(selectedDefaultRecord, name, selectedGender, formattedSelectedDate, selectedEmail,
+                height, weight, selectedPhone, selectedEthic, address))
+
+            // Cập nhật lại danh sách và quay lại màn hình đầu tiên
+            await dispatch(getPatientRecord());
+            navigation.navigate('HoSoKhamScreen')
+        }
     };
 
     return (
@@ -115,7 +132,7 @@ export default HoSoKhamAddScreen = () => {
                     {/* Chọn làm hồ sơ chính */}
                     <TouchableOpacity
                         style={{ flexDirection: 'row', backgroundColor: colors.white, alignItems: 'center' }}
-                        onPress={() => handleSelectPatientRecord()}>
+                        onPress={() => handleSelectDefaultRecord()}>
                         {selectedDefaultRecord ?
                             <Image
                                 style={{ width: 24, height: 24, marginStart: 16, marginEnd: 8 }}
@@ -132,10 +149,10 @@ export default HoSoKhamAddScreen = () => {
                             <Text style={[stylesBase.H5, { color: colors.ink400, marginTop: 12 }]}>Họ và tên</Text>
                             <TextInput
                                 style={[stylesBase.H3Strong, { color: colors.ink500, }]}
-                                autoCapitalize='none'
+                                autoCapitalize='characters'
                                 placeholder="Nhập tên hồ sơ"
                                 placeholderTextColor={colors.ink200}
-                                onChangeText={setSelectedName}
+                                onChangeText={handleTextName}
                                 value={selectedName} />
 
                             {/* Giới tính */}
@@ -242,7 +259,7 @@ export default HoSoKhamAddScreen = () => {
                             <View style={{ flexDirection: 'row', marginTop: 4, marginBottom: 12 }}>
                                 <TouchableOpacity
                                     style={{ flexDirection: 'row', alignItems: 'center', }}
-                                    onPress={() => handleSelectNation(true)}>
+                                    onPress={() => handleSelectEthic(true)}>
                                     {selectedEthic === true ?
                                         <Image
                                             style={{ width: 24, height: 24, marginEnd: 8 }}
@@ -257,7 +274,7 @@ export default HoSoKhamAddScreen = () => {
 
                                 <TouchableOpacity
                                     style={{ flexDirection: 'row', alignItems: 'center', marginStart: 12 }}
-                                    onPress={() => handleSelectNation(false)}>
+                                    onPress={() => handleSelectEthic(false)}>
                                     {selectedEthic === false ?
                                         <Image
                                             style={{ width: 24, height: 24, marginEnd: 8 }}
