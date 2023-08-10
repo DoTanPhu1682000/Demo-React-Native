@@ -157,7 +157,16 @@ export const getPatientRecord = () => {
 
             const response = await api.get(`/${Constants.PATIENT_RECORD_BY_USER_KEY}`)
             console.log(response.data);
-            dispatch({ type: SET_PATIENT_RECORD_SUCCESS, payload: response.data });
+
+            // sắp xếp default_record= true cho lên đầu
+            const sortedData = response.data.sort((a, b) => {
+                if (a.patient_record.default_record === b.patient_record.default_record) {
+                    return 0;
+                }
+                return a.patient_record.default_record ? -1 : 1;
+            });
+
+            dispatch({ type: SET_PATIENT_RECORD_SUCCESS, payload: sortedData });
         } catch (error) {
             dispatch({ type: SET_PATIENT_RECORD_FAILURE, payload: error });
             console.log(error)

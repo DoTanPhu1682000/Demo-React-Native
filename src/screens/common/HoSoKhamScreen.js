@@ -35,16 +35,6 @@ export default HoSoKhamScreen = () => {
         setRefreshing(false);
     };
 
-    // const sortedPatientRecord = [...patientRecord].sort((a, b) => {
-    //     if (b.patient_record.default_record && !a.patient_record.default_record) {
-    //         return 1;
-    //     }
-    //     if (!b.patient_record.default_record && a.patient_record.default_record) {
-    //         return -1;
-    //     }
-    //     return 0;
-    // });
-
     const navigateToHoSoKhamAddScreen = () => {
         // Điều hướng đến màn hình HomeScreen
         navigation.navigate('HoSoKhamAddScreen')
