@@ -2,10 +2,11 @@ import React, { Component, useState, useEffect } from "react";
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, SafeAreaView, Dimensions, ScrollView, Image, FlatList, StatusBar } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from 'react-redux';
-import { getPatientRecord } from '../../redux/actions/updateAction'
+import { getPatientRecord, getPatientRecordDefault } from '../../redux/actions/updateAction'
 import { formatDate } from '../../utils/CalendarUtil'
 import colors from '../../configs/colors/colors'
 import stylesBase from '../../configs/styles/styles'
+import ConfirmationBottomSheet from '../../component/ConfirmationBottomSheet'
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -15,6 +16,8 @@ export default HoSoKhamScreen = () => {
     const dispatch = useDispatch();
     const patientRecord = useSelector((state) => state.patientRecordReducer.patientRecord)
     const [refreshing, setRefreshing] = useState(false);
+    const [isConfirmationVisible, setIsConfirmationVisible] = useState(false);
+    const [selectedItem, setSelectedItem] = useState(null);
 
     useEffect(() => {
         console.log("Create HoSoKhamScreen")
@@ -35,8 +38,30 @@ export default HoSoKhamScreen = () => {
         setRefreshing(false);
     };
 
+    const handleItemPress = (item) => {
+        setSelectedItem(item);
+        setIsConfirmationVisible(true);
+    };
+
+    const handleConfirm = async () => {
+        if (selectedItem) {
+            // Gọi API với selectedItem ở đây
+            await dispatch(getPatientRecordDefault(selectedItem.patient_record.code))
+            await refreshData();
+
+            // Đóng ConfirmationBottomSheet
+            setIsConfirmationVisible(false);
+            setSelectedItem(null);
+        }
+    };
+
+    const handleCancel = () => {
+        // Đóng ConfirmationBottomSheet
+        setIsConfirmationVisible(false);
+        setSelectedItem(null);
+    };
+
     const navigateToHoSoKhamAddScreen = () => {
-        // Điều hướng đến màn hình HomeScreen
         navigation.navigate('HoSoKhamAddScreen')
     }
 
@@ -45,37 +70,59 @@ export default HoSoKhamScreen = () => {
 
         return (
             <View>
-                <StatusBar barStyle="dark-content" backgroundColor={colors.white} />
-                <TouchableOpacity style={{ flexDirection: 'row', marginBottom: 16, backgroundColor: colors.white, borderRadius: 8 }}>
-                    <Image
-                        style={{ width: 60, height: 60, margin: 12, }}
-                        source={require('../../images/img_user.png')} resizeMode="stretch" />
+                <View style={{ flexDirection: 'row', marginBottom: 16, backgroundColor: colors.white, borderRadius: 8 }}>
+                    <TouchableOpacity style={{ flexDirection: 'row', flex: 1 }}>
+                        <Image
+                            style={{ width: 60, height: 60, margin: 12, }}
+                            source={require('../../images/img_user.png')} resizeMode="stretch" />
+                        <View style={{ justifyContent: 'center', }}>
+                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                <Text style={[stylesBase.H5Strong, { color: colors.ink500 }]}>{item.patient_record.patient_name}</Text>
+                                {item.patient_record.default_record === true ?
+                                    <Image
+                                        style={{ width: 16, height: 16, justifyContent: 'center', marginStart: 12 }}
+                                        source={require('../../images/ic_default_record.png')} resizeMode="stretch" />
+                                    : null
+                                }
+                            </View>
+                            <View style={{ flexDirection: 'row' }}>
+                                {item.patient_record.patient_gender === true ? (
+                                    <Text style={[stylesBase.P1, { color: colors.ink400 }]}>Nam - </Text>
+                                ) : (
+                                    <Text style={[stylesBase.P1, { color: colors.ink400 }]}>Nữ - </Text>
+                                )}
+                                <Text style={[stylesBase.P1, { color: colors.ink400 }]}>{formattedDOB}</Text>
+                            </View>
+                        </View>
+                    </TouchableOpacity>
 
-                    <View style={{ justifyContent: 'center', }}>
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <Text style={[stylesBase.H5Strong, { color: colors.ink500 }]}>{item.patient_record.patient_name}</Text>
-                            {item.patient_record.default_record === true ? (
-                                <Image
-                                    style={{ width: 16, height: 16, justifyContent: 'center', marginStart: 12 }}
-                                    source={require('../../images/ic_default_record.png')} resizeMode="stretch" />
-                            ) : null}
-                        </View>
-                        <View style={{ flexDirection: 'row' }}>
-                            {item.patient_record.patient_gender === true ? (
-                                <Text style={[stylesBase.P1, { color: colors.ink400 }]}>Nam - </Text>
-                            ) : (
-                                <Text style={[stylesBase.P1, { color: colors.ink400 }]}>Nữ - </Text>
-                            )}
-                            <Text style={[stylesBase.P1, { color: colors.ink400 }]}>{formattedDOB}</Text>
-                        </View>
-                    </View>
-                </TouchableOpacity>
+                    <TouchableOpacity
+                        style={{ position: 'absolute', right: 0 }}
+                        onPress={() => handleItemPress(item)}>
+                        {item.patient_record.default_record === false ?
+                            <Image
+                                style={{ width: 20, height: 20, margin: 12, }}
+                                source={require('../../images/ic_more_horizontal.png')} resizeMode="stretch" />
+                            : null
+                        }
+                    </TouchableOpacity>
+
+                    <ConfirmationBottomSheet
+                        isVisible={isConfirmationVisible}
+                        onConfirm={handleConfirm}
+                        onCancel={handleCancel}
+                        title="Yêu cầu xác nhận"
+                        message="Bạn muốn thiết lập hồ sơ khám này là hồ sơ chính không ?"
+                        confirmText="Đồng ý"
+                        cancelText="Hủy" />
+                </View>
             </View>
         );
     };
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
+            <StatusBar barStyle="dark-content" backgroundColor={colors.white} />
             {/* TaskBar */}
             <View style={{ width: '100%', height: '6%', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: colors.white }}>
                 <TouchableOpacity
