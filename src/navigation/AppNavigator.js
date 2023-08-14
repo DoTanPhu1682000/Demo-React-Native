@@ -14,6 +14,7 @@ import SettingsScreen from "../screens/settings/SettingsScreen";
 import ProfileScreen from "../screens/profile/ProfileScreen";
 import HoSoKhamScreen from "../screens/common/HoSoKhamScreen"
 import HoSoKhamAddScreen from "../screens/common/add/HoSoKhamAddScreen"
+import SiteListScreen from "../screens/site/list/SiteListScreen"
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -47,26 +48,16 @@ function HomeTabs() {
     );
 }
 
-// Drawer
-// const HomeDrawer = () => {
-//     return (
-//         <Drawer.Navigator initialRouteName='HomeScreen' screenOptions={{ headerShown: false }}>
-//             <Drawer.Screen name="HomeScreen" component={HomeScreen} />
-//             <Drawer.Screen name="SettingsScreen" component={SettingsScreen} />
-//             <Drawer.Screen name="ProfileScreen" component={ProfileScreen} />
-//         </Drawer.Navigator>
-//     );
-// }
-
 export default function AppNavigator() {
     return (
         <Provider store={store}>
             <NavigationContainer>
-                <Stack.Navigator initialRouteName='LoginScreen' screenOptions={{ headerShown: false }}>
+                <Stack.Navigator initialRouteName='HomeTabs' screenOptions={{ headerShown: false }}>
                     <Stack.Screen name="LoginScreen" component={LoginScreen} />
                     <Stack.Screen name="HomeTabs" component={HomeTabs} />
                     <Stack.Screen name="HoSoKhamScreen" component={HoSoKhamScreen} />
                     <Stack.Screen name="HoSoKhamAddScreen" component={HoSoKhamAddScreen} />
+                    <Stack.Screen name="SiteListScreen" component={SiteListScreen} />
                 </Stack.Navigator>
             </NavigationContainer>
             {/* bắt buộc Toast phải nằm dưới NavigationContainer */}

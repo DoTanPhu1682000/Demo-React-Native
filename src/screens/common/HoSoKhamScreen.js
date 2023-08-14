@@ -2,7 +2,7 @@ import React, { Component, useState, useEffect } from "react";
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, SafeAreaView, Dimensions, ScrollView, Image, FlatList, StatusBar } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from 'react-redux';
-import { getPatientRecord, getPatientRecordDefault } from '../../redux/actions/updateAction'
+import { getPatientRecord, getPatientRecordDefault, setSelectedItemPatientRecord } from '../../redux/actions/updateAction'
 import { formatDate } from '../../utils/CalendarUtil'
 import colors from '../../configs/colors/colors'
 import stylesBase from '../../configs/styles/styles'
@@ -38,6 +38,11 @@ export default HoSoKhamScreen = () => {
         setRefreshing(false);
     };
 
+    const handleItemPatientRecord = async (item) => {
+        await dispatch(setSelectedItemPatientRecord(item));
+        navigation.navigate('SiteListScreen')
+    };
+
     const handleItemPress = (item) => {
         setSelectedItem(item);
         setIsConfirmationVisible(true);
@@ -71,7 +76,9 @@ export default HoSoKhamScreen = () => {
         return (
             <View>
                 <View style={{ flexDirection: 'row', marginBottom: 16, backgroundColor: colors.white, borderRadius: 8 }}>
-                    <TouchableOpacity style={{ flexDirection: 'row', flex: 1 }}>
+                    <TouchableOpacity
+                        style={{ flexDirection: 'row', flex: 1 }}
+                        onPress={() => handleItemPatientRecord(item)}>
                         <Image
                             style={{ width: 60, height: 60, margin: 12, }}
                             source={require('../../images/img_user.png')} resizeMode="stretch" />
@@ -145,7 +152,7 @@ export default HoSoKhamScreen = () => {
                 </TouchableOpacity>
             </View>
 
-            <View style={{ flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: '#F2F4F9' }}>
+            <View style={{ flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: colors.sBackground }}>
                 <FlatList
                     data={patientRecord}
                     style={{ width: windowWidth - 32, marginTop: 16 }}

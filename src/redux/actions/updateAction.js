@@ -3,6 +3,8 @@ import * as Constants from '../../api/AppApiHelper';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { CAP_NHAT_EMAIL } from "../reducers/infoReducer"
 import { SET_PATIENT_RECORD_REQUEST, SET_PATIENT_RECORD_SUCCESS, SET_PATIENT_RECORD_FAILURE } from '../reducers/patientRecordReducer'
+import { SET_SELECTED_ITEM_PATIENT_RECORD } from '../reducers/itemPatientRecordReducer'
+import { SET_SITE_REQUEST, SET_SITE_SUCCESS, SET_SITE_FAILURE } from '../reducers/siteReducer'
 
 const KEY_ACCESS_TOKEN = 'KEY_ACCESS_TOKEN';
 const KEY_REFRESH_TOKEN = 'KEY_REFRESH_TOKEN';
@@ -234,6 +236,41 @@ export const getPatientRecordDefault = (code) => {
             dispatch({ type: SET_PATIENT_RECORD_SUCCESS, payload: response.data });
         } catch (error) {
             dispatch({ type: SET_PATIENT_RECORD_FAILURE, payload: error });
+            console.log(error)
+        }
+    };
+};
+
+// setSelectedItemPatientRecord
+export const setSelectedItemPatientRecord = (item) => ({
+    type: SET_SELECTED_ITEM_PATIENT_RECORD,
+    payload: item,
+});
+
+// getSiteList
+export const getSiteList = (id, text, page) => {
+    return async (dispatch) => {
+        try {
+            dispatch({ type: SET_SITE_REQUEST });
+
+            const paramsSiteList = {
+                [KEY_PAGE_NUMBER]: page.toString(),
+                [KEY_PAGE_SIZE]: 20,
+            };
+
+            if (text) {
+                paramsSiteList.search_text = text;
+            }
+            if (id >= 0) {
+                paramsSiteList.state_id = id.toString();
+            }
+
+            const response = await api.get(`/${Constants.SITE_GET_LIST}`, { paramsSiteList })
+            console.log(response.data);
+
+            dispatch({ type: SET_SITE_SUCCESS, payload: response.data });
+        } catch (error) {
+            dispatch({ type: SET_SITE_FAILURE, payload: error });
             console.log(error)
         }
     };
