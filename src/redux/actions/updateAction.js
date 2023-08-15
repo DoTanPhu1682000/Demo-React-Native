@@ -248,7 +248,7 @@ export const setSelectedItemPatientRecord = (item) => ({
 });
 
 // getSiteList
-export const getSiteList = (id, text, page) => {
+export const getSiteList1 = (id, text, page) => {
     return async (dispatch) => {
         try {
             dispatch({ type: SET_SITE_REQUEST });
@@ -265,7 +265,7 @@ export const getSiteList = (id, text, page) => {
                 paramsSiteList.state_id = id.toString();
             }
 
-            const response = await api.get(`/${Constants.SITE_GET_LIST}`, { paramsSiteList })
+            const response = await api.get(`/${Constants.SITE_GET_LIST}`, { params: paramsSiteList })
             console.log(response.data);
 
             dispatch({ type: SET_SITE_SUCCESS, payload: response.data });
@@ -274,6 +274,33 @@ export const getSiteList = (id, text, page) => {
             console.log(error)
         }
     };
+};
+
+export const getSiteList = async (id, text, page, dispatchCallback) => {
+    try {
+        dispatchCallback({ type: SET_SITE_REQUEST });
+
+        const paramsSiteList = {
+            [KEY_PAGE_NUMBER]: page.toString(),
+            [KEY_PAGE_SIZE]: 20,
+        };
+
+        if (text) {
+            paramsSiteList.search_text = text;
+        }
+        if (id >= 0) {
+            paramsSiteList.state_id = id.toString();
+        }
+
+        const response = await api.get(`/${Constants.SITE_GET_LIST}`, { params: paramsSiteList })
+        console.log(response.data);
+
+        dispatchCallback({ type: SET_SITE_SUCCESS, payload: response.data });
+        return response.data;
+    } catch (error) {
+        dispatchCallback({ type: SET_SITE_FAILURE, payload: error });
+        console.log(error)
+    }
 };
 
 // getUserLoginQrCode

@@ -13,8 +13,11 @@ export default SiteListScreen = () => {
     const navigation = useNavigation();
     const dispatch = useDispatch();
     const [refreshing, setRefreshing] = useState(false);
-    const itemPatientRecord = useSelector((state) => state.itemPatientRecordReducer.selectedItemPatientRecord)
+    const [loadingMore, setLoadingMore] = useState(false);
+    const [currentPage, setCurrentPage] = useState(0);
+    const [dataList, setDataList] = useState([]);
     const siteList = useSelector((state) => state.siteReducer.siteList)
+    const itemPatientRecord = useSelector((state) => state.itemPatientRecordReducer.selectedItemPatientRecord)
 
     useEffect(() => {
         console.log("Create SiteListScreen")
@@ -31,29 +34,51 @@ export default SiteListScreen = () => {
 
     const refreshData = async () => {
         setRefreshing(true);
-        await dispatch(getSiteList(-1, "", 0))
+        setCurrentPage(0); // Reset trang hiện tại
+        const response = await getSiteList(-1, '', 0, (action) => {
+            dispatch(action)
+        })
+        setDataList(response.content_page); // Cập nhật toàn bộ danh sách dữ liệu mới
         setRefreshing(false);
     };
 
-    const handleTest = async () => {
-        console.log(siteList);
+    const loadMoreData = async () => {
+        if (!loadingMore && currentPage < siteList.total_page - 1) {
+            setLoadingMore(true);
+            const nextPage = currentPage + 1;
+            const response = await getSiteList(-1, '', nextPage, (action) => {
+                dispatch(action)
+            })
+            setCurrentPage(nextPage);
+
+            // Thêm dữ liệu mới vào danh sách hiện có
+            setDataList((prevDataList) => [...prevDataList, ...response.content_page]);
+            console.log(" ==> dataList:", [...dataList, ...response.content_page]);
+
+            setLoadingMore(false);
+        }
     };
 
+    const keyExtractor = (item, index) => `${item.id}_${index}`;
+
     const renderItem = ({ item }) => {
+        const avatarLink = item.avatar && item.avatar.length > 0 ? item.avatar[0].link : null;
+
         return (
             <View>
                 <View style={{ flexDirection: 'row', marginBottom: 16, backgroundColor: colors.white, borderRadius: 8 }}>
                     <TouchableOpacity style={{ flexDirection: 'row', flex: 1 }}>
                         <Image
                             style={{ width: 64, height: 64, margin: 12, }}
-                            source={require('../../../images/ic_hospital_location.png')} resizeMode="stretch" />
+                            source={avatarLink ? { uri: avatarLink } : require('../../../images/ic_hospital_location.png')}
+                            resizeMode="stretch" />
                         <View style={{ flex: 1, width: '100%', marginTop: 12, marginBottom: 12 }}>
-                            <Text numberOfLines={2} style={[stylesBase.H5, { color: colors.ink500 }]}>{item.name}</Text>
+                            <Text numberOfLines={2} style={[stylesBase.H5, { color: colors.ink500, marginEnd: 12 }]}>{item.name}</Text>
                             <View style={{ flexDirection: 'row' }}>
                                 <Image
                                     style={{ width: 16, height: 16, marginTop: 5, marginEnd: 4 }}
                                     source={require('../../../images/ic_pin.png')} resizeMode="stretch" />
-                                <Text numberOfLines={2} style={[stylesBase.P1, { color: colors.ink400, flex: 1, marginEnd: 12 }]}>{item.address}</Text>
+                                <Text numberOfLines={2} style={[stylesBase.P1, { color: colors.ink400, flex: 1, marginEnd: 12, lineHeight: 18 }]}>{item.address}</Text>
                             </View>
                         </View>
                     </TouchableOpacity>
@@ -80,8 +105,7 @@ export default SiteListScreen = () => {
                 <Text style={[stylesBase.H5Strong, { color: colors.ink500 }]}>Cơ sở y tế</Text>
 
                 <TouchableOpacity
-                    style={{ height: '100%', aspectRatio: 1.5, alignItems: 'center', flexDirection: 'row', justifyContent: 'flex-end', marginEnd: 12 }}
-                    onPress={() => handleTest()}>
+                    style={{ height: '100%', aspectRatio: 1.5, alignItems: 'center', flexDirection: 'row', justifyContent: 'flex-end', marginEnd: 12 }}>
                     <Image
                         style={{ width: 24, height: 24 }}
                         source={require('../../../images/ic_sos.png')} resizeMode="stretch" />
@@ -92,12 +116,14 @@ export default SiteListScreen = () => {
                 <View style={{ flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: colors.sBackground, }}>
                     {siteList && siteList.content_page && (
                         <FlatList
-                            data={siteList.content_page}
+                            data={dataList}
                             style={{ width: windowWidth - 32, marginTop: 16 }}
                             renderItem={renderItem}
-                            keyExtractor={(item) => item.id.toString()}
+                            keyExtractor={keyExtractor}
                             onRefresh={refreshData}
                             refreshing={refreshing}
+                            onEndReached={loadMoreData}
+                            onEndReachedThreshold={0.1}
                         />
                     )}
                 </View>
