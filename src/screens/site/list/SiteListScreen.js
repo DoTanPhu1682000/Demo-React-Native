@@ -32,30 +32,30 @@ export default SiteListScreen = () => {
         }
     }, [])
 
+    const fetchData = async (page, searchText) => {
+        const response = await getSiteList(-1, searchText, page, (action) => {
+            dispatch(action);
+        });
+        return response.content_page;
+    };
+
     const refreshData = async () => {
         setRefreshing(true);
-        setCurrentPage(0); // Reset trang hiện tại
-        const response = await getSiteList(-1, selectedSearch, 0, (action) => {
-            dispatch(action)
-        })
-        setDataList(response.content_page); // Cập nhật toàn bộ danh sách dữ liệu mới
+        const newData = await fetchData(0, selectedSearch);
+        setDataList(newData);
+        setCurrentPage(0);
         setRefreshing(false);
     };
 
     const loadMoreData = async () => {
-        console.log("==> loadMoreData");
         if (!loadingMore && currentPage < siteList.total_page - 1) {
+            console.log("==> loadMoreData");
             setLoadingMore(true);
             const nextPage = currentPage + 1;
-            const response = await getSiteList(-1, selectedSearch, nextPage, (action) => {
-                dispatch(action)
-            })
+            const newData = await fetchData(nextPage, selectedSearch);
             setCurrentPage(nextPage);
-
-            // Thêm dữ liệu mới vào danh sách hiện có
-            setDataList((prevDataList) => [...prevDataList, ...response.content_page]);
-            console.log(" ==> dataList:", [...dataList, ...response.content_page]);
-
+            setDataList((prevDataList) => [...prevDataList, ...newData]);
+            console.log(" ==> dataList:", [...dataList, ...newData]);
             setLoadingMore(false);
         }
     };
@@ -71,18 +71,14 @@ export default SiteListScreen = () => {
         }
 
         typingTimeout = setTimeout(() => {
-            console.log("==> text:", text);
             performSearch(text);
         }, 1000); // Chờ 1 giây trước khi thực hiện tìm kiếm
     };
 
     const performSearch = async (text) => {
         // Thực hiện tìm kiếm và cập nhật dữ liệu
-        const response = await getSiteList(-1, text, 0, (action) => {
-            dispatch(action);
-        });
-
-        setDataList(response.content_page);
+        const newData = await fetchData(0, text);
+        setDataList(newData);
         setCurrentPage(0);
     };
 
