@@ -1,4 +1,4 @@
-import React, { Component, useState, useEffect } from "react";
+import React, { Component, useState, useEffect, useRef } from "react";
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, SafeAreaView, Dimensions, ScrollView, Image, FlatList, StatusBar } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from 'react-redux';
@@ -60,19 +60,14 @@ export default SiteListScreen = () => {
         }
     };
 
-    let typingTimeout = null;
+    const timerRef = useRef(null);
 
     const performSearchDelayed = async (text) => {
         setSelectedSearch(text)
 
-        if (typingTimeout) {
-            console.log("clearTimeOut");
-            clearTimeout(typingTimeout);
-        }
+        clearTimeout(timerRef.current);
 
-        typingTimeout = setTimeout(() => {
-            performSearch(text);
-        }, 1000); // Chờ 1 giây trước khi thực hiện tìm kiếm
+        timerRef.current = setTimeout(() => performSearch(text), 2000)
     };
 
     const performSearch = async (text) => {
@@ -141,7 +136,7 @@ export default SiteListScreen = () => {
                         style={{ width: 16, height: 16, marginStart: 8, marginEnd: 8 }}
                         source={require('../../../images/ic_search.png')} resizeMode="stretch" />
                     <TextInput
-                        style={[stylesBase.P1, { flex: 1 }]}
+                        style={[stylesBase.P1, { flex: 1, marginEnd: 8 }]}
                         autoCapitalize='none'
                         placeholder="Nhập nội dung cần tìm"
                         placeholderTextColor={colors.ink200}
