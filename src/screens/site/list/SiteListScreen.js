@@ -13,6 +13,7 @@ export default SiteListScreen = () => {
     const navigation = useNavigation();
     const dispatch = useDispatch();
     const [refreshing, setRefreshing] = useState(false);
+    const [selectedSearch, setSelectedSearch] = useState("");
     const [loadingMore, setLoadingMore] = useState(false);
     const [currentPage, setCurrentPage] = useState(0);
     const [dataList, setDataList] = useState([]);
@@ -21,7 +22,6 @@ export default SiteListScreen = () => {
 
     useEffect(() => {
         console.log("Create SiteListScreen")
-        // Lắng nghe sự kiện focus để tự động refresh dữ liệu
         const unsubscribe = navigation.addListener('focus', () => {
             refreshData();
         });
@@ -35,7 +35,7 @@ export default SiteListScreen = () => {
     const refreshData = async () => {
         setRefreshing(true);
         setCurrentPage(0); // Reset trang hiện tại
-        const response = await getSiteList(-1, '', 0, (action) => {
+        const response = await getSiteList(-1, selectedSearch, 0, (action) => {
             dispatch(action)
         })
         setDataList(response.content_page); // Cập nhật toàn bộ danh sách dữ liệu mới
@@ -43,10 +43,11 @@ export default SiteListScreen = () => {
     };
 
     const loadMoreData = async () => {
+        console.log("==> loadMoreData");
         if (!loadingMore && currentPage < siteList.total_page - 1) {
             setLoadingMore(true);
             const nextPage = currentPage + 1;
-            const response = await getSiteList(-1, '', nextPage, (action) => {
+            const response = await getSiteList(-1, selectedSearch, nextPage, (action) => {
                 dispatch(action)
             })
             setCurrentPage(nextPage);
@@ -57,6 +58,32 @@ export default SiteListScreen = () => {
 
             setLoadingMore(false);
         }
+    };
+
+    let typingTimeout = null;
+
+    const performSearchDelayed = async (text) => {
+        setSelectedSearch(text)
+
+        if (typingTimeout) {
+            console.log("clearTimeOut");
+            clearTimeout(typingTimeout);
+        }
+
+        typingTimeout = setTimeout(() => {
+            console.log("==> text:", text);
+            performSearch(text);
+        }, 1000); // Chờ 1 giây trước khi thực hiện tìm kiếm
+    };
+
+    const performSearch = async (text) => {
+        // Thực hiện tìm kiếm và cập nhật dữ liệu
+        const response = await getSiteList(-1, text, 0, (action) => {
+            dispatch(action);
+        });
+
+        setDataList(response.content_page);
+        setCurrentPage(0);
     };
 
     const keyExtractor = (item, index) => `${item.id}_${index}`;
@@ -76,7 +103,7 @@ export default SiteListScreen = () => {
                             <Text numberOfLines={2} style={[stylesBase.H5, { color: colors.ink500, marginEnd: 12 }]}>{item.name}</Text>
                             <View style={{ flexDirection: 'row' }}>
                                 <Image
-                                    style={{ width: 16, height: 16, marginTop: 5, marginEnd: 4 }}
+                                    style={{ width: 16, height: 16, marginTop: 2, marginEnd: 4 }}
                                     source={require('../../../images/ic_pin.png')} resizeMode="stretch" />
                                 <Text numberOfLines={2} style={[stylesBase.P1, { color: colors.ink400, flex: 1, marginEnd: 12, lineHeight: 18 }]}>{item.address}</Text>
                             </View>
@@ -110,6 +137,21 @@ export default SiteListScreen = () => {
                         style={{ width: 24, height: 24 }}
                         source={require('../../../images/ic_sos.png')} resizeMode="stretch" />
                 </TouchableOpacity>
+            </View>
+
+            <View style={{ backgroundColor: colors.white }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', color: colors.ink500, backgroundColor: colors.ink100, borderRadius: 8, marginTop: 8, marginBottom: 8, marginStart: 16, marginEnd: 16 }}>
+                    <Image
+                        style={{ width: 16, height: 16, marginStart: 8, marginEnd: 8 }}
+                        source={require('../../../images/ic_search.png')} resizeMode="stretch" />
+                    <TextInput
+                        style={[stylesBase.P1, { flex: 1 }]}
+                        autoCapitalize='none'
+                        placeholder="Nhập nội dung cần tìm"
+                        placeholderTextColor={colors.ink200}
+                        onChangeText={performSearchDelayed}
+                        value={selectedSearch} />
+                </View>
             </View>
 
             <View style={{ flex: 1, backgroundColor: colors.sBackground }}>
