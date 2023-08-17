@@ -2,7 +2,7 @@ import React, { Component, useState, useEffect, useRef } from "react";
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, SafeAreaView, Dimensions, ScrollView, Image, FlatList, StatusBar } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from 'react-redux';
-import { getAppointmentService } from '../../../redux/actions/updateAction'
+import { getAppointmentService, setSelectedItemAppointmentService } from '../../../redux/actions/updateAction'
 import colors from '../../../configs/colors/colors'
 import stylesBase from '../../../configs/styles/styles'
 
@@ -30,12 +30,6 @@ export default AppointmentServiceScreen = () => {
             unsubscribe();
         }
     }, [])
-
-    const handleTest = async () => {
-        console.log(itemPatientRecord);
-        console.log(itemSite);
-        console.log(appointmentServiceList);
-    }
 
     const refreshData = async () => {
         setRefreshing(true);
@@ -65,11 +59,18 @@ export default AppointmentServiceScreen = () => {
         setDataList(filteredResults);
     };
 
+    const handlePressItem = async (item) => {
+        await dispatch(setSelectedItemAppointmentService(item));
+        // navigation.navigate('AppointmentServiceScreen')
+    };
+
     const renderItem = ({ item }) => {
         return (
             <View>
                 <View style={{ flexDirection: 'row', marginBottom: 16, backgroundColor: colors.white, borderRadius: 8 }}>
-                    <TouchableOpacity style={{ flexDirection: 'row', flex: 1 }}>
+                    <TouchableOpacity
+                        style={{ flexDirection: 'row', flex: 1 }}
+                        onPress={() => handlePressItem(item)}>
                         <View style={{ flex: 1, margin: 12 }}>
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                                 <Text numberOfLines={1} style={[stylesBase.P1Strong, { color: colors.ink500 }]}>{item.name}</Text>
@@ -97,7 +98,7 @@ export default AppointmentServiceScreen = () => {
                 <TouchableOpacity
                     style={{ height: '100%', aspectRatio: 1.5, alignItems: 'center', flexDirection: 'row', marginStart: 12 }}
                     onPress={() => {
-                        navigation.goBack()
+                        navigation.pop(3)
                     }}>
                     <Image
                         style={{ width: 24, height: 24, }}
@@ -107,7 +108,6 @@ export default AppointmentServiceScreen = () => {
                 <Text style={[stylesBase.H5Strong, { color: colors.ink500 }]}>Dịch vụ</Text>
 
                 <TouchableOpacity
-                    onPress={() => handleTest()}
                     style={{ height: '100%', aspectRatio: 1.5, alignItems: 'center', flexDirection: 'row', justifyContent: 'flex-end', marginEnd: 12 }}>
                     <Image
                         style={{ width: 24, height: 24 }}

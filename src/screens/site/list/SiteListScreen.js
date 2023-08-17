@@ -119,7 +119,7 @@ export default SiteListScreen = () => {
                 <TouchableOpacity
                     style={{ height: '100%', aspectRatio: 1.5, alignItems: 'center', flexDirection: 'row', marginStart: 12 }}
                     onPress={() => {
-                        navigation.goBack()
+                        navigation.pop(2)
                     }}>
                     <Image
                         style={{ width: 24, height: 24, }}
