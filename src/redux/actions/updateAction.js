@@ -5,6 +5,8 @@ import { CAP_NHAT_EMAIL } from "../reducers/infoReducer"
 import { SET_PATIENT_RECORD_REQUEST, SET_PATIENT_RECORD_SUCCESS, SET_PATIENT_RECORD_FAILURE } from '../reducers/patientRecordReducer'
 import { SET_SELECTED_ITEM_PATIENT_RECORD } from '../reducers/itemPatientRecordReducer'
 import { SET_SITE_REQUEST, SET_SITE_SUCCESS, SET_SITE_FAILURE } from '../reducers/siteReducer'
+import { SET_SELECTED_ITEM_SITE } from '../reducers/itemSiteReducer'
+import { SET_APPOINTMENT_SERVICE_REQUEST, SET_APPOINTMENT_SERVICE_SUCCESS, SET_APPOINTMENT_SERVICE_FAILURE } from '../reducers/appointmentServiceReducer'
 
 const KEY_ACCESS_TOKEN = 'KEY_ACCESS_TOKEN';
 const KEY_REFRESH_TOKEN = 'KEY_REFRESH_TOKEN';
@@ -213,7 +215,7 @@ export const getPatientRecordAdd = (defaultRecord, patientName, patientGender, p
                     await dispatch(getPatientRecordDefault(patientRecord.code))
                     dispatch({ type: SET_PATIENT_RECORD_SUCCESS, payload: response.data });
                 } catch (error) {
-                    //ignore
+                    console.log(error);
                 }
             } else {
                 dispatch({ type: SET_PATIENT_RECORD_SUCCESS, payload: response.data });
@@ -248,34 +250,6 @@ export const setSelectedItemPatientRecord = (item) => ({
 });
 
 // getSiteList
-export const getSiteList1 = (id, text, page) => {
-    return async (dispatch) => {
-        try {
-            dispatch({ type: SET_SITE_REQUEST });
-
-            const paramsSiteList = {
-                [KEY_PAGE_NUMBER]: page.toString(),
-                [KEY_PAGE_SIZE]: 20,
-            };
-
-            if (text) {
-                paramsSiteList.search_text = text;
-            }
-            if (id >= 0) {
-                paramsSiteList.state_id = id.toString();
-            }
-
-            const response = await api.get(`/${Constants.SITE_GET_LIST}`, { params: paramsSiteList })
-            console.log(response.data);
-
-            dispatch({ type: SET_SITE_SUCCESS, payload: response.data });
-        } catch (error) {
-            dispatch({ type: SET_SITE_FAILURE, payload: error });
-            console.log(error)
-        }
-    };
-};
-
 export const getSiteList = async (id, text, page, dispatchCallback) => {
     try {
         dispatchCallback({ type: SET_SITE_REQUEST });
@@ -299,6 +273,44 @@ export const getSiteList = async (id, text, page, dispatchCallback) => {
         return response.data;
     } catch (error) {
         dispatchCallback({ type: SET_SITE_FAILURE, payload: error });
+        console.log(error)
+    }
+};
+
+// setSelectedItemSite
+export const setSelectedItemSite = (item) => ({
+    type: SET_SELECTED_ITEM_SITE,
+    payload: item,
+});
+
+// getAppointmentService
+const getCurrentLanguageCodeByEthic = (isVN) => {
+    let lang = "";
+    if (isVN) {
+        lang = "vi";
+    } else {
+        lang = "en";
+    }
+    return lang;
+}
+
+export const getAppointmentService = async (isVN, isOnline, siteCode, dispatchCallback) => {
+    try {
+        dispatchCallback({ type: SET_APPOINTMENT_SERVICE_REQUEST });
+
+        const paramsAppointmentServiceList = {
+            [KEY_LANGUAGE]: getCurrentLanguageCodeByEthic(isVN),
+            "online": isOnline,
+            "siteCode": siteCode,
+        };
+
+        const response = await api.get(`/${Constants.DOCTOR_SERVICE_LIST}`, { params: paramsAppointmentServiceList })
+        console.log(response.data);
+
+        dispatchCallback({ type: SET_APPOINTMENT_SERVICE_SUCCESS, payload: response.data });
+        return response.data;
+    } catch (error) {
+        dispatchCallback({ type: SET_APPOINTMENT_SERVICE_FAILURE, payload: error });
         console.log(error)
     }
 };
