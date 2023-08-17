@@ -84,7 +84,10 @@ export default SiteListScreen = () => {
     const keyExtractor = (item, index) => `${item.id}_${index}`;
 
     const renderItem = ({ item }) => {
-        const avatarLink = item.avatar && item.avatar.length > 0 ? item.avatar[0].link : null;
+        const avatarLink = item.avatar && item.avatar.length > 0 ? item.avatar[0].link : null
+        const defaultAvatarSource = require('../../../images/ic_hospital_location.png')
+        // Kiểm tra xem avatarLink có giá trị hợp lệ hay không
+        const imageSource = avatarLink ? { uri: avatarLink } : defaultAvatarSource;
 
         return (
             <View>
@@ -94,8 +97,20 @@ export default SiteListScreen = () => {
                         onPress={() => handlePressItem(item)}>
                         <Image
                             style={{ width: 64, height: 64, margin: 12, }}
-                            source={avatarLink ? { uri: avatarLink } : require('../../../images/ic_hospital_location.png')}
-                            resizeMode="stretch" />
+                            source={imageSource}
+                            resizeMode="stretch"
+                            onError={(error) => {
+                                // console.error('Error loading image:', error.nativeEvent.error);
+                                // Thay thế ảnh bị lỗi bằng ảnh mặc định trong dataList
+                                const newDataList = dataList.map(dataItem => {
+                                    if (dataItem.id === item.id) {
+                                        return { ...dataItem, avatar: [defaultAvatarSource] };
+                                    }
+                                    return dataItem;
+                                });
+                                setDataList(newDataList);
+                            }}
+                        />
                         <View style={{ flex: 1, width: '100%', marginTop: 12, marginBottom: 12 }}>
                             <Text numberOfLines={2} style={[stylesBase.H5, { color: colors.ink500, marginEnd: 12 }]}>{item.name}</Text>
                             <View style={{ flexDirection: 'row' }}>
