@@ -16,6 +16,7 @@ import HoSoKhamScreen from "../screens/common/HoSoKhamScreen"
 import HoSoKhamAddScreen from "../screens/common/add/HoSoKhamAddScreen"
 import SiteListScreen from "../screens/site/list/SiteListScreen"
 import AppointmentServiceScreen from "../screens/service/list/AppointmentServiceScreen"
+import AppointmentServiceDetailScreen from "../screens/service/detail/AppointmentServiceDetailScreen"
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -60,6 +61,7 @@ export default function AppNavigator() {
                     <Stack.Screen name="HoSoKhamAddScreen" component={HoSoKhamAddScreen} />
                     <Stack.Screen name="SiteListScreen" component={SiteListScreen} />
                     <Stack.Screen name="AppointmentServiceScreen" component={AppointmentServiceScreen} />
+                    <Stack.Screen name="AppointmentServiceDetailScreen" component={AppointmentServiceDetailScreen} />
                 </Stack.Navigator>
             </NavigationContainer>
             {/* bắt buộc Toast phải nằm dưới NavigationContainer */}

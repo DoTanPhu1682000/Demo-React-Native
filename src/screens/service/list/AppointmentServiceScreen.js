@@ -64,6 +64,11 @@ export default AppointmentServiceScreen = () => {
         // navigation.navigate('AppointmentServiceScreen')
     };
 
+    const handlePressDetail = async (item) => {
+        await dispatch(setSelectedItemAppointmentService(item));
+        navigation.navigate('AppointmentServiceDetailScreen')
+    };
+
     const renderItem = ({ item }) => {
         return (
             <View>
@@ -74,7 +79,10 @@ export default AppointmentServiceScreen = () => {
                         <View style={{ flex: 1, margin: 12 }}>
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                                 <Text numberOfLines={1} style={[stylesBase.P1Strong, { color: colors.ink500 }]}>{item.name}</Text>
-                                <Text style={[stylesBase.P1, { color: colors.primaryB500, }]}>Chi tiết</Text>
+                                <TouchableOpacity
+                                    onPress={() => handlePressDetail(item)}>
+                                    <Text style={[stylesBase.P1, { color: colors.primaryB500, }]}>Chi tiết</Text>
+                                </TouchableOpacity>
                             </View>
                             <View style={{ flexDirection: 'row', marginTop: 8, marginBottom: 8, alignItems: 'center' }}>
                                 <Image
