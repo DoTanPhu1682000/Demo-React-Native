@@ -8,6 +8,7 @@ import { SET_SITE_REQUEST, SET_SITE_SUCCESS, SET_SITE_FAILURE } from '../reducer
 import { SET_SELECTED_ITEM_SITE } from '../reducers/itemSiteReducer'
 import { SET_APPOINTMENT_SERVICE_REQUEST, SET_APPOINTMENT_SERVICE_SUCCESS, SET_APPOINTMENT_SERVICE_FAILURE } from '../reducers/appointmentServiceReducer'
 import { SET_SELECTED_ITEM_APPOINTMENT_SERVICE } from '../reducers/itemAppointmentServiceReducer'
+import { SET_DOCTOR_REQUEST, SET_DOCTOR_SUCCESS, SET_DOCTOR_FAILURE } from '../reducers/doctorReducer'
 
 const KEY_ACCESS_TOKEN = 'KEY_ACCESS_TOKEN';
 const KEY_REFRESH_TOKEN = 'KEY_REFRESH_TOKEN';
@@ -284,7 +285,7 @@ export const setSelectedItemSite = (item) => ({
     payload: item,
 });
 
-// getAppointmentService
+// getCurrentLanguageCodeByEthic
 const getCurrentLanguageCodeByEthic = (isVN) => {
     let lang = "";
     if (isVN) {
@@ -295,6 +296,7 @@ const getCurrentLanguageCodeByEthic = (isVN) => {
     return lang;
 }
 
+// getAppointmentService
 export const getAppointmentService = async (isVN, isOnline, siteCode, dispatchCallback) => {
     try {
         dispatchCallback({ type: SET_APPOINTMENT_SERVICE_REQUEST });
@@ -321,6 +323,41 @@ export const setSelectedItemAppointmentService = (item) => ({
     type: SET_SELECTED_ITEM_APPOINTMENT_SERVICE,
     payload: item,
 });
+
+//  getDoctorListDatLich
+export const getDoctorListDatLich = async (isOnline, siteCode, specializationCode, date, serviceCode, isVN, page, size, dispatchCallback) => {
+    return getDoctorList(isOnline, siteCode, null, specializationCode, -1, date, null, serviceCode, isVN, page, size, dispatchCallback);
+};
+
+// getDoctorList
+export const getDoctorList = async (isOnline, siteCode, stateCode, specializationCode, specializationId, date, doctorNameKeyword, serviceCode, isVN, page, size, dispatchCallback) => {
+    try {
+        dispatchCallback({ type: SET_DOCTOR_REQUEST });
+
+        const queryParams = {
+            "page": page.toString(),
+            "size": size.toString(),
+            "online": isOnline ? isOnline.toString() : undefined,
+            "specialization": specializationId > 0 ? specializationId.toString() : undefined,
+            "site_code": siteCode || undefined,
+            "doctor_name": doctorNameKeyword || undefined,
+            "state_code": stateCode || undefined,
+            "specialization_code": specializationCode || undefined,
+            "service_code": serviceCode || undefined,
+            "lang": getCurrentLanguageCodeByEthic(isVN),
+            "appt_date": date || undefined,
+        };
+
+        const response = await api.get(`/${Constants.DOCTOR_LIST_DOCTOR}`, { params: queryParams })
+        console.log(response.data);
+
+        dispatchCallback({ type: SET_DOCTOR_SUCCESS, payload: response.data });
+        return response.data;
+    } catch (error) {
+        dispatchCallback({ type: SET_DOCTOR_FAILURE, payload: error });
+        console.log(error)
+    }
+};
 
 // getUserLoginQrCode
 export const getUserLoginQrCode = () => {

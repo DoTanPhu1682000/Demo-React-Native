@@ -78,10 +78,10 @@ export default AppointmentServiceScreen = () => {
                         onPress={() => handlePressItem(item)}>
                         <View style={{ flex: 1, margin: 12 }}>
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                <Text numberOfLines={1} style={[stylesBase.P1Strong, { color: colors.ink500 }]}>{item.name}</Text>
+                                <Text numberOfLines={2} style={[stylesBase.P1Strong, { color: colors.ink500, flex: 1 }]}>{item.name}</Text>
                                 <TouchableOpacity
                                     onPress={() => handlePressDetail(item)}>
-                                    <Text style={[stylesBase.P1, { color: colors.primaryB500, }]}>Chi tiết</Text>
+                                    <Text style={[stylesBase.P1, { color: colors.primaryB500, flex: 1 }]}>Chi tiết</Text>
                                 </TouchableOpacity>
                             </View>
                             <View style={{ flexDirection: 'row', marginTop: 8, marginBottom: 8, alignItems: 'center' }}>

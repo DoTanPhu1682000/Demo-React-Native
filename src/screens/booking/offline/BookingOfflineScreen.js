@@ -2,7 +2,7 @@ import React, { Component, useState, useEffect, useRef } from "react";
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, SafeAreaView, Dimensions, ScrollView, Image, FlatList, StatusBar } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from 'react-redux';
-import { getSiteList, setSelectedItemSite } from '../../../redux/actions/updateAction'
+import { getDoctorList, getDoctorListDatLich } from '../../../redux/actions/updateAction'
 import { formatISODateToServerDate } from '../../../utils/CalendarUtil'
 import { format } from 'date-fns';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -18,98 +18,64 @@ export default BookingOfflineScreen = () => {
     const [refreshing, setRefreshing] = useState(false);
     const [loadingMore, setLoadingMore] = useState(false);
     const [currentPage, setCurrentPage] = useState(0);
-    const [dataList, setDataList] = useState([]);
+    const [dataListDoctor, setDataListDoctor] = useState([]);
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [showDatePicker, setShowDatePicker] = useState(false);
-    const siteList = useSelector((state) => state.siteReducer.siteList)
+    const doctorList = useSelector((state) => state.doctorReducer.doctorList)
     const itemAppointmentService = useSelector((state) => state.itemAppointmentServiceReducer.selectedItemAppointmentService)
     const itemPatientRecord = useSelector((state) => state.itemPatientRecordReducer.selectedItemPatientRecord)
     const itemSite = useSelector((state) => state.itemSiteReducer.selectedItemSite)
 
     useEffect(() => {
         console.log("Create BookingOfflineScreen")
-        // const unsubscribe = navigation.addListener('focus', () => {
-        //     refreshData();
-        // });
+        const unsubscribe = navigation.addListener('focus', () => {
+            refreshData();
+        });
 
         return () => {
             console.log("Destroy BookingOfflineScreen")
-            // unsubscribe();
+            unsubscribe();
         }
     }, [])
 
-    // const fetchData = async (page, searchText) => {
-    //     const response = await getSiteList(-1, searchText, page, (action) => {
-    //         dispatch(action);
-    //     });
-    //     return response.content_page;
-    // };
+    const handleTest = async () => {
+        console.log(itemPatientRecord);
+        console.log(itemSite);
+        console.log(itemAppointmentService);
+    };
 
-    // const refreshData = async () => {
-    //     setRefreshing(true);
-    //     const newData = await fetchData(0, selectedSearch);
-    //     setDataList(newData);
-    //     setCurrentPage(0);
-    //     setRefreshing(false);
-    // };
+    const refreshData = async () => {
+        setRefreshing(true);
 
-    // const loadMoreData = async () => {
-    //     if (!loadingMore && currentPage < siteList.total_page - 1) {
-    //         console.log("==> loadMoreData");
-    //         setLoadingMore(true);
-    //         const nextPage = currentPage + 1;
-    //         const newData = await fetchData(nextPage, selectedSearch);
-    //         setCurrentPage(nextPage);
-    //         setDataList((prevDataList) => [...prevDataList, ...newData]);
-    //         console.log(" ==> dataList:", [...dataList, ...newData]);
-    //         setLoadingMore(false);
-    //     }
-    // };
+        // kiểm tra xem là vi or en
+        const isVietnam = itemPatientRecord === null || itemPatientRecord.patient_record.patient_ethic !== "55";
+        // chuyển ngày sinh
+        const formattedSelectedDate = formatISODateToServerDate(selectedDate)
 
-    // const keyExtractor = (item, index) => `${item.id}_${index}`;
+        const response = await getDoctorListDatLich(false, itemSite.code, itemAppointmentService.supported_specialization, formattedSelectedDate, itemAppointmentService.code, isVietnam, 0, 50, (action) => {
+            dispatch(action);
+        });
+        console.log("==> response:", response);
+        console.log("==> response.content_page:", response.content_page);
+        setDataListDoctor(response.content_page)
+        setCurrentPage(0);
+        setRefreshing(false);
+    };
 
-    // const renderItem = ({ item }) => {
-    //     const avatarLink = item.avatar && item.avatar.length > 0 ? item.avatar[0].link : null
-    //     const defaultAvatarSource = require('../../../images/ic_hospital_location.png')
-    //     // Kiểm tra xem avatarLink có giá trị hợp lệ hay không
-    //     const imageSource = avatarLink ? { uri: avatarLink } : defaultAvatarSource;
-
-    //     return (
-    //         <View>
-    //             <View style={{ flexDirection: 'row', marginBottom: 16, backgroundColor: colors.white, borderRadius: 8 }}>
-    //                 <TouchableOpacity
-    //                     style={{ flexDirection: 'row', flex: 1 }}
-    //                     onPress={() => handlePressItem(item)}>
-    //                     <Image
-    //                         style={{ width: 64, height: 64, margin: 12, }}
-    //                         source={imageSource}
-    //                         resizeMode="stretch"
-    //                         onError={(error) => {
-    //                             // console.error('Error loading image:', error.nativeEvent.error);
-    //                             // Thay thế ảnh bị lỗi bằng ảnh mặc định trong dataList
-    //                             const newDataList = dataList.map(dataItem => {
-    //                                 if (dataItem.id === item.id) {
-    //                                     return { ...dataItem, avatar: [defaultAvatarSource] };
-    //                                 }
-    //                                 return dataItem;
-    //                             });
-    //                             setDataList(newDataList);
-    //                         }}
-    //                     />
-    //                     <View style={{ flex: 1, width: '100%', marginTop: 12, marginBottom: 12 }}>
-    //                         <Text numberOfLines={2} style={[stylesBase.H5, { color: colors.ink500, marginEnd: 12 }]}>{item.name}</Text>
-    //                         <View style={{ flexDirection: 'row' }}>
-    //                             <Image
-    //                                 style={{ width: 16, height: 16, marginTop: 2, marginEnd: 4 }}
-    //                                 source={require('../../../images/ic_pin.png')} resizeMode="stretch" />
-    //                             <Text numberOfLines={2} style={[stylesBase.P1, { color: colors.ink400, flex: 1, marginEnd: 12, lineHeight: 18 }]}>{item.address}</Text>
-    //                         </View>
-    //                     </View>
-    //                 </TouchableOpacity>
-    //             </View >
-    //         </View >
-    //     );
-    // };
+    const loadMoreData = async () => {
+        if (!loadingMore && currentPage < doctorList.total_page - 1) {
+            console.log("==> loadMoreData");
+            setLoadingMore(true);
+            const nextPage = currentPage + 1;
+            const response = await getDoctorListDatLich(false, itemSite.code, itemAppointmentService.supported_specialization, formattedSelectedDate, itemAppointmentService.code, isVietnam, nextPage, 50, (action) => {
+                dispatch(action);
+            });
+            setCurrentPage(nextPage);
+            setDataList((prevDataList) => [...prevDataList, ...response.content_page]);
+            console.log(" ==> dataListDoctor:", [...dataList, ...response.content_page]);
+            setLoadingMore(false);
+        }
+    };
 
     const formattedDate = format(selectedDate, 'dd/MM/yyyy');
 
@@ -118,6 +84,23 @@ export default BookingOfflineScreen = () => {
         if (date !== undefined) {
             setSelectedDate(date);
         }
+    };
+
+    const keyExtractor = (item, index) => `${item.id}_${index}`;
+
+    const renderItem = ({ item }) => {
+        return (
+            <View style={{ backgroundColor: colors.white, marginBottom: 12 }}>
+                <TouchableOpacity
+                    style={{ width: 120, borderWidth: 1, borderColor: colors.primary, borderRadius: 8, alignItems: 'center', marginEnd: 12 }}>
+                    <Image
+                        style={{ width: 64, height: 64, marginStart: 20, marginEnd: 20, marginTop: 12 }}
+                        source={require('../../../images/ic_avatar_doctor.png')}
+                        resizeMode="stretch" />
+                    <Text numberOfLines={1} ellipsizeMode="tail" style={[stylesBase.P2, { color: colors.ink500, marginTop: 8, marginBottom: 12 }]}>{item.doctor_name}</Text>
+                </TouchableOpacity>
+            </View >
+        );
     };
 
     return (
@@ -138,6 +121,7 @@ export default BookingOfflineScreen = () => {
                 <Text style={[stylesBase.H5Strong, { color: colors.ink500 }]}>Đặt lịch tư vấn</Text>
 
                 <TouchableOpacity
+                    onPress={() => handleTest()}
                     style={{ height: '100%', aspectRatio: 1.5, alignItems: 'center', flexDirection: 'row', justifyContent: 'flex-end', marginEnd: 12 }}>
                     <Image
                         style={{ width: 24, height: 24 }}
@@ -255,6 +239,32 @@ export default BookingOfflineScreen = () => {
                     </View>
                 </View>
 
+                {/* Doctor */}
+                <View style={{ flex: 1, marginTop: 12, backgroundColor: colors.white }}>
+                    <View style={{ flexDirection: 'row', justifyContent: "space-between", margin: 16, alignItems: 'center' }}>
+                        <Text numberOfLines={1} style={[stylesBase.H4Strong, { color: colors.ink500 }]}>Bác sĩ</Text>
+                        <View style={{ flex: 1, marginLeft: 8, alignItems: 'flex-end' }}>
+                            <Text numberOfLines={1} style={[stylesBase.P1, { color: colors.primary, textAlign: 'right' }]}>Bs. Nguyễn Mai Ngọc</Text>
+                        </View>
+                    </View>
+
+                    <View style={{ flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: colors.white, }}>
+                        {dataListDoctor && (
+                            <FlatList
+                                data={dataListDoctor}
+                                horizontal
+                                style={{ width: windowWidth - 32 }}
+                                renderItem={renderItem}
+                                keyExtractor={keyExtractor}
+                                onRefresh={refreshData}
+                                refreshing={refreshing}
+                                onEndReached={loadMoreData}
+                                onEndReachedThreshold={0.1}
+                            />
+                        )}
+                    </View>
+                </View>
+
                 {/* Dịch vụ */}
                 <View style={{ backgroundColor: colors.white, marginTop: 12 }}>
                     <View style={{ margin: 16 }}>
@@ -277,23 +287,6 @@ export default BookingOfflineScreen = () => {
                 </View>
 
             </ScrollView>
-
-            {/* <View style={{ flex: 1, backgroundColor: colors.sBackground }}>
-                <View style={{ flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: colors.sBackground, }}>
-                    {siteList && siteList.content_page && (
-                        <FlatList
-                            data={dataList}
-                            style={{ width: windowWidth - 32, marginTop: 16 }}
-                            renderItem={renderItem}
-                            keyExtractor={keyExtractor}
-                            onRefresh={refreshData}
-                            refreshing={refreshing}
-                            onEndReached={loadMoreData}
-                            onEndReachedThreshold={0.1}
-                        />
-                    )}
-                </View>
-            </View> */}
         </SafeAreaView>
     );
 }

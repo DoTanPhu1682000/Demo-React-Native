@@ -51,7 +51,7 @@ export default AppointmentServiceDetailScreen = () => {
 
             <View style={{ height: '30%', backgroundColor: colors.primary }}>
                 <View style={{ marginTop: 80, flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.white, borderTopStartRadius: 20, borderTopEndRadius: 20 }}>
-                    <Text numberOfLines={2} style={[stylesBase.H5Strong, { color: colors.ink500, marginStart: 20, marginEnd: 20 }]}>{itemAppointmentService.name}</Text>
+                    <Text numberOfLines={2} style={[stylesBase.P1Strong, { color: colors.ink500, marginStart: 20, marginEnd: 20 }]}>{itemAppointmentService.name}</Text>
                 </View>
                 <View style={{ alignItems: 'center', top: -210 }}>
                     <View style={{ position: 'absolute', borderRadius: 12, backgroundColor: colors.white, borderWidth: 1, borderColor: colors.sLine }}>
