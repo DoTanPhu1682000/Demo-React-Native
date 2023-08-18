@@ -6,7 +6,7 @@ import stylesBase from '../configs/styles/styles'
 const ConfirmationBottomSheet = ({ isVisible, onConfirm, onCancel, title, message, confirmText, cancelText }) => {
     return (
         <Modal visible={isVisible} transparent={true}>
-            <View style={{ flex: 1, opacity: 0.2, backgroundColor: 'black' }} />
+            <View style={{ flex: 1, opacity: 0.1, backgroundColor: 'black' }} />
             <View style={{ position: 'absolute', width: '100%', bottom: 0 }}>
                 <View style={{ backgroundColor: 'white', padding: 16, borderRadius: 12, }}>
                     <Text style={[stylesBase.H4Strong, { marginBottom: 4, color: colors.ink500, textAlign: 'center' }]}>{title}</Text>

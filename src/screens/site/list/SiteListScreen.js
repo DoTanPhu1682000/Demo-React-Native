@@ -66,7 +66,7 @@ export default SiteListScreen = () => {
 
         clearTimeout(timerRef.current);
 
-        timerRef.current = setTimeout(() => performSearch(text), 2000)
+        timerRef.current = setTimeout(() => performSearch(text), 1000)
     };
 
     const performSearch = async (text) => {

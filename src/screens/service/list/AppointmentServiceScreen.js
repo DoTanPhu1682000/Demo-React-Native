@@ -48,7 +48,7 @@ export default AppointmentServiceScreen = () => {
 
         clearTimeout(timerRef.current);
 
-        timerRef.current = setTimeout(() => performSearch(text), 2000)
+        timerRef.current = setTimeout(() => performSearch(text), 1000)
     };
 
     const performSearch = async (text) => {
@@ -61,7 +61,7 @@ export default AppointmentServiceScreen = () => {
 
     const handlePressItem = async (item) => {
         await dispatch(setSelectedItemAppointmentService(item));
-        // navigation.navigate('AppointmentServiceScreen')
+        navigation.navigate('BookingOfflineScreen')
     };
 
     const handlePressDetail = async (item) => {
