@@ -9,6 +9,7 @@ import { SET_SELECTED_ITEM_SITE } from '../reducers/itemSiteReducer'
 import { SET_APPOINTMENT_SERVICE_REQUEST, SET_APPOINTMENT_SERVICE_SUCCESS, SET_APPOINTMENT_SERVICE_FAILURE } from '../reducers/appointmentServiceReducer'
 import { SET_SELECTED_ITEM_APPOINTMENT_SERVICE } from '../reducers/itemAppointmentServiceReducer'
 import { SET_DOCTOR_REQUEST, SET_DOCTOR_SUCCESS, SET_DOCTOR_FAILURE } from '../reducers/doctorReducer'
+import { SET_DOCTOR_TIME_TABLE_REQUEST, SET_DOCTOR_TIME_TABLE_SUCCESS, SET_DOCTOR_TIME_TABLE_FAILURE } from '../reducers/doctorTimeTableReducer'
 
 const KEY_ACCESS_TOKEN = 'KEY_ACCESS_TOKEN';
 const KEY_REFRESH_TOKEN = 'KEY_REFRESH_TOKEN';
@@ -355,6 +356,26 @@ export const getDoctorList = async (isOnline, siteCode, stateCode, specializatio
         return response.data;
     } catch (error) {
         dispatchCallback({ type: SET_DOCTOR_FAILURE, payload: error });
+        console.log(error)
+    }
+};
+
+// getDoctorTimeTable
+export const getDoctorTimeTable = async (doctorCode, assignDate, dispatchCallback) => {
+    try {
+        dispatchCallback({ type: SET_DOCTOR_TIME_TABLE_REQUEST });
+
+        const queryParams = {
+            "assign_date": assignDate,
+        };
+
+        const response = await api.get(`/${Constants.DOCTOR_TIME_TABLE}/${doctorCode}`, { params: queryParams })
+        console.log(response.data);
+
+        dispatchCallback({ type: SET_DOCTOR_TIME_TABLE_SUCCESS, payload: response.data });
+        return response.data;
+    } catch (error) {
+        dispatchCallback({ type: SET_DOCTOR_TIME_TABLE_FAILURE, payload: error });
         console.log(error)
     }
 };

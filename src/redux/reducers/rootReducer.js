@@ -7,6 +7,7 @@ import itemSiteReducer from './itemSiteReducer'
 import appointmentServiceReducer from './appointmentServiceReducer'
 import itemAppointmentServiceReducer from './itemAppointmentServiceReducer'
 import doctorReducer from './doctorReducer'
+import doctorTimeTableReducer from './doctorTimeTableReducer'
 
 const rootReducer = combineReducers({
     infoReducer,
@@ -17,6 +18,7 @@ const rootReducer = combineReducers({
     appointmentServiceReducer,
     itemAppointmentServiceReducer,
     doctorReducer,
+    doctorTimeTableReducer,
 })
 
 export default (state, action) => rootReducer(state, action)

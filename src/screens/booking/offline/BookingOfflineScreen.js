@@ -2,7 +2,7 @@ import React, { Component, useState, useEffect, useRef } from "react";
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, SafeAreaView, Dimensions, ScrollView, Image, FlatList, StatusBar } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from 'react-redux';
-import { getDoctorList, getDoctorListDatLich } from '../../../redux/actions/updateAction'
+import { getDoctorList, getDoctorListDatLich, getDoctorTimeTable } from '../../../redux/actions/updateAction'
 import { formatISODateToServerDate } from '../../../utils/CalendarUtil'
 import { format } from 'date-fns';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -21,6 +21,7 @@ export default BookingOfflineScreen = () => {
     const [dataListDoctor, setDataListDoctor] = useState([]);
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [showDatePicker, setShowDatePicker] = useState(false);
+    const [selectedItemIndex, setSelectedItemIndex] = useState(null);
     const doctorList = useSelector((state) => state.doctorReducer.doctorList)
     const itemAppointmentService = useSelector((state) => state.itemAppointmentServiceReducer.selectedItemAppointmentService)
     const itemPatientRecord = useSelector((state) => state.itemPatientRecordReducer.selectedItemPatientRecord)
@@ -55,8 +56,6 @@ export default BookingOfflineScreen = () => {
         const response = await getDoctorListDatLich(false, itemSite.code, itemAppointmentService.supported_specialization, formattedSelectedDate, itemAppointmentService.code, isVietnam, 0, 50, (action) => {
             dispatch(action);
         });
-        console.log("==> response:", response);
-        console.log("==> response.content_page:", response.content_page);
         setDataListDoctor(response.content_page)
         setCurrentPage(0);
         setRefreshing(false);
@@ -86,13 +85,43 @@ export default BookingOfflineScreen = () => {
         }
     };
 
+    const fetchDoctorTimeTable = async (doctorCode) => {
+        try {
+            const formattedSelectedDate = formatISODateToServerDate(selectedDate);
+
+            const response = await getDoctorTimeTable(doctorCode, formattedSelectedDate, (action) => {
+                dispatch(action);
+            });
+
+            // Cập nhật dữ liệu về giờ khám mong muốn sau khi gọi API
+            // Cập nhật state hoặc dữ liệu tương tự tùy theo cách bạn quản lý dữ liệu.
+        } catch (error) {
+            console.error('Error fetching doctor time table:', error);
+        }
+    };
+
+    const handleItemDoctorPress = (index) => {
+        setSelectedItemIndex(index);
+
+        // Lấy mã bác sĩ từ dataListDoctor tương ứng với index
+        const selectedDoctorCode = dataListDoctor[index]?.doctor_code;
+
+        // Gọi hàm fetchDoctorTimeTable để cập nhật dữ liệu giờ khám mong muốn
+        if (selectedDoctorCode) {
+            fetchDoctorTimeTable(selectedDoctorCode);
+        }
+    };
+
     const keyExtractor = (item, index) => `${item.id}_${index}`;
 
-    const renderItem = ({ item }) => {
+    const renderItem = ({ item, index }) => {
+        const isSelected = index === selectedItemIndex;
+
         return (
             <View style={{ backgroundColor: colors.white, marginBottom: 12 }}>
                 <TouchableOpacity
-                    style={{ width: 120, borderWidth: 1, borderColor: colors.primary, borderRadius: 8, alignItems: 'center', marginEnd: 12 }}>
+                    style={[styles.itemContainer, isSelected && styles.selectedItem,]}
+                    onPress={() => handleItemDoctorPress(index)}>
                     <Image
                         style={{ width: 64, height: 64, marginStart: 20, marginEnd: 20, marginTop: 12 }}
                         source={require('../../../images/ic_avatar_doctor.png')}
@@ -263,26 +292,18 @@ export default BookingOfflineScreen = () => {
                             />
                         )}
                     </View>
+
+                    <TouchableOpacity
+                        style={{ marginStart: 16, marginEnd: 16, marginBottom: 16, marginTop: 8, backgroundColor: colors.primary100, alignItems: 'center', borderRadius: 4, paddingTop: 8, paddingBottom: 8 }}>
+                        <Text style={[stylesBase.P1, { color: colors.primary }]}>Xem tất cả</Text>
+                    </TouchableOpacity>
                 </View>
 
-                {/* Dịch vụ */}
+                {/* Giờ khám mong muốn */}
                 <View style={{ backgroundColor: colors.white, marginTop: 12 }}>
                     <View style={{ margin: 16 }}>
-                        <View style={{ flexDirection: 'row', justifyContent: "space-between", alignItems: 'center' }}>
-                            <Text style={[stylesBase.H4Strong, { color: colors.ink500 }]}>Dịch vụ</Text>
-                            <TouchableOpacity>
-                                <Text style={[stylesBase.P1, { color: colors.primaryB500 }]}>Thay đổi</Text>
-                            </TouchableOpacity>
-                        </View>
-                        <TouchableOpacity style={{ flexDirection: 'row', marginTop: 12 }}>
-                            <Image
-                                style={{ width: 28, height: 28 }}
-                                source={require('../../../images/ic_handle_heart.png')} resizeMode="stretch" />
-                            <View style={{ marginStart: 12 }}>
-                                <Text numberOfLines={1} style={[stylesBase.H5Strong, { color: colors.ink500 }]}>Tư vấn sức khỏe chung</Text>
-                                <Text numberOfLines={2} style={[stylesBase.P1, { color: colors.ink400 }]}>Tư vấn sức khỏe tổng quan cùng Bác sĩ - Chuyên viên nội tiết tổng quát qua Video Call</Text>
-                            </View>
-                        </TouchableOpacity>
+                        <Text style={[stylesBase.H4Strong, { color: colors.ink500 }]}>Giờ khám mong muốn</Text>
+
                     </View>
                 </View>
 
@@ -290,3 +311,16 @@ export default BookingOfflineScreen = () => {
         </SafeAreaView>
     );
 }
+
+const styles = StyleSheet.create({
+    itemContainer: {
+        width: 120,
+        alignItems: 'center',
+        marginEnd: 12,
+    },
+    selectedItem: {
+        borderWidth: 1,
+        borderRadius: 8,
+        borderColor: colors.primary,
+    },
+});
