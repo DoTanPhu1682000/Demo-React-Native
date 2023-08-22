@@ -13,6 +13,7 @@ const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
 export default BookingOfflineScreen = () => {
+    // Hooks and State
     const navigation = useNavigation();
     const dispatch = useDispatch();
     const [selectedDate, setSelectedDate] = useState(new Date());
@@ -24,6 +25,8 @@ export default BookingOfflineScreen = () => {
     const [dataListDoctorTimeTable, setDataListDoctorTimeTable] = useState([]);
     const [selectedDoctorIndex, setSelectedDoctorIndex] = useState(null);
     const [selectedDoctorTimeTableIndex, setSelectedDoctorTimeTableIndex] = useState(null);
+
+    // Redux Selectors
     const doctorList = useSelector((state) => state.doctorReducer.doctorList)
     const doctorTimeTable = useSelector((state) => state.doctorTimeTableReducer.doctorTimeTable)
     const itemAppointmentService = useSelector((state) => state.itemAppointmentServiceReducer.selectedItemAppointmentService)
@@ -51,11 +54,8 @@ export default BookingOfflineScreen = () => {
     const refreshData = async () => {
         setRefreshing(true);
 
-        // kiểm tra xem là vi or en
         const isVietnam = itemPatientRecord === null || itemPatientRecord.patient_record.patient_ethic !== "55";
-        // chuyển ngày sinh
         const formattedSelectedDate = formatISODateToServerDate(selectedDate)
-        await console.log("==> formattedSelectedDate:", formattedSelectedDate);
 
         const response = await getDoctorListDatLich(false, itemSite.code, itemAppointmentService.supported_specialization, formattedSelectedDate, itemAppointmentService.code, isVietnam, 0, 50, (action) => {
             dispatch(action);
@@ -93,12 +93,9 @@ export default BookingOfflineScreen = () => {
     const loadDoctorListByDate = async (selectedDate) => {
         setRefreshing(true);
 
-        // Kiểm tra xem là việt nam hay không
         const isVietnam = itemPatientRecord === null || itemPatientRecord.patient_record.patient_ethic !== "55";
-
-        // Chuyển ngày sinh
         const formattedSelectedDate = formatISODateToServerDate(selectedDate);
-        await console.log("==> formattedSelectedDate-loadDoctorListByDate:", formattedSelectedDate);
+        await console.log("==> formattedSelectedDate:", formattedSelectedDate);
 
         const response = await getDoctorListDatLich(false, itemSite.code, itemAppointmentService.supported_specialization, formattedSelectedDate, itemAppointmentService.code, isVietnam, 0, 50, (action) => {
             dispatch(action);
@@ -171,8 +168,8 @@ export default BookingOfflineScreen = () => {
                     style={[styles.itemTimeTableContainer, isSelected && styles.selectedItemTimeTable,]}
                     onPress={() => handleItemDoctorTimeTablePress(item)}>
                     {isSelected
-                        ? <Text style={[stylesBase.H5, { color: colors.white }]}>{item.time_table_id}</Text>
-                        : <Text style={[stylesBase.H5, { color: colors.ink500 }]}>{item.time_table_id}</Text>}
+                        ? <Text style={[stylesBase.H5, { color: colors.white }]}>{item.period_start_time}</Text>
+                        : <Text style={[stylesBase.H5, { color: colors.ink500 }]}>{item.period_start_time}</Text>}
                 </TouchableOpacity>
             </View >
         );
