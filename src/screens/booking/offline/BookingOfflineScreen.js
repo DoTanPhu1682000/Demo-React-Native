@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, TouchableOpacity, TextInput, SafeAreaView, Dime
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from 'react-redux';
 import { getDoctorList, getDoctorListDatLich, getDoctorTimeTable } from '../../../redux/actions/updateAction'
-import { formatISODateToServerDate } from '../../../utils/CalendarUtil'
+import { formatISODateToServerDate, formatMilisecondsToTime } from '../../../utils/CalendarUtil'
 import { format } from 'date-fns';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import colors from '../../../configs/colors/colors'
@@ -80,6 +80,7 @@ export default BookingOfflineScreen = () => {
         }
     };
 
+    // ------------------------------------------------------------------[ Date ]--------------------------------------------------------------------------- \\
     const formattedDate = format(selectedDate, 'dd/MM/yyyy');
 
     const handleDateChange = (event, date) => {
@@ -105,20 +106,9 @@ export default BookingOfflineScreen = () => {
         setCurrentPage(0);
         setRefreshing(false);
     };
+    // ----------------------------------------------------------------------------------------------------------------------------------------------------- \\
 
-    const fetchDoctorTimeTable = async (doctorCode) => {
-        try {
-            const formattedSelectedDate = formatISODateToServerDate(selectedDate);
-
-            const response = await getDoctorTimeTable(doctorCode, formattedSelectedDate, (action) => {
-                dispatch(action);
-            });
-            setDataListDoctorTimeTable(response.time_table_period)
-        } catch (error) {
-            console.error('Error fetching doctor time table:', error);
-        }
-    };
-
+    // ------------------------------------------------------------------[ Doctor ]------------------------------------------------------------------------- \\
     const handleItemDoctorPress = (index) => {
         setSelectedDoctorIndex(index);
 
@@ -128,6 +118,20 @@ export default BookingOfflineScreen = () => {
         // Gọi hàm fetchDoctorTimeTable để cập nhật dữ liệu giờ khám mong muốn
         if (selectedDoctorCode) {
             fetchDoctorTimeTable(selectedDoctorCode);
+        }
+    };
+
+    const fetchDoctorTimeTable = async (doctorCode) => {
+        try {
+            const formattedSelectedDate = formatISODateToServerDate(selectedDate);
+
+            const response = await getDoctorTimeTable(doctorCode, formattedSelectedDate, (action) => {
+                dispatch(action);
+            });
+
+            setDataListDoctorTimeTable(response.time_table_period)
+        } catch (error) {
+            console.error('Error fetching doctor time table:', error);
         }
     };
 
@@ -150,8 +154,9 @@ export default BookingOfflineScreen = () => {
             </View >
         );
     };
+    // ----------------------------------------------------------------------------------------------------------------------------------------------------- \\
 
-    // ------------------------------------------------------------------[ DoctorTimeTable ]--------------------------------------------------------------------------- \\
+    // ------------------------------------------------------------------[ DoctorTimeTable ]---------------------------------------------------------------- \\
     const handleItemDoctorTimeTablePress = (item) => {
         setSelectedDoctorTimeTableIndex(item);
         console.log("==> item", item);
@@ -162,19 +167,22 @@ export default BookingOfflineScreen = () => {
     const renderDoctorTimeTable = ({ item, index }) => {
         const isSelected = item === selectedDoctorTimeTableIndex;
 
+        const miliseconds = item.period_start_time
+        const formattedTime = formatMilisecondsToTime(miliseconds);
+
         return (
             <View style={{ backgroundColor: colors.white, marginBottom: 12 }}>
                 <TouchableOpacity
                     style={[styles.itemTimeTableContainer, isSelected && styles.selectedItemTimeTable,]}
                     onPress={() => handleItemDoctorTimeTablePress(item)}>
                     {isSelected
-                        ? <Text style={[stylesBase.H5, { color: colors.white }]}>{item.period_start_time}</Text>
-                        : <Text style={[stylesBase.H5, { color: colors.ink500 }]}>{item.period_start_time}</Text>}
+                        ? <Text style={[stylesBase.H5, { color: colors.white }]}>{formattedTime}</Text>
+                        : <Text style={[stylesBase.H5, { color: colors.ink500 }]}>{formattedTime}</Text>}
                 </TouchableOpacity>
             </View >
         );
     };
-    // ---------------------------------------------------------------------------------------------------------------------------------------------------------------- \\
+    // ----------------------------------------------------------------------------------------------------------------------------------------------------- \\
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: colors.sBackground }}>
@@ -358,6 +366,40 @@ export default BookingOfflineScreen = () => {
                                 />
                             )}
                         </View>
+                    </View>
+                </View>
+
+                {/* Khuyến mại */}
+                <View style={{ backgroundColor: colors.white, marginTop: 12 }}>
+                    <View style={{ margin: 16 }}>
+                        <Text style={[stylesBase.H4Strong, { color: colors.ink500 }]}>Khuyến mại</Text>
+                        <TouchableOpacity style={{ flexDirection: 'row', marginTop: 12, borderWidth: 1, borderColor: colors.sLine, borderRadius: 8, alignItems: 'center' }}>
+                            <Image
+                                style={{ width: 28, height: 28, marginStart: 12, marginEnd: 8, marginTop: 12, marginBottom: 12 }}
+                                source={require('../../../images/ic_promo_code.png')} resizeMode="stretch" />
+                            <Text numberOfLines={1} style={[stylesBase.P1Strong, { color: colors.ink500 }]}>Mã khuyến mại</Text>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 'auto', marginEnd: 12 }}>
+                                <Text numberOfLines={1} style={[stylesBase.P1, { color: colors.primaryB500, paddingVertical: 4, paddingHorizontal: 8, maxWidth: 100 }]}>HGB1254</Text>
+                            </View>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+
+                {/* Triệu chứng* */}
+                <View style={{ backgroundColor: colors.white, marginTop: 12 }}>
+                    <View style={{ margin: 16 }}>
+                        <Text style={[stylesBase.H4Strong, { color: colors.ink500 }]}>Triệu chứng</Text>
+                        <TextInput
+                            style={[stylesBase.H5, { marginTop: 12, color: colors.ink500, backgroundColor: colors.ink100, borderRadius: 8, paddingVertical: 4, paddingHorizontal: 8, }]}
+                            autoCapitalize='none'
+                            placeholder="Nhập triệu chứng của bạn ( 1000 ký tự )"
+                            placeholderTextColor={colors.ink200}
+                            multiline={true}
+                            maxLength={1000}
+                            numberOfLines={5}
+                        // onChangeText={handleNameChange}
+                        // value={selectedName}
+                        />
                     </View>
                 </View>
 

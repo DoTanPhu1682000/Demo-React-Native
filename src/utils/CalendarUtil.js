@@ -16,3 +16,12 @@ export const formatISODateToServerDate = (isoDateString) => {
     const formattedDate = isoDate.toISOString().split("T")[0];
     return formattedDate;
 }
+
+export const formatMilisecondsToTime = (miliseconds) => {
+    const date = new Date(miliseconds);
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+
+    const formattedTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+    return formattedTime;
+}
