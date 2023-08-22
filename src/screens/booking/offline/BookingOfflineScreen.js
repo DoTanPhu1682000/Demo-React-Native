@@ -81,6 +81,9 @@ export default BookingOfflineScreen = () => {
     };
 
     // ------------------------------------------------------------------[ Date ]--------------------------------------------------------------------------- \\
+    const inputPatientRecordDob = itemPatientRecord.patient_record.patient_dob
+    const formattedPatientRecordDob = format(new Date(inputPatientRecordDob), 'dd/MM/yyyy');
+
     const formattedDate = format(selectedDate, 'dd/MM/yyyy');
 
     const handleDateChange = (event, date) => {
@@ -212,8 +215,8 @@ export default BookingOfflineScreen = () => {
 
             <ScrollView>
                 {/* Hồ sơ */}
-                <View style={{ backgroundColor: colors.white, marginTop: 8 }}>
-                    <View style={{ margin: 16 }}>
+                <View style={{ backgroundColor: colors.white, marginTop: 8, padding: 16 }}>
+                    <View style={{ flex: 1 }}>
                         <View style={{ flexDirection: 'row', justifyContent: "space-between", alignItems: 'center' }}>
                             <Text style={[stylesBase.H4Strong, { color: colors.ink500 }]}>Hồ sơ</Text>
                             <TouchableOpacity>
@@ -224,12 +227,15 @@ export default BookingOfflineScreen = () => {
                             <Image
                                 style={{ width: 28, height: 28 }}
                                 source={require('../../../images/ic_user_booking.png')} resizeMode="stretch" />
-                            <View style={{ marginStart: 12 }}>
-                                <Text style={[stylesBase.H5Strong, { color: colors.ink500 }]}>Đỗ Tấn Phú</Text>
+                            <View style={{ flex: 1, marginStart: 12 }}>
+                                <Text style={[stylesBase.H5Strong, { color: colors.ink500 }]}>{itemPatientRecord.patient_record.patient_name}</Text>
                                 <View style={{ flexDirection: 'row' }}>
-                                    <Text style={[stylesBase.P1, { color: colors.ink400 }]}>Nam</Text>
+                                    {itemPatientRecord.patient_record.patient_gender
+                                        ? <Text style={[stylesBase.P1, { color: colors.ink400 }]}>Nam</Text>
+                                        : <Text style={[stylesBase.P1, { color: colors.ink400 }]}>Nữ</Text>
+                                    }
                                     <Text style={[stylesBase.P1, { color: colors.ink400 }]}> - </Text>
-                                    <Text style={[stylesBase.P1, { color: colors.ink400 }]}>16/08/2000</Text>
+                                    <Text style={[stylesBase.P1, { color: colors.ink400 }]}>{formattedPatientRecordDob}</Text>
                                 </View>
                             </View>
                         </TouchableOpacity>
@@ -237,8 +243,8 @@ export default BookingOfflineScreen = () => {
                 </View>
 
                 {/* Thẻ bảo hiểm y tế */}
-                <View style={{ backgroundColor: colors.white, marginTop: 12 }}>
-                    <View style={{ margin: 16 }}>
+                <View style={{ backgroundColor: colors.white, marginTop: 12, padding: 16 }}>
+                    <View style={{ flex: 1 }}>
                         <View style={{ flexDirection: 'row', justifyContent: "space-between", alignItems: 'center' }}>
                             <Text style={[stylesBase.H4Strong, { color: colors.ink500 }]}>Thẻ bảo hiểm y tế</Text>
                         </View>
@@ -246,7 +252,7 @@ export default BookingOfflineScreen = () => {
                             <Image
                                 style={{ width: 28, height: 28 }}
                                 source={require('../../../images/ic_bhyt.png')} resizeMode="stretch" />
-                            <View style={{ marginStart: 12 }}>
+                            <View style={{ flex: 1, marginStart: 12 }}>
                                 <Text style={[stylesBase.H5Strong, { color: colors.ink500 }]}>Nhập thẻ bảo hiểm y tế</Text>
                             </View>
                         </TouchableOpacity>
@@ -254,8 +260,8 @@ export default BookingOfflineScreen = () => {
                 </View>
 
                 {/* Cơ sở y tế */}
-                <View style={{ backgroundColor: colors.white, marginTop: 12 }}>
-                    <View style={{ margin: 16 }}>
+                <View style={{ backgroundColor: colors.white, marginTop: 12, padding: 16 }}>
+                    <View style={{ flex: 1 }}>
                         <View style={{ flexDirection: 'row', justifyContent: "space-between", alignItems: 'center' }}>
                             <Text style={[stylesBase.H4Strong, { color: colors.ink500 }]}>Cơ sở y tế</Text>
                             <TouchableOpacity>
@@ -266,17 +272,17 @@ export default BookingOfflineScreen = () => {
                             <Image
                                 style={{ width: 28, height: 28 }}
                                 source={require('../../../images/ic_location_csyt.png')} resizeMode="stretch" />
-                            <View style={{ marginStart: 12 }}>
-                                <Text numberOfLines={1} style={[stylesBase.H5Strong, { color: colors.ink500 }]}>PK Đa khoa Dr.Binh</Text>
-                                <Text numberOfLines={2} style={[stylesBase.P1, { color: colors.ink400 }]}>11,13,15 Trần Xuân Soạn, Hai Bà Trưng, Thanh Nhàn, Hà Nội</Text>
+                            <View style={{ flex: 1, marginStart: 12 }}>
+                                <Text style={[stylesBase.H5Strong, { color: colors.ink500, }]}>{itemSite.name}</Text>
+                                <Text numberOfLines={2} style={[stylesBase.P1, { color: colors.ink400 }]}>{itemSite.address}</Text>
                             </View>
                         </TouchableOpacity>
                     </View>
                 </View>
 
                 {/* Dịch vụ */}
-                <View style={{ backgroundColor: colors.white, marginTop: 12 }}>
-                    <View style={{ margin: 16 }}>
+                <View style={{ backgroundColor: colors.white, marginTop: 12, padding: 16 }}>
+                    <View style={{ flex: 1 }}>
                         <View style={{ flexDirection: 'row', justifyContent: "space-between", alignItems: 'center' }}>
                             <Text style={[stylesBase.H4Strong, { color: colors.ink500 }]}>Dịch vụ</Text>
                             <TouchableOpacity>
@@ -287,17 +293,17 @@ export default BookingOfflineScreen = () => {
                             <Image
                                 style={{ width: 28, height: 28 }}
                                 source={require('../../../images/ic_handle_heart.png')} resizeMode="stretch" />
-                            <View style={{ marginStart: 12 }}>
-                                <Text numberOfLines={1} style={[stylesBase.H5Strong, { color: colors.ink500 }]}>Tư vấn sức khỏe chung</Text>
-                                <Text numberOfLines={2} style={[stylesBase.P1, { color: colors.ink400 }]}>Tư vấn sức khỏe tổng quan cùng Bác sĩ - Chuyên viên nội tiết tổng quát qua Video Call</Text>
+                            <View style={{ flex: 1, marginStart: 12 }}>
+                                <Text style={[stylesBase.H5Strong, { color: colors.ink500 }]}>{itemAppointmentService.name}</Text>
+                                <Text numberOfLines={2} style={[stylesBase.P1, { color: colors.ink400 }]}>{itemAppointmentService.description}</Text>
                             </View>
                         </TouchableOpacity>
                     </View>
                 </View>
 
                 {/* Chọn ngày thực hiện dịch vụ */}
-                <View style={{ backgroundColor: colors.white, marginTop: 12 }}>
-                    <View style={{ margin: 16 }}>
+                <View style={{ backgroundColor: colors.white, marginTop: 12, padding: 16 }}>
+                    <View style={{ flex: 1 }}>
                         <View style={{ flexDirection: 'row' }}>
                             <Text style={[stylesBase.H4Strong, { color: colors.ink500 }]}>Chọn ngày thực hiện dịch vụ</Text>
                         </View>
@@ -352,8 +358,8 @@ export default BookingOfflineScreen = () => {
                 </View>
 
                 {/* Giờ khám mong muốn */}
-                <View style={{ backgroundColor: colors.white, marginTop: 12 }}>
-                    <View style={{ margin: 16 }}>
+                <View style={{ backgroundColor: colors.white, marginTop: 12, padding: 16 }}>
+                    <View style={{ flex: 1 }}>
                         <Text style={[stylesBase.H4Strong, { color: colors.ink500 }]}>Giờ khám mong muốn</Text>
                         <View style={{ flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: colors.white, marginTop: 16 }}>
                             {dataListDoctorTimeTable && (
@@ -370,8 +376,8 @@ export default BookingOfflineScreen = () => {
                 </View>
 
                 {/* Khuyến mại */}
-                <View style={{ backgroundColor: colors.white, marginTop: 12 }}>
-                    <View style={{ margin: 16 }}>
+                <View style={{ backgroundColor: colors.white, marginTop: 12, padding: 16 }}>
+                    <View style={{ flex: 1 }}>
                         <Text style={[stylesBase.H4Strong, { color: colors.ink500 }]}>Khuyến mại</Text>
                         <TouchableOpacity style={{ flexDirection: 'row', marginTop: 12, borderWidth: 1, borderColor: colors.sLine, borderRadius: 8, alignItems: 'center' }}>
                             <Image
