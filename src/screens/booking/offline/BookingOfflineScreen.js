@@ -15,14 +15,17 @@ const windowHeight = Dimensions.get('window').height;
 export default BookingOfflineScreen = () => {
     const navigation = useNavigation();
     const dispatch = useDispatch();
+    const [selectedDate, setSelectedDate] = useState(new Date());
+    const [showDatePicker, setShowDatePicker] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
     const [loadingMore, setLoadingMore] = useState(false);
     const [currentPage, setCurrentPage] = useState(0);
     const [dataListDoctor, setDataListDoctor] = useState([]);
-    const [selectedDate, setSelectedDate] = useState(new Date());
-    const [showDatePicker, setShowDatePicker] = useState(false);
-    const [selectedItemIndex, setSelectedItemIndex] = useState(null);
+    const [dataListDoctorTimeTable, setDataListDoctorTimeTable] = useState([]);
+    const [selectedDoctorIndex, setSelectedDoctorIndex] = useState(null);
+    const [selectedDoctorTimeTableIndex, setSelectedDoctorTimeTableIndex] = useState(null);
     const doctorList = useSelector((state) => state.doctorReducer.doctorList)
+    const doctorTimeTable = useSelector((state) => state.doctorTimeTableReducer.doctorTimeTable)
     const itemAppointmentService = useSelector((state) => state.itemAppointmentServiceReducer.selectedItemAppointmentService)
     const itemPatientRecord = useSelector((state) => state.itemPatientRecordReducer.selectedItemPatientRecord)
     const itemSite = useSelector((state) => state.itemSiteReducer.selectedItemSite)
@@ -52,6 +55,7 @@ export default BookingOfflineScreen = () => {
         const isVietnam = itemPatientRecord === null || itemPatientRecord.patient_record.patient_ethic !== "55";
         // chuyển ngày sinh
         const formattedSelectedDate = formatISODateToServerDate(selectedDate)
+        await console.log("==> formattedSelectedDate:", formattedSelectedDate);
 
         const response = await getDoctorListDatLich(false, itemSite.code, itemAppointmentService.supported_specialization, formattedSelectedDate, itemAppointmentService.code, isVietnam, 0, 50, (action) => {
             dispatch(action);
@@ -82,7 +86,27 @@ export default BookingOfflineScreen = () => {
         setShowDatePicker(false);
         if (date !== undefined) {
             setSelectedDate(date);
+            loadDoctorListByDate(date); // Thay đổi này sẽ gọi hàm tải danh sách bác sĩ lại khi ngày thay đổi
         }
+    };
+
+    const loadDoctorListByDate = async (selectedDate) => {
+        setRefreshing(true);
+
+        // Kiểm tra xem là việt nam hay không
+        const isVietnam = itemPatientRecord === null || itemPatientRecord.patient_record.patient_ethic !== "55";
+
+        // Chuyển ngày sinh
+        const formattedSelectedDate = formatISODateToServerDate(selectedDate);
+        await console.log("==> formattedSelectedDate-loadDoctorListByDate:", formattedSelectedDate);
+
+        const response = await getDoctorListDatLich(false, itemSite.code, itemAppointmentService.supported_specialization, formattedSelectedDate, itemAppointmentService.code, isVietnam, 0, 50, (action) => {
+            dispatch(action);
+        });
+
+        setDataListDoctor(response.content_page);
+        setCurrentPage(0);
+        setRefreshing(false);
     };
 
     const fetchDoctorTimeTable = async (doctorCode) => {
@@ -92,16 +116,14 @@ export default BookingOfflineScreen = () => {
             const response = await getDoctorTimeTable(doctorCode, formattedSelectedDate, (action) => {
                 dispatch(action);
             });
-
-            // Cập nhật dữ liệu về giờ khám mong muốn sau khi gọi API
-            // Cập nhật state hoặc dữ liệu tương tự tùy theo cách bạn quản lý dữ liệu.
+            setDataListDoctorTimeTable(response.time_table_period)
         } catch (error) {
             console.error('Error fetching doctor time table:', error);
         }
     };
 
     const handleItemDoctorPress = (index) => {
-        setSelectedItemIndex(index);
+        setSelectedDoctorIndex(index);
 
         // Lấy mã bác sĩ từ dataListDoctor tương ứng với index
         const selectedDoctorCode = dataListDoctor[index]?.doctor_code;
@@ -115,7 +137,7 @@ export default BookingOfflineScreen = () => {
     const keyExtractor = (item, index) => `${item.id}_${index}`;
 
     const renderItem = ({ item, index }) => {
-        const isSelected = index === selectedItemIndex;
+        const isSelected = index === selectedDoctorIndex;
 
         return (
             <View style={{ backgroundColor: colors.white, marginBottom: 12 }}>
@@ -131,6 +153,31 @@ export default BookingOfflineScreen = () => {
             </View >
         );
     };
+
+    // ------------------------------------------------------------------[ DoctorTimeTable ]--------------------------------------------------------------------------- \\
+    const handleItemDoctorTimeTablePress = (item) => {
+        setSelectedDoctorTimeTableIndex(item);
+        console.log("==> item", item);
+    };
+
+    const keyExtractorDoctorTimeTable = (item, index) => `${item.id}_${index}`;
+
+    const renderDoctorTimeTable = ({ item, index }) => {
+        const isSelected = item === selectedDoctorTimeTableIndex;
+
+        return (
+            <View style={{ backgroundColor: colors.white, marginBottom: 12 }}>
+                <TouchableOpacity
+                    style={[styles.itemTimeTableContainer, isSelected && styles.selectedItemTimeTable,]}
+                    onPress={() => handleItemDoctorTimeTablePress(item)}>
+                    {isSelected
+                        ? <Text style={[stylesBase.H5, { color: colors.white }]}>{item.time_table_id}</Text>
+                        : <Text style={[stylesBase.H5, { color: colors.ink500 }]}>{item.time_table_id}</Text>}
+                </TouchableOpacity>
+            </View >
+        );
+    };
+    // ---------------------------------------------------------------------------------------------------------------------------------------------------------------- \\
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: colors.sBackground }}>
@@ -261,7 +308,7 @@ export default BookingOfflineScreen = () => {
                             <DateTimePicker
                                 value={selectedDate}
                                 mode="date"
-                                maximumDate={new Date()}
+                                minimumDate={new Date()}
                                 display="default"
                                 onChange={handleDateChange} />
                         )}
@@ -303,7 +350,17 @@ export default BookingOfflineScreen = () => {
                 <View style={{ backgroundColor: colors.white, marginTop: 12 }}>
                     <View style={{ margin: 16 }}>
                         <Text style={[stylesBase.H4Strong, { color: colors.ink500 }]}>Giờ khám mong muốn</Text>
-
+                        <View style={{ flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: colors.white, marginTop: 16 }}>
+                            {dataListDoctorTimeTable && (
+                                <FlatList
+                                    data={dataListDoctorTimeTable}
+                                    horizontal
+                                    style={{ width: windowWidth - 32 }}
+                                    renderItem={renderDoctorTimeTable}
+                                    keyExtractor={keyExtractorDoctorTimeTable}
+                                />
+                            )}
+                        </View>
                     </View>
                 </View>
 
@@ -322,5 +379,19 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderRadius: 8,
         borderColor: colors.primary,
+    },
+    itemTimeTableContainer: {
+        paddingTop: 8,
+        paddingBottom: 8,
+        paddingStart: 28,
+        paddingEnd: 28,
+        alignItems: 'center',
+        borderWidth: 1,
+        borderColor: colors.sLine,
+        borderRadius: 8,
+        marginEnd: 12,
+    },
+    selectedItemTimeTable: {
+        backgroundColor: colors.primary,
     },
 });
