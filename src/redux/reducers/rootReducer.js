@@ -1,13 +1,16 @@
 import { combineReducers } from "redux";
 import infoReducer from './infoReducer';
 import patientRecordReducer from "./patientRecordReducer"
-import itemPatientRecordReducer from './itemPatientRecordReducer'
 import siteReducer from './siteReducer'
-import itemSiteReducer from './itemSiteReducer'
 import appointmentServiceReducer from './appointmentServiceReducer'
-import itemAppointmentServiceReducer from './itemAppointmentServiceReducer'
 import doctorReducer from './doctorReducer'
 import doctorTimeTableReducer from './doctorTimeTableReducer'
+import calculateFeeReducer from './calculateFeeReducer'
+import itemPatientRecordReducer from './itemPatientRecordReducer'
+import itemSiteReducer from './itemSiteReducer'
+import itemAppointmentServiceReducer from './itemAppointmentServiceReducer'
+import itemDoctorReducer from './itemDoctorReducer'
+import itemDoctorTimeTableReducer from './itemDoctorTimeTableReducer'
 
 const rootReducer = combineReducers({
     infoReducer,
@@ -18,7 +21,10 @@ const rootReducer = combineReducers({
     appointmentServiceReducer,
     itemAppointmentServiceReducer,
     doctorReducer,
+    itemDoctorReducer,
     doctorTimeTableReducer,
+    calculateFeeReducer,
+    itemDoctorTimeTableReducer,
 })
 
 export default (state, action) => rootReducer(state, action)

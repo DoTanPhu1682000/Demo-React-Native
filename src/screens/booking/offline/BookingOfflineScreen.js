@@ -2,7 +2,7 @@ import React, { Component, useState, useEffect, useRef } from "react";
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, SafeAreaView, Dimensions, ScrollView, Image, FlatList, StatusBar } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from 'react-redux';
-import { getDoctorList, getDoctorListDatLich, getDoctorTimeTable } from '../../../redux/actions/updateAction'
+import { getDoctorListDatLich, getDoctorTimeTable, setSelectedItemDoctor, setSelectedItemDoctorTimeTable, calculateFee } from '../../../redux/actions/updateAction'
 import { formatISODateToServerDate, formatMilisecondsToTime } from '../../../utils/CalendarUtil'
 import { format } from 'date-fns';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -25,6 +25,7 @@ export default BookingOfflineScreen = () => {
     const [dataListDoctorTimeTable, setDataListDoctorTimeTable] = useState([]);
     const [selectedDoctorIndex, setSelectedDoctorIndex] = useState(null);
     const [selectedDoctorTimeTableIndex, setSelectedDoctorTimeTableIndex] = useState(null);
+    const [selectedNote, setSelectedNote] = useState('');
 
     // Redux Selectors
     const doctorList = useSelector((state) => state.doctorReducer.doctorList)
@@ -32,6 +33,8 @@ export default BookingOfflineScreen = () => {
     const itemAppointmentService = useSelector((state) => state.itemAppointmentServiceReducer.selectedItemAppointmentService)
     const itemPatientRecord = useSelector((state) => state.itemPatientRecordReducer.selectedItemPatientRecord)
     const itemSite = useSelector((state) => state.itemSiteReducer.selectedItemSite)
+    const itemDoctor = useSelector((state) => state.itemDoctorReducer.selectedItemDoctor)
+    const itemDoctorTimeTable = useSelector((state) => state.itemDoctorTimeTableReducer.selectedItemDoctorTimeTable)
 
     useEffect(() => {
         console.log("Create BookingOfflineScreen")
@@ -46,9 +49,18 @@ export default BookingOfflineScreen = () => {
     }, [])
 
     const handleTest = async () => {
-        console.log(itemPatientRecord);
+        const isVietnam = itemPatientRecord === null || itemPatientRecord.patient_record.patient_ethic !== "55";
+        const formattedSelectedDate = formatISODateToServerDate(selectedDate)
+        console.log(itemPatientRecord.patient_record);
         console.log(itemSite);
         console.log(itemAppointmentService);
+        console.log(itemDoctor);
+        console.log(itemDoctorTimeTable);
+
+        // const response = await dispatch(calculateFee(itemPatientRecord, itemSite, itemAppointmentService, doctorList, formattedSelectedDate, "", doctorTimeTable, null, null, isVietnam, (action) => {
+        //     dispatch(action);
+        // }))
+        // console.log(response);
     };
 
     const refreshData = async () => {
@@ -117,8 +129,11 @@ export default BookingOfflineScreen = () => {
     // ----------------------------------------------------------------------------------------------------------------------------------------------------- \\
 
     // ------------------------------------------------------------------[ Doctor ]------------------------------------------------------------------------- \\
-    const handleItemDoctorPress = (index, selectedDate) => {
+    const handleItemDoctorPress = async (index, selectedDate) => {
         setSelectedDoctorIndex(index);
+
+        // lưu bác sĩ đã chọn
+        await dispatch(setSelectedItemDoctor(dataListDoctor[index]))
 
         // Lấy mã bác sĩ từ dataListDoctor tương ứng với index
         const selectedDoctorCode = dataListDoctor[index]?.doctor_code;
@@ -165,9 +180,11 @@ export default BookingOfflineScreen = () => {
     // ----------------------------------------------------------------------------------------------------------------------------------------------------- \\
 
     // ------------------------------------------------------------------[ DoctorTimeTable ]---------------------------------------------------------------- \\
-    const handleItemDoctorTimeTablePress = (item) => {
+    const handleItemDoctorTimeTablePress = async (item) => {
         setSelectedDoctorTimeTableIndex(item);
-        console.log("==> item", item);
+
+        // lưu doctorTimeTable đã chọn
+        await dispatch(setSelectedItemDoctorTimeTable(item))
     };
 
     const keyExtractorDoctorTimeTable = (item, index) => `${item.id}_${index}`;
@@ -397,7 +414,7 @@ export default BookingOfflineScreen = () => {
                 </View>
 
                 {/* Triệu chứng* */}
-                <View style={{ backgroundColor: colors.white, marginTop: 12 }}>
+                <View style={{ backgroundColor: colors.white, marginTop: 12, marginBottom: 20 }}>
                     <View style={{ margin: 16 }}>
                         <Text style={[stylesBase.H4Strong, { color: colors.ink500 }]}>Triệu chứng</Text>
                         <TextInput
@@ -408,13 +425,23 @@ export default BookingOfflineScreen = () => {
                             multiline={true}
                             maxLength={1000}
                             numberOfLines={5}
-                        // onChangeText={handleNameChange}
-                        // value={selectedName}
-                        />
+                            onChangeText={setSelectedNote}
+                            value={selectedNote} />
                     </View>
                 </View>
-
             </ScrollView>
+
+            {/* Button Lưu lại */}
+            <View style={{ flexDirection: 'row', backgroundColor: colors.white, paddingStart: 16, paddingEnd: 16, paddingTop: 8, paddingBottom: 8 }}>
+                <View style={{ flex: 1 }}>
+                    <Text style={[stylesBase.P1, { color: colors.ink500 }]}>Tổng tiền</Text>
+                    <Text style={[stylesBase.H3Strong, { color: colors.primary }]}>17.000.000đ</Text>
+                </View>
+                <TouchableOpacity
+                    style={{ flex: 1, backgroundColor: colors.primary, marginStart: 12, borderRadius: 8, alignItems: 'center', justifyContent: 'center' }}>
+                    <Text style={[stylesBase.H5, { color: colors.white }]}>Đặt lịch</Text>
+                </TouchableOpacity>
+            </View>
         </SafeAreaView>
     );
 }
