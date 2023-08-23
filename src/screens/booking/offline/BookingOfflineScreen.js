@@ -99,7 +99,7 @@ export default BookingOfflineScreen = () => {
 
         const isVietnam = itemPatientRecord === null || itemPatientRecord.patient_record.patient_ethic !== "55";
         const formattedSelectedDate = formatISODateToServerDate(selectedDate);
-        await console.log("==> formattedSelectedDate:", formattedSelectedDate);
+        console.log("==> formattedSelectedDate:", formattedSelectedDate);
 
         const response = await getDoctorListDatLich(false, itemSite.code, itemAppointmentService.supported_specialization, formattedSelectedDate, itemAppointmentService.code, isVietnam, 0, 50, (action) => {
             dispatch(action);
@@ -108,11 +108,16 @@ export default BookingOfflineScreen = () => {
         setDataListDoctor(response.content_page);
         setCurrentPage(0);
         setRefreshing(false);
+
+        // Chọn bác sĩ đầu tiên
+        if (response.content_page.length > 0) {
+            handleItemDoctorPress(0, formattedSelectedDate);
+        }
     };
     // ----------------------------------------------------------------------------------------------------------------------------------------------------- \\
 
     // ------------------------------------------------------------------[ Doctor ]------------------------------------------------------------------------- \\
-    const handleItemDoctorPress = (index) => {
+    const handleItemDoctorPress = (index, selectedDate) => {
         setSelectedDoctorIndex(index);
 
         // Lấy mã bác sĩ từ dataListDoctor tương ứng với index
@@ -120,11 +125,11 @@ export default BookingOfflineScreen = () => {
 
         // Gọi hàm fetchDoctorTimeTable để cập nhật dữ liệu giờ khám mong muốn
         if (selectedDoctorCode) {
-            fetchDoctorTimeTable(selectedDoctorCode);
+            fetchDoctorTimeTable(selectedDoctorCode, selectedDate);
         }
     };
 
-    const fetchDoctorTimeTable = async (doctorCode) => {
+    const fetchDoctorTimeTable = async (doctorCode, selectedDate) => {
         try {
             const formattedSelectedDate = formatISODateToServerDate(selectedDate);
 
@@ -147,7 +152,7 @@ export default BookingOfflineScreen = () => {
             <View style={{ backgroundColor: colors.white, marginBottom: 12 }}>
                 <TouchableOpacity
                     style={[styles.itemContainer, isSelected && styles.selectedItem,]}
-                    onPress={() => handleItemDoctorPress(index)}>
+                    onPress={() => handleItemDoctorPress(index, selectedDate)}>
                     <Image
                         style={{ width: 64, height: 64, marginStart: 20, marginEnd: 20, marginTop: 12 }}
                         source={require('../../../images/ic_avatar_doctor.png')}
