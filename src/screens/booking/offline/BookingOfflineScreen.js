@@ -30,6 +30,7 @@ export default BookingOfflineScreen = () => {
     // Redux Selectors
     const doctorList = useSelector((state) => state.doctorReducer.doctorList)
     const doctorTimeTable = useSelector((state) => state.doctorTimeTableReducer.doctorTimeTable)
+    const calculateFeeList = useSelector((state) => state.calculateFeeReducer.calculateFee)
     const itemAppointmentService = useSelector((state) => state.itemAppointmentServiceReducer.selectedItemAppointmentService)
     const itemPatientRecord = useSelector((state) => state.itemPatientRecordReducer.selectedItemPatientRecord)
     const itemSite = useSelector((state) => state.itemSiteReducer.selectedItemSite)
@@ -48,7 +49,7 @@ export default BookingOfflineScreen = () => {
         }
     }, [])
 
-    const handleTest = async () => {
+    const handleTest = () => {
         const isVietnam = itemPatientRecord === null || itemPatientRecord.patient_record.patient_ethic !== "55";
         const formattedSelectedDate = formatISODateToServerDate(selectedDate)
         console.log(itemPatientRecord.patient_record);
@@ -57,10 +58,10 @@ export default BookingOfflineScreen = () => {
         console.log(itemDoctor);
         console.log(itemDoctorTimeTable);
 
-        // const response = await dispatch(calculateFee(itemPatientRecord, itemSite, itemAppointmentService, doctorList, formattedSelectedDate, "", doctorTimeTable, null, null, isVietnam, (action) => {
-        //     dispatch(action);
-        // }))
-        // console.log(response);
+        dispatch(calculateFee(
+            itemPatientRecord.patient_record, itemSite, itemAppointmentService, itemDoctor,
+            formattedSelectedDate, "", itemDoctorTimeTable, null, null, isVietnam
+        ))
     };
 
     const refreshData = async () => {
@@ -91,6 +92,12 @@ export default BookingOfflineScreen = () => {
             setLoadingMore(false);
         }
     };
+
+    let formattedAmount = '0đ'; // Mặc định là 0đ
+
+    if (calculateFeeList && calculateFeeList.actual_fee) {
+        formattedAmount = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(calculateFeeList.actual_fee);
+    }
 
     // ------------------------------------------------------------------[ Date ]--------------------------------------------------------------------------- \\
     const inputPatientRecordDob = itemPatientRecord.patient_record.patient_dob
@@ -185,6 +192,14 @@ export default BookingOfflineScreen = () => {
 
         // lưu doctorTimeTable đã chọn
         await dispatch(setSelectedItemDoctorTimeTable(item))
+
+        const isVietnam = itemPatientRecord === null || itemPatientRecord.patient_record.patient_ethic !== "55";
+        const formattedSelectedDate = formatISODateToServerDate(selectedDate)
+
+        dispatch(calculateFee(
+            itemPatientRecord.patient_record, itemSite, itemAppointmentService, itemDoctor,
+            formattedSelectedDate, "", item, null, null, isVietnam
+        ))
     };
 
     const keyExtractorDoctorTimeTable = (item, index) => `${item.id}_${index}`;
@@ -435,7 +450,7 @@ export default BookingOfflineScreen = () => {
             <View style={{ flexDirection: 'row', backgroundColor: colors.white, paddingStart: 16, paddingEnd: 16, paddingTop: 8, paddingBottom: 8 }}>
                 <View style={{ flex: 1 }}>
                     <Text style={[stylesBase.P1, { color: colors.ink500 }]}>Tổng tiền</Text>
-                    <Text style={[stylesBase.H3Strong, { color: colors.primary }]}>17.000.000đ</Text>
+                    <Text style={[stylesBase.H3Strong, { color: colors.primary }]}>{formattedAmount}</Text>
                 </View>
                 <TouchableOpacity
                     style={{ flex: 1, backgroundColor: colors.primary, marginStart: 12, borderRadius: 8, alignItems: 'center', justifyContent: 'center' }}>

@@ -396,13 +396,15 @@ export const setSelectedItemDoctorTimeTable = (item) => ({
 });
 
 // calculateFee
-export const calculateFee = async (patientRecord, site, listService, doctor, date, note, timeTable, healthInsuranceCard, promotion, isVN, dispatchCallback) => {
-    try {
-        dispatchCallback({ type: SET_CALCULATE_FEE_REQUEST });
+export const calculateFee = (patientRecord, site, appointmentService, doctor, date, note, timeTable, healthInsuranceCard, promotion, isVN) => {
+    return async (dispatch) => {
+        dispatch({ type: SET_CALCULATE_FEE_REQUEST });
 
         const queryParams = {
             [KEY_LANGUAGE]: getCurrentLanguageCodeByEthic(isVN),
         };
+
+        const listService = [appointmentService]
 
         const item = {
             "appointment_date": date,
@@ -413,22 +415,26 @@ export const calculateFee = async (patientRecord, site, listService, doctor, dat
             "site_name": site.name,
             "site_code": site.code,
             "appointment_type": "OFFLINE",
-            "appointment_used_services": listService,
-            "appointment_insurance": healthInsuranceCard,
-            "appointment_promotions": promotion ? [{ promoCode: promotion.name }] : [],
+            "appointment_used_services": listService.map(service => ({
+                ...service,
+                "service_id": appointmentService.id // Thêm trường service_id
+            })),
+            // "appointment_insurance": healthInsuranceCard,
+            // "appointment_promotions": promotion ? [{ promoCode: promotion.name }] : [],
         };
 
-        console.log(item);
+        try {
+            console.log(item);
 
-        const response = await api.post(`/${Constants.DOCTOR_CALCULATE_FEE}`, item, { params: queryParams })
-        console.log(response.data);
+            const response = await api.post(`/${Constants.DOCTOR_CALCULATE_FEE}`, item, { params: queryParams });
+            console.log(response.data);
 
-        dispatchCallback({ type: SET_CALCULATE_FEE_SUCCESS, payload: response.data });
-        return response.data;
-    } catch (error) {
-        dispatchCallback({ type: SET_CALCULATE_FEE_FAILURE, payload: error });
-        console.log(error)
-    }
+            dispatch({ type: SET_CALCULATE_FEE_SUCCESS, payload: response.data });
+        } catch (error) {
+            dispatch({ type: SET_CALCULATE_FEE_FAILURE, payload: error });
+            console.log(error);
+        }
+    };
 };
 
 // getUserLoginQrCode
