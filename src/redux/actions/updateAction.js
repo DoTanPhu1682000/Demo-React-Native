@@ -12,7 +12,6 @@ import { SET_DOCTOR_REQUEST, SET_DOCTOR_SUCCESS, SET_DOCTOR_FAILURE } from '../r
 import { SET_SELECTED_ITEM_DOCTOR } from '../reducers/itemDoctorReducer'
 import { SET_DOCTOR_TIME_TABLE_REQUEST, SET_DOCTOR_TIME_TABLE_SUCCESS, SET_DOCTOR_TIME_TABLE_FAILURE } from '../reducers/doctorTimeTableReducer'
 import { SET_SELECTED_ITEM_DOCTOR_TIME_TABLE } from '../reducers/itemDoctorTimeTableReducer'
-import { SET_CALCULATE_FEE_REQUEST, SET_CALCULATE_FEE_SUCCESS, SET_CALCULATE_FEE_FAILURE } from '../reducers/calculateFeeReducer'
 
 const KEY_ACCESS_TOKEN = 'KEY_ACCESS_TOKEN';
 const KEY_REFRESH_TOKEN = 'KEY_REFRESH_TOKEN';
@@ -396,10 +395,8 @@ export const setSelectedItemDoctorTimeTable = (item) => ({
 });
 
 // calculateFee
-export const calculateFee = (patientRecord, site, appointmentService, doctor, date, note, timeTable, healthInsuranceCard, promotion, isVN) => {
-    return async (dispatch) => {
-        dispatch({ type: SET_CALCULATE_FEE_REQUEST });
-
+export const calculateFee = async (patientRecord, site, appointmentService, doctor, date, note, timeTable, healthInsuranceCard, promotion, isVN) => {
+    try {
         const queryParams = {
             [KEY_LANGUAGE]: getCurrentLanguageCodeByEthic(isVN),
         };
@@ -422,18 +419,48 @@ export const calculateFee = (patientRecord, site, appointmentService, doctor, da
             // "appointment_insurance": healthInsuranceCard,
             // "appointment_promotions": promotion ? [{ promoCode: promotion.name }] : [],
         };
+        console.log(item);
 
-        try {
-            console.log(item);
+        const response = await api.post(`/${Constants.DOCTOR_CALCULATE_FEE}`, item, { params: queryParams });
+        console.log(response.data);
 
-            const response = await api.post(`/${Constants.DOCTOR_CALCULATE_FEE}`, item, { params: queryParams });
-            console.log(response.data);
+        return response.data;
+    }
+    catch (error) {
+        console.log('==> Error calculateFee:', error);
+    }
+};
 
-            dispatch({ type: SET_CALCULATE_FEE_SUCCESS, payload: response.data });
-        } catch (error) {
-            dispatch({ type: SET_CALCULATE_FEE_FAILURE, payload: error });
-            console.log(error);
-        }
+// checkAppointmentExisted
+export const checkAppointmentExisted = async (patientRecord, site, appointmentService, doctor, date, note, timeTable, healthInsuranceCard, promotion) => {
+    try {
+        const listService = [appointmentService]
+
+        const item = {
+            "appointment_date": date,
+            "symptoms": note,
+            "time_table_period": timeTable,
+            "patient_record": patientRecord,
+            "doctor": doctor,
+            "site_name": site.name,
+            "site_code": site.code,
+            "appointment_type": "OFFLINE",
+            "appointment_used_services": listService.map(service => ({
+                ...service,
+                "service_id": appointmentService.id // Thêm trường service_id
+            })),
+            // "appointment_insurance": healthInsuranceCard,
+            // "appointment_promotions": promotion ? [{ promoCode: promotion.name }] : [],
+        };
+        console.log(item);
+
+        const response = await api.post(`/${Constants.DOCTOR_APPOINTMENT_CHECK_EXISTED}`, item);
+        console.log(response.data);
+
+        return response.data;
+    }
+    catch (error) {
+        console.log('==> Error checkAppointmentExisted:', error);
     };
 };
 

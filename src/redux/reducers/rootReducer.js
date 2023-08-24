@@ -5,7 +5,6 @@ import siteReducer from './siteReducer'
 import appointmentServiceReducer from './appointmentServiceReducer'
 import doctorReducer from './doctorReducer'
 import doctorTimeTableReducer from './doctorTimeTableReducer'
-import calculateFeeReducer from './calculateFeeReducer'
 import itemPatientRecordReducer from './itemPatientRecordReducer'
 import itemSiteReducer from './itemSiteReducer'
 import itemAppointmentServiceReducer from './itemAppointmentServiceReducer'
@@ -15,15 +14,14 @@ import itemDoctorTimeTableReducer from './itemDoctorTimeTableReducer'
 const rootReducer = combineReducers({
     infoReducer,
     patientRecordReducer,
-    itemPatientRecordReducer,
     siteReducer,
-    itemSiteReducer,
     appointmentServiceReducer,
-    itemAppointmentServiceReducer,
     doctorReducer,
-    itemDoctorReducer,
     doctorTimeTableReducer,
-    calculateFeeReducer,
+    itemPatientRecordReducer,
+    itemSiteReducer,
+    itemAppointmentServiceReducer,
+    itemDoctorReducer,
     itemDoctorTimeTableReducer,
 })
 

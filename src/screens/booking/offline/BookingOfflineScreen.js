@@ -2,7 +2,7 @@ import React, { Component, useState, useEffect, useRef } from "react";
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, SafeAreaView, Dimensions, ScrollView, Image, FlatList, StatusBar } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from 'react-redux';
-import { getDoctorListDatLich, getDoctorTimeTable, setSelectedItemDoctor, setSelectedItemDoctorTimeTable, calculateFee } from '../../../redux/actions/updateAction'
+import { getDoctorListDatLich, getDoctorTimeTable, setSelectedItemDoctor, setSelectedItemDoctorTimeTable, calculateFee, checkAppointmentExisted } from '../../../redux/actions/updateAction'
 import { formatISODateToServerDate, formatMilisecondsToTime } from '../../../utils/CalendarUtil'
 import { format } from 'date-fns';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -23,14 +23,13 @@ export default BookingOfflineScreen = () => {
     const [currentPage, setCurrentPage] = useState(0);
     const [dataListDoctor, setDataListDoctor] = useState([]);
     const [dataListDoctorTimeTable, setDataListDoctorTimeTable] = useState([]);
+    const [dataCalculateFee, setDataCalculateFee] = useState();
     const [selectedDoctorIndex, setSelectedDoctorIndex] = useState(null);
     const [selectedDoctorTimeTableIndex, setSelectedDoctorTimeTableIndex] = useState(null);
     const [selectedNote, setSelectedNote] = useState('');
 
     // Redux Selectors
     const doctorList = useSelector((state) => state.doctorReducer.doctorList)
-    const doctorTimeTable = useSelector((state) => state.doctorTimeTableReducer.doctorTimeTable)
-    const calculateFeeList = useSelector((state) => state.calculateFeeReducer.calculateFee)
     const itemAppointmentService = useSelector((state) => state.itemAppointmentServiceReducer.selectedItemAppointmentService)
     const itemPatientRecord = useSelector((state) => state.itemPatientRecordReducer.selectedItemPatientRecord)
     const itemSite = useSelector((state) => state.itemSiteReducer.selectedItemSite)
@@ -50,25 +49,18 @@ export default BookingOfflineScreen = () => {
     }, [])
 
     const handleTest = () => {
-        const isVietnam = itemPatientRecord === null || itemPatientRecord.patient_record.patient_ethic !== "55";
-        const formattedSelectedDate = formatISODateToServerDate(selectedDate)
         console.log(itemPatientRecord.patient_record);
         console.log(itemSite);
         console.log(itemAppointmentService);
         console.log(itemDoctor);
         console.log(itemDoctorTimeTable);
-
-        dispatch(calculateFee(
-            itemPatientRecord.patient_record, itemSite, itemAppointmentService, itemDoctor,
-            formattedSelectedDate, "", itemDoctorTimeTable, null, null, isVietnam
-        ))
     };
+
+    const isVietnam = itemPatientRecord === null || itemPatientRecord.patient_record.patient_ethic !== "55";
+    const formattedSelectedDate = formatISODateToServerDate(selectedDate)
 
     const refreshData = async () => {
         setRefreshing(true);
-
-        const isVietnam = itemPatientRecord === null || itemPatientRecord.patient_record.patient_ethic !== "55";
-        const formattedSelectedDate = formatISODateToServerDate(selectedDate)
 
         const response = await getDoctorListDatLich(false, itemSite.code, itemAppointmentService.supported_specialization, formattedSelectedDate, itemAppointmentService.code, isVietnam, 0, 50, (action) => {
             dispatch(action);
@@ -95,8 +87,20 @@ export default BookingOfflineScreen = () => {
 
     let formattedAmount = '0đ'; // Mặc định là 0đ
 
-    if (calculateFeeList && calculateFeeList.actual_fee) {
-        formattedAmount = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(calculateFeeList.actual_fee);
+    if (dataCalculateFee && dataCalculateFee.actual_fee) {
+        formattedAmount = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(dataCalculateFee.actual_fee);
+    }
+
+    const handleDatLich = () => {
+        checkAppointmentExisted(itemPatientRecord.patient_record, itemSite, itemAppointmentService, itemDoctor, formattedSelectedDate, "", itemDoctorTimeTable, null, null)
+            .then(async (response) => {
+                if (response !== null) {
+                    console.log("==> checkAppointmentExisted:", response);
+                }
+            })
+            .catch((error) => {
+                console.log('==> Error checkAppointmentExisted:', error);
+            });
     }
 
     // ------------------------------------------------------------------[ Date ]--------------------------------------------------------------------------- \\
@@ -116,7 +120,6 @@ export default BookingOfflineScreen = () => {
     const loadDoctorListByDate = async (selectedDate) => {
         setRefreshing(true);
 
-        const isVietnam = itemPatientRecord === null || itemPatientRecord.patient_record.patient_ethic !== "55";
         const formattedSelectedDate = formatISODateToServerDate(selectedDate);
         console.log("==> formattedSelectedDate:", formattedSelectedDate);
 
@@ -133,7 +136,6 @@ export default BookingOfflineScreen = () => {
             handleItemDoctorPress(0, formattedSelectedDate);
         }
     };
-    // ----------------------------------------------------------------------------------------------------------------------------------------------------- \\
 
     // ------------------------------------------------------------------[ Doctor ]------------------------------------------------------------------------- \\
     const handleItemDoctorPress = async (index, selectedDate) => {
@@ -141,6 +143,9 @@ export default BookingOfflineScreen = () => {
 
         // lưu bác sĩ đã chọn
         await dispatch(setSelectedItemDoctor(dataListDoctor[index]))
+
+        // Đặt lại giá trị của dataCalculateFee thành null để xóa số tiền
+        setDataCalculateFee(null);
 
         // Lấy mã bác sĩ từ dataListDoctor tương ứng với index
         const selectedDoctorCode = dataListDoctor[index]?.doctor_code;
@@ -184,7 +189,6 @@ export default BookingOfflineScreen = () => {
             </View >
         );
     };
-    // ----------------------------------------------------------------------------------------------------------------------------------------------------- \\
 
     // ------------------------------------------------------------------[ DoctorTimeTable ]---------------------------------------------------------------- \\
     const handleItemDoctorTimeTablePress = async (item) => {
@@ -193,13 +197,15 @@ export default BookingOfflineScreen = () => {
         // lưu doctorTimeTable đã chọn
         await dispatch(setSelectedItemDoctorTimeTable(item))
 
-        const isVietnam = itemPatientRecord === null || itemPatientRecord.patient_record.patient_ethic !== "55";
-        const formattedSelectedDate = formatISODateToServerDate(selectedDate)
-
-        dispatch(calculateFee(
-            itemPatientRecord.patient_record, itemSite, itemAppointmentService, itemDoctor,
-            formattedSelectedDate, "", item, null, null, isVietnam
-        ))
+        calculateFee(itemPatientRecord.patient_record, itemSite, itemAppointmentService, itemDoctor, formattedSelectedDate, "", item, null, null, isVietnam)
+            .then(async (response) => {
+                if (response !== null) {
+                    setDataCalculateFee(response)
+                }
+            })
+            .catch((error) => {
+                console.log('==> Error calculateFee:', error);
+            });
     };
 
     const keyExtractorDoctorTimeTable = (item, index) => `${item.id}_${index}`;
@@ -453,7 +459,8 @@ export default BookingOfflineScreen = () => {
                     <Text style={[stylesBase.H3Strong, { color: colors.primary }]}>{formattedAmount}</Text>
                 </View>
                 <TouchableOpacity
-                    style={{ flex: 1, backgroundColor: colors.primary, marginStart: 12, borderRadius: 8, alignItems: 'center', justifyContent: 'center' }}>
+                    style={{ flex: 1, backgroundColor: colors.primary, marginStart: 12, borderRadius: 8, alignItems: 'center', justifyContent: 'center' }}
+                    onPress={() => handleDatLich()}>
                     <Text style={[stylesBase.H5, { color: colors.white }]}>Đặt lịch</Text>
                 </TouchableOpacity>
             </View>
