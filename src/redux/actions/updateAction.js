@@ -464,6 +464,39 @@ export const checkAppointmentExisted = async (patientRecord, site, appointmentSe
     };
 };
 
+// createAppointment
+export const createAppointment = async (patientRecord, site, appointmentService, doctor, date, note, timeTable, healthInsuranceCard, promotion) => {
+    try {
+        const listService = [appointmentService]
+
+        const item = {
+            "appointment_date": date,
+            "symptoms": note,
+            "time_table_period": timeTable,
+            "patient_record": patientRecord,
+            "doctor": doctor,
+            "site_name": site.name,
+            "site_code": site.code,
+            "appointment_type": "OFFLINE",
+            "appointment_used_services": listService.map(service => ({
+                ...service,
+                "service_id": appointmentService.id // Thêm trường service_id
+            })),
+            // "appointment_insurance": healthInsuranceCard,
+            // "appointment_promotions": promotion ? [{ promoCode: promotion.name }] : [],
+        };
+        console.log(item);
+
+        const response = await api.post(`/${Constants.DOCTOR_APPOINTMENT}`, item);
+        console.log(response.data);
+
+        return response.data;
+    }
+    catch (error) {
+        console.log('==> Error createAppointment:', error);
+    };
+};
+
 // getUserLoginQrCode
 export const getUserLoginQrCode = () => {
     return async (dispatch) => {

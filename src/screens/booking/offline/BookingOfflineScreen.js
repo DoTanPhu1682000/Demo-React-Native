@@ -2,10 +2,11 @@ import React, { Component, useState, useEffect, useRef } from "react";
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, SafeAreaView, Dimensions, ScrollView, Image, FlatList, StatusBar } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from 'react-redux';
-import { getDoctorListDatLich, getDoctorTimeTable, setSelectedItemDoctor, setSelectedItemDoctorTimeTable, calculateFee, checkAppointmentExisted } from '../../../redux/actions/updateAction'
+import { getDoctorListDatLich, getDoctorTimeTable, setSelectedItemDoctor, setSelectedItemDoctorTimeTable, calculateFee, checkAppointmentExisted, createAppointment } from '../../../redux/actions/updateAction'
 import { formatISODateToServerDate, formatMilisecondsToTime } from '../../../utils/CalendarUtil'
 import { format } from 'date-fns';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import BaseDialog from '../../../component/BaseDialog'
 import colors from '../../../configs/colors/colors'
 import stylesBase from '../../../configs/styles/styles'
 
@@ -24,9 +25,11 @@ export default BookingOfflineScreen = () => {
     const [dataListDoctor, setDataListDoctor] = useState([]);
     const [dataListDoctorTimeTable, setDataListDoctorTimeTable] = useState([]);
     const [dataCalculateFee, setDataCalculateFee] = useState();
+    const [dataCreateAppointment, setDataCreateAppointment] = useState();
     const [selectedDoctorIndex, setSelectedDoctorIndex] = useState(null);
     const [selectedDoctorTimeTableIndex, setSelectedDoctorTimeTableIndex] = useState(null);
     const [selectedNote, setSelectedNote] = useState('');
+    const [isDialogVisible, setDialogVisible] = useState(false);
 
     // Redux Selectors
     const doctorList = useSelector((state) => state.doctorReducer.doctorList)
@@ -91,16 +94,43 @@ export default BookingOfflineScreen = () => {
         formattedAmount = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(dataCalculateFee.actual_fee);
     }
 
+    const showDialog = () => {
+        setDialogVisible(true);
+    };
+
+    const closeDialog = () => {
+        setDialogVisible(false);
+    };
+
     const handleDatLich = () => {
-        checkAppointmentExisted(itemPatientRecord.patient_record, itemSite, itemAppointmentService, itemDoctor, formattedSelectedDate, "", itemDoctorTimeTable, null, null)
-            .then(async (response) => {
-                if (response !== null) {
-                    console.log("==> checkAppointmentExisted:", response);
-                }
-            })
-            .catch((error) => {
-                console.log('==> Error checkAppointmentExisted:', error);
-            });
+        // nếu như người dùng chưa chọn thời gian thì sẽ hiện lên thông báo
+        if (dataCalculateFee === null) {
+            console.log('==> Error: dataCalculateFee is null.');
+            return;
+        }
+
+        if (dataCalculateFee.actual_fee > 0) {
+            checkAppointmentExisted(itemPatientRecord.patient_record, itemSite, itemAppointmentService, itemDoctor, formattedSelectedDate, selectedNote.trim(), itemDoctorTimeTable, null, null)
+                .then(async (response) => {
+                    if (response !== null) {
+                        console.log("==> checkAppointmentExisted:", response);
+                    }
+                })
+                .catch((error) => {
+                    console.log('==> Error checkAppointmentExisted:', error);
+                    showDialog();
+                });
+        } else {
+            // createAppointment(itemPatientRecord.patient_record, itemSite, itemAppointmentService, itemDoctor, formattedSelectedDate, selectedNote.trim(), itemDoctorTimeTable, null, null)
+            //     .then(async (response) => {
+            //         if (response !== null) {
+            //             console.log("==> createAppointment:", response);
+            //         }
+            //     })
+            //     .catch((error) => {
+            //         console.log('==> Error createAppointment:', error);
+            //     });
+        }
     }
 
     // ------------------------------------------------------------------[ Date ]--------------------------------------------------------------------------- \\
@@ -197,7 +227,7 @@ export default BookingOfflineScreen = () => {
         // lưu doctorTimeTable đã chọn
         await dispatch(setSelectedItemDoctorTimeTable(item))
 
-        calculateFee(itemPatientRecord.patient_record, itemSite, itemAppointmentService, itemDoctor, formattedSelectedDate, "", item, null, null, isVietnam)
+        calculateFee(itemPatientRecord.patient_record, itemSite, itemAppointmentService, itemDoctor, formattedSelectedDate, selectedNote.trim(), item, null, null, isVietnam)
             .then(async (response) => {
                 if (response !== null) {
                     setDataCalculateFee(response)
@@ -445,7 +475,7 @@ export default BookingOfflineScreen = () => {
                             placeholderTextColor={colors.ink200}
                             multiline={true}
                             maxLength={1000}
-                            numberOfLines={5}
+                            numberOfLines={2}
                             onChangeText={setSelectedNote}
                             value={selectedNote} />
                     </View>
@@ -464,6 +494,14 @@ export default BookingOfflineScreen = () => {
                     <Text style={[stylesBase.H5, { color: colors.white }]}>Đặt lịch</Text>
                 </TouchableOpacity>
             </View>
+
+            <BaseDialog
+                visible={isDialogVisible}
+                title="Thông báo"
+                content="Lịch khám đã tồn tại với hồ sơ này, vui lòng hủy hoặc hoàn thành trước khi đặt lịch mới"
+                confirmText="Đóng"
+                onClose={closeDialog}
+            />
         </SafeAreaView>
     );
 }
