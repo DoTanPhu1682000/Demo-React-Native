@@ -82,11 +82,19 @@ export default BookingOfflineScreen = () => {
                 dispatch(action);
             });
             setCurrentPage(nextPage);
-            setDataList((prevDataList) => [...prevDataList, ...response.content_page]);
+            setDataListDoctor((prevDataList) => [...prevDataList, ...response.content_page]);
             console.log(" ==> dataListDoctor:", [...dataList, ...response.content_page]);
             setLoadingMore(false);
         }
     };
+
+    useEffect(() => {
+        console.log("dataListDoctor has changed:", dataListDoctor);
+        // Chọn bác sĩ đầu tiên
+        if (dataListDoctor.length > 0) {
+            handleItemDoctorPress(0, formattedSelectedDate);
+        }
+    }, [dataListDoctor]);
 
     let formattedAmount = '0đ'; // Mặc định là 0đ
 
@@ -109,6 +117,8 @@ export default BookingOfflineScreen = () => {
             return;
         }
 
+        // nếu số tiền thanh toán > 0 thì kiểm tra Hồ sơ khám có tồn lại Lịch khám nào không, nếu ok thì chuyển sang trang thanh toán
+        // ngược lại: tạo lịch khám và tạo Order
         if (dataCalculateFee.actual_fee > 0) {
             checkAppointmentExisted(itemPatientRecord.patient_record, itemSite, itemAppointmentService, itemDoctor, formattedSelectedDate, selectedNote.trim(), itemDoctorTimeTable, null, null)
                 .then(async (response) => {
@@ -160,11 +170,6 @@ export default BookingOfflineScreen = () => {
         setDataListDoctor(response.content_page);
         setCurrentPage(0);
         setRefreshing(false);
-
-        // Chọn bác sĩ đầu tiên
-        if (response.content_page.length > 0) {
-            handleItemDoctorPress(0, formattedSelectedDate);
-        }
     };
 
     // ------------------------------------------------------------------[ Doctor ]------------------------------------------------------------------------- \\
