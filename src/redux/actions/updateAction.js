@@ -497,6 +497,41 @@ export const createAppointment = async (patientRecord, site, appointmentService,
     };
 };
 
+// order
+export const order = async (patientRecord, site, appointmentService, key, appointmentPrice, date, isVN) => {
+    try {
+        const queryParams = {
+            [KEY_LANGUAGE]: getCurrentLanguageCodeByEthic(isVN),
+        };
+
+        const listService = [appointmentService]
+
+        const item = {
+            "customer_name": patientRecord.patient_name,
+            "customer_phone": patientRecord.patient_phone_number,
+            "customer_address": patientRecord.patient_address,
+            "customer_email": patientRecord.patient_email,
+            "order_type": "APPT",
+            "ref_key": key,
+            "total_amounts": appointmentPrice.actual_fee,
+            "discount_amounts": appointmentPrice.discount,
+            "real_amounts": appointmentPrice.total_fee,
+            "site_name": site.name,
+            "site_code": site.code,
+            "description": `Thanh toan lich hen - ${listService[0].note} - ${date}`,
+        };
+        console.log(item);
+
+        const response = await api.post(`/${Constants.PATIENT_ORDER}`, item, { params: queryParams });
+        console.log(response.data);
+
+        return response.data;
+    }
+    catch (error) {
+        console.log('==> Error order:', error);
+    };
+};
+
 // getUserLoginQrCode
 export const getUserLoginQrCode = () => {
     return async (dispatch) => {

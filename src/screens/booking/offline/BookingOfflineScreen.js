@@ -2,11 +2,12 @@ import React, { Component, useState, useEffect, useRef } from "react";
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, SafeAreaView, Dimensions, ScrollView, Image, FlatList, StatusBar } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from 'react-redux';
-import { getDoctorListDatLich, getDoctorTimeTable, setSelectedItemDoctor, setSelectedItemDoctorTimeTable, calculateFee, checkAppointmentExisted, createAppointment } from '../../../redux/actions/updateAction'
-import { formatISODateToServerDate, formatMilisecondsToTime } from '../../../utils/CalendarUtil'
+import { getDoctorListDatLich, getDoctorTimeTable, setSelectedItemDoctor, setSelectedItemDoctorTimeTable, calculateFee, checkAppointmentExisted, createAppointment, order } from '../../../redux/actions/updateAction'
+import { formatDate, formatISODateToServerDate, formatMilisecondsToTime } from '../../../utils/CalendarUtil'
 import { format } from 'date-fns';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import BaseDialog from '../../../component/BaseDialog'
+import ConfirmationBottomSheet from '../../../component/ConfirmationBottomSheet'
 import colors from '../../../configs/colors/colors'
 import stylesBase from '../../../configs/styles/styles'
 
@@ -143,15 +144,24 @@ export default BookingOfflineScreen = () => {
                     showDialog();
                 });
         } else {
-            // createAppointment(itemPatientRecord.patient_record, itemSite, itemAppointmentService, itemDoctor, formattedSelectedDate, selectedNote.trim(), itemDoctorTimeTable, null, null)
-            //     .then(async (response) => {
-            //         if (response !== null) {
-            //             console.log("==> createAppointment:", response);
-            //         }
-            //     })
-            //     .catch((error) => {
-            //         console.log('==> Error createAppointment:', error);
-            //     });
+            createAppointment(itemPatientRecord.patient_record, itemSite, itemAppointmentService, itemDoctor, formattedSelectedDate, selectedNote.trim(), itemDoctorTimeTable, null, null)
+                .then(async (response) => {
+                    if (response !== null) {
+                        const formattedDate = formatDate(response.appointment_date);
+                        order(itemPatientRecord.patient_record, itemSite, itemAppointmentService, response.key, dataCalculateFee, formattedDate, isVietnam)
+                            .then(async (response) => {
+                                if (response !== null) {
+                                    console.log("==> order thành công");
+                                }
+                            })
+                            .catch((error) => {
+                                console.log('==> Error order:', error);
+                            });
+                    }
+                })
+                .catch((error) => {
+                    console.log('==> Error createAppointment:', error);
+                });
         }
     }
 
