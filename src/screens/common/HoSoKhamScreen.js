@@ -1,6 +1,6 @@
 import React, { Component, useState, useEffect } from "react";
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, SafeAreaView, Dimensions, ScrollView, Image, FlatList, StatusBar } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { useDispatch, useSelector } from 'react-redux';
 import { getPatientRecord, getPatientRecordDefault, setSelectedItemPatientRecord } from '../../redux/actions/updateAction'
 import { formatDate } from '../../utils/CalendarUtil'
@@ -12,6 +12,7 @@ const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
 export default HoSoKhamScreen = () => {
+    const route = useRoute();
     const navigation = useNavigation();
     const dispatch = useDispatch();
     const patientRecord = useSelector((state) => state.patientRecordReducer.patientRecord)
@@ -40,7 +41,12 @@ export default HoSoKhamScreen = () => {
 
     const handleItemPatientRecord = async (item) => {
         await dispatch(setSelectedItemPatientRecord(item));
-        navigation.navigate('SiteListScreen')
+
+        if (route.params?.fromBookingOfflineScreen) {
+            navigation.navigate('BookingOfflineScreen');
+        } else {
+            navigation.navigate('SiteListScreen')
+        }
     };
 
     const handleItemPress = (item) => {
@@ -135,7 +141,11 @@ export default HoSoKhamScreen = () => {
                 <TouchableOpacity
                     style={{ height: '100%', aspectRatio: 1.5, alignItems: 'center', flexDirection: 'row', marginStart: 12 }}
                     onPress={() => {
-                        navigation.goBack()
+                        if (route.params?.fromBookingOfflineScreen) {
+                            navigation.navigate('BookingOfflineScreen');
+                        } else {
+                            navigation.goBack()
+                        }
                     }}>
                     <Image
                         style={{ width: 24, height: 24, }}

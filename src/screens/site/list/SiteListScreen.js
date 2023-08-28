@@ -1,6 +1,6 @@
 import React, { Component, useState, useEffect, useRef } from "react";
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, SafeAreaView, Dimensions, ScrollView, Image, FlatList, StatusBar } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { useDispatch, useSelector } from 'react-redux';
 import { getSiteList, setSelectedItemSite } from '../../../redux/actions/updateAction'
 import colors from '../../../configs/colors/colors'
@@ -10,6 +10,7 @@ const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
 export default SiteListScreen = () => {
+    const route = useRoute();
     const navigation = useNavigation();
     const dispatch = useDispatch();
     const [refreshing, setRefreshing] = useState(false);
@@ -78,7 +79,12 @@ export default SiteListScreen = () => {
 
     const handlePressItem = async (item) => {
         await dispatch(setSelectedItemSite(item));
-        navigation.navigate('AppointmentServiceScreen')
+
+        if (route.params?.fromBookingOfflineScreen) {
+            navigation.navigate('AppointmentServiceScreen');
+        } else {
+            navigation.navigate('AppointmentServiceScreen')
+        }
     };
 
     const keyExtractor = (item, index) => `${item.id}_${index}`;
@@ -134,7 +140,11 @@ export default SiteListScreen = () => {
                 <TouchableOpacity
                     style={{ height: '100%', aspectRatio: 1.5, alignItems: 'center', flexDirection: 'row', marginStart: 12 }}
                     onPress={() => {
-                        navigation.pop(2)
+                        if (route.params?.fromBookingOfflineScreen) {
+                            navigation.navigate('BookingOfflineScreen');
+                        } else {
+                            navigation.pop(2)
+                        }
                     }}>
                     <Image
                         style={{ width: 24, height: 24, }}

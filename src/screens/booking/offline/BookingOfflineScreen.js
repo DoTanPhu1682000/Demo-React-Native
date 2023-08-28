@@ -102,6 +102,18 @@ export default BookingOfflineScreen = () => {
         formattedAmount = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(dataCalculateFee.actual_fee);
     }
 
+    const handlePatienRecordChange = async () => {
+        navigation.navigate('HoSoKhamScreen', { fromBookingOfflineScreen: true });
+    }
+
+    const handleSiteChange = async () => {
+        navigation.navigate('SiteListScreen', { fromBookingOfflineScreen: true });
+    }
+
+    const handleAppointmentServiceChange = async () => {
+        navigation.navigate('AppointmentServiceScreen', { fromBookingOfflineScreen: true });
+    }
+
     const showDialog = () => {
         setDialogVisible(true);
     };
@@ -297,7 +309,8 @@ export default BookingOfflineScreen = () => {
                     <View style={{ flex: 1 }}>
                         <View style={{ flexDirection: 'row', justifyContent: "space-between", alignItems: 'center' }}>
                             <Text style={[stylesBase.H4Strong, { color: colors.ink500 }]}>Hồ sơ</Text>
-                            <TouchableOpacity>
+                            <TouchableOpacity
+                                onPress={() => handlePatienRecordChange()}>
                                 <Text style={[stylesBase.P1, { color: colors.primaryB500 }]}>Thay hồ sơ</Text>
                             </TouchableOpacity>
                         </View>
@@ -342,7 +355,8 @@ export default BookingOfflineScreen = () => {
                     <View style={{ flex: 1 }}>
                         <View style={{ flexDirection: 'row', justifyContent: "space-between", alignItems: 'center' }}>
                             <Text style={[stylesBase.H4Strong, { color: colors.ink500 }]}>Cơ sở y tế</Text>
-                            <TouchableOpacity>
+                            <TouchableOpacity
+                                onPress={() => handleSiteChange()}>
                                 <Text style={[stylesBase.P1, { color: colors.primaryB500 }]}>Thay đổi</Text>
                             </TouchableOpacity>
                         </View>
@@ -363,7 +377,8 @@ export default BookingOfflineScreen = () => {
                     <View style={{ flex: 1 }}>
                         <View style={{ flexDirection: 'row', justifyContent: "space-between", alignItems: 'center' }}>
                             <Text style={[stylesBase.H4Strong, { color: colors.ink500 }]}>Dịch vụ</Text>
-                            <TouchableOpacity>
+                            <TouchableOpacity
+                                onPress={() => handleAppointmentServiceChange()}>
                                 <Text style={[stylesBase.P1, { color: colors.primaryB500 }]}>Thay đổi</Text>
                             </TouchableOpacity>
                         </View>
@@ -371,10 +386,17 @@ export default BookingOfflineScreen = () => {
                             <Image
                                 style={{ width: 28, height: 28 }}
                                 source={require('../../../images/ic_handle_heart.png')} resizeMode="stretch" />
-                            <View style={{ flex: 1, marginStart: 12 }}>
-                                <Text style={[stylesBase.H5Strong, { color: colors.ink500 }]}>{itemAppointmentService.name}</Text>
-                                <Text numberOfLines={2} style={[stylesBase.P1, { color: colors.ink400 }]}>{itemAppointmentService.description}</Text>
-                            </View>
+                            {itemAppointmentService
+                                ?
+                                <View style={{ flex: 1, marginStart: 12 }}>
+                                    <Text style={[stylesBase.H5Strong, { color: colors.ink500 }]}>{itemAppointmentService.name}</Text>
+                                    <Text numberOfLines={2} style={[stylesBase.P1, { color: colors.ink400 }]}>{itemAppointmentService.description}</Text>
+                                </View>
+                                :
+                                <View style={{ flex: 1, marginStart: 12 }}>
+                                    <Text style={[stylesBase.H5Strong, { color: colors.ink500 }]}>--</Text>
+                                </View>
+                            }
                         </TouchableOpacity>
                     </View>
                 </View>
