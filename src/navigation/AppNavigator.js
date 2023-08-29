@@ -18,6 +18,7 @@ import SiteListScreen from "../screens/site/list/SiteListScreen"
 import AppointmentServiceScreen from "../screens/service/list/AppointmentServiceScreen"
 import AppointmentServiceDetailScreen from "../screens/service/detail/AppointmentServiceDetailScreen"
 import BookingOfflineScreen from "../screens/booking/offline/BookingOfflineScreen"
+import PaymentAppointmentScreen from "../screens/booking/payment/PaymentAppointmentScreen"
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -64,6 +65,7 @@ export default function AppNavigator() {
                     <Stack.Screen name="AppointmentServiceScreen" component={AppointmentServiceScreen} />
                     <Stack.Screen name="AppointmentServiceDetailScreen" component={AppointmentServiceDetailScreen} />
                     <Stack.Screen name="BookingOfflineScreen" component={BookingOfflineScreen} />
+                    <Stack.Screen name="PaymentAppointmentScreen" component={PaymentAppointmentScreen} />
                 </Stack.Navigator>
             </NavigationContainer>
             {/* bắt buộc Toast phải nằm dưới NavigationContainer */}

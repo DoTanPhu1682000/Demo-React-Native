@@ -428,6 +428,7 @@ export const calculateFee = async (patientRecord, site, appointmentService, doct
     }
     catch (error) {
         console.log('==> Error calculateFee:', error);
+        throw error;
     }
 };
 
@@ -461,6 +462,7 @@ export const checkAppointmentExisted = async (patientRecord, site, appointmentSe
     }
     catch (error) {
         console.log('==> Error checkAppointmentExisted:', error);
+        throw error;
     };
 };
 
@@ -494,6 +496,7 @@ export const createAppointment = async (patientRecord, site, appointmentService,
     }
     catch (error) {
         console.log('==> Error createAppointment:', error);
+        throw error;
     };
 };
 
@@ -519,6 +522,7 @@ export const order = async (patientRecord, site, appointmentService, key, appoin
             "site_name": site.name,
             "site_code": site.code,
             "description": `Thanh toan lich hen - ${listService[0].note} - ${date}`,
+            "bank_code": "MOMO",
         };
         console.log(item);
 
@@ -529,6 +533,7 @@ export const order = async (patientRecord, site, appointmentService, key, appoin
     }
     catch (error) {
         console.log('==> Error order:', error);
+        throw error;
     };
 };
 

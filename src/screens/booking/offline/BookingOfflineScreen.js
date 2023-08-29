@@ -121,6 +121,7 @@ export default BookingOfflineScreen = () => {
 
     const closeDialog = () => {
         setDialogVisible(false);
+        refreshData();
     };
 
     const handleDatLich = () => {
@@ -136,11 +137,11 @@ export default BookingOfflineScreen = () => {
             checkAppointmentExisted(itemPatientRecord.patient_record, itemSite, itemAppointmentService, itemDoctor, formattedSelectedDate, selectedNote.trim(), itemDoctorTimeTable, null, null)
                 .then(async (response) => {
                     if (response !== null) {
-                        console.log("==> checkAppointmentExisted:", response);
+                        console.log("==> Không có lịch khám nào");
+                        navigation.navigate('PaymentAppointmentScreen', { dataCalculateFee, selectedNote: selectedNote.trim(), formattedSelectedDate: formattedSelectedDate });
                     }
                 })
                 .catch((error) => {
-                    console.log('==> Error checkAppointmentExisted:', error);
                     showDialog();
                 });
         } else {
@@ -160,7 +161,7 @@ export default BookingOfflineScreen = () => {
                     }
                 })
                 .catch((error) => {
-                    console.log('==> Error createAppointment:', error);
+                    showDialog();
                 });
         }
     }
