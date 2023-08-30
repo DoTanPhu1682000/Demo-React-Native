@@ -1,5 +1,4 @@
 import { combineReducers } from "redux";
-import infoReducer from './infoReducer';
 import patientRecordReducer from "./patientRecordReducer"
 import siteReducer from './siteReducer'
 import appointmentServiceReducer from './appointmentServiceReducer'
@@ -12,7 +11,6 @@ import itemDoctorReducer from './itemDoctorReducer'
 import itemDoctorTimeTableReducer from './itemDoctorTimeTableReducer'
 
 const rootReducer = combineReducers({
-    infoReducer,
     patientRecordReducer,
     siteReducer,
     appointmentServiceReducer,

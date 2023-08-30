@@ -2,7 +2,7 @@ import React, { Component, useState, useEffect } from "react";
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, SafeAreaView, Dimensions, ScrollView, Image, FlatList, StatusBar } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useDispatch, useSelector } from 'react-redux';
-import { updateEmail, login, getRefreshToken, getHomeNews } from '../../redux/actions/updateAction'
+import { login, getRefreshToken, getHomeNews } from '../../redux/actions/updateAction'
 import Toast from 'react-native-toast-message';
 import colors from '../../configs/colors/colors'
 import stylesBase from '../../configs/styles/styles'
@@ -14,7 +14,6 @@ export default HomeScreen = () => {
     // Hooks and State
     const navigation = useNavigation()
     const dispatch = useDispatch()
-    const [email, onChangeEmail] = React.useState("")
     const [refreshing, setRefreshing] = useState(false);
     const [dataListNews, setDataListNews] = useState([]);
 
@@ -39,7 +38,7 @@ export default HomeScreen = () => {
         await getHomeNews()
             .then(async (response) => {
                 if (response !== null) {
-                    setDataListNews(response)
+                    setDataListNews(response.news)
                 }
             })
 
@@ -81,22 +80,21 @@ export default HomeScreen = () => {
         return (
             <View style={{ backgroundColor: colors.white, borderWidth: 1, borderColor: colors.sLine, borderRadius: 8, marginEnd: 16, padding: 8 }}>
                 <Image
-                    style={{ width: 250, height: 134 }}
+                    style={{ width: 250, height: 134, borderRadius: 8 }}
                     source={imageSource}
                     resizeMode="stretch"
-                    // onError={(error) => {
-                    //     // console.error('Error loading image:', error.nativeEvent.error);
-                    //     // Thay thế ảnh bị lỗi bằng ảnh mặc định trong dataListNews
-                    //     const newDataList = dataListNews.map(dataItem => {
-                    //         if (dataItem.id === item.id) {
-                    //             return { ...dataItem, image_link: defaultAvatarSource.uri };
-                    //         }
-                    //         return dataItem;
-                    //     });
-                    //     setDataListNews(newDataList);
-                    // }}
+                    onError={(error) => {
+                        // Thay thế ảnh bị lỗi bằng ảnh mặc định trong dataListNews
+                        const newDataList = dataListNews.map(dataItem => {
+                            if (dataItem.id === item.id) {
+                                return { ...dataItem, image_link: defaultAvatarSource.uri };
+                            }
+                            return dataItem;
+                        });
+                        setDataListNews(newDataList);
+                    }}
                 />
-                <Text style={[stylesBase.P2, { color: colors.ink500, marginTop: 12 }]}>{item.title}</Text>
+                <Text style={[stylesBase.P1Strong, { color: colors.ink500, marginTop: 12, width: 250 }]}>{item.title}</Text>
             </View >
         );
     };
@@ -146,17 +144,10 @@ export default HomeScreen = () => {
                         </TouchableOpacity>
                     </View>
 
-                    <Text>Email: {info.email}</Text>
-                    <TextInput
-                        style={{ width: '80%', height: 40, fontSize: 16, margin: 12, borderWidth: 1, padding: 10, borderRadius: 8 }}
-                        autoCapitalize="none"
-                        onChangeText={onChangeEmail}
-                        value={email} />
-
                     <View style={{ flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: colors.white, marginTop: 16, padding: 16 }}>
                         {dataListNews && (
                             <FlatList
-                                data={dataListNews.news}
+                                data={dataListNews}
                                 horizontal
                                 renderItem={renderItem}
                                 keyExtractor={keyExtractor}
@@ -165,12 +156,6 @@ export default HomeScreen = () => {
                             />
                         )}
                     </View>
-
-                    <TouchableOpacity
-                        style={{ width: 200, height: 40, borderWidth: 1, borderRadius: 12, marginTop: 24, justifyContent: 'center', alignItems: 'center', backgroundColor: '#4D8D6E' }}
-                        onPress={() => dispatch(updateEmail(email))}>
-                        <Text style={{ color: '#FFFFFF' }}>Cập nhật</Text>
-                    </TouchableOpacity>
 
                     <TouchableOpacity
                         style={{ width: 200, height: 40, borderWidth: 1, borderRadius: 12, marginTop: 24, justifyContent: 'center', alignItems: 'center', backgroundColor: '#4D8D6E' }}
@@ -185,7 +170,7 @@ export default HomeScreen = () => {
                     </TouchableOpacity>
 
                     <TouchableOpacity
-                        style={{ width: 200, height: 40, borderWidth: 1, borderRadius: 12, marginTop: 24, justifyContent: 'center', alignItems: 'center', backgroundColor: '#4D8D6E' }}
+                        style={{ width: 200, height: 40, borderWidth: 1, borderRadius: 12, marginTop: 24, marginBottom: 40, justifyContent: 'center', alignItems: 'center', backgroundColor: '#4D8D6E' }}
                         onPress={() => handleShowToast()}>
                         <Text style={{ color: '#FFFFFF' }}>show Toast</Text>
                     </TouchableOpacity>

@@ -1,7 +1,6 @@
 import axios from 'axios';
 import * as Constants from '../../api/AppApiHelper';
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { CAP_NHAT_EMAIL } from "../reducers/infoReducer"
 import { SET_PATIENT_RECORD_REQUEST, SET_PATIENT_RECORD_SUCCESS, SET_PATIENT_RECORD_FAILURE } from '../reducers/patientRecordReducer'
 import { SET_SELECTED_ITEM_PATIENT_RECORD } from '../reducers/itemPatientRecordReducer'
 import { SET_SITE_REQUEST, SET_SITE_SUCCESS, SET_SITE_FAILURE } from '../reducers/siteReducer'
@@ -29,23 +28,6 @@ const KEY_FILES = 'files';
 
 const getKeyAuthorization = () => {
     return 'Basic bWVkaWhvbWU6bWVkaWhvbWVAMTIzNEAjJA==';
-}
-
-export const updateEmail = (email) => async dispatch => {
-    try {
-        // 1. Side-effect gọi lên server hoặc làm gì đấy bất đồng bộ (dùng middleware redux-thunk giúp bạn làm việc này)
-        await new Promise((resolve, reject) => {
-            setTimeout(() => {
-                resolve()
-            }, 2000)
-        })
-        await console.log("Đã cập nhật email lên server!")
-
-        // 2. Cập nhật thông tin của infoReducer trong store
-        dispatch({ type: CAP_NHAT_EMAIL, email: email })
-    } catch (error) {
-
-    }
 }
 
 const api = axios.create({

@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from 'react-redux';
 
 export default ProfileScreen = ({ navigation }) => {
     const dispatch = useDispatch();
-    const info = useSelector((state) => state.infoReducer)
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
@@ -32,7 +31,6 @@ export default ProfileScreen = ({ navigation }) => {
 
             <View style={styles.container}>
                 <Text style={{ fontSize: 24 }}>Profile</Text>
-                <Text>Email: {info.email}</Text>
             </View>
         </SafeAreaView>
     );
