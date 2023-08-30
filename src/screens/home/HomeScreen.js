@@ -2,7 +2,7 @@ import React, { Component, useState, useEffect } from "react";
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, SafeAreaView, Dimensions, ScrollView, Image, FlatList, StatusBar } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useDispatch, useSelector } from 'react-redux';
-import { login, getRefreshToken, getHomeNews } from '../../redux/actions/updateAction'
+import { login, getRefreshToken, getHomeNews, getCommonList } from '../../redux/actions/updateAction'
 import Toast from 'react-native-toast-message';
 import colors from '../../configs/colors/colors'
 import stylesBase from '../../configs/styles/styles'
@@ -16,9 +16,10 @@ export default HomeScreen = () => {
     const dispatch = useDispatch()
     const [refreshing, setRefreshing] = useState(false);
     const [dataListNews, setDataListNews] = useState([]);
+    const [dataListCommon, setDataListCommon] = useState([]);
 
     // Redux Selectors
-    const info = useSelector((state) => state.infoReducer)
+
 
     useEffect(() => {
         console.log("Create HomeScreen")
@@ -39,6 +40,13 @@ export default HomeScreen = () => {
             .then(async (response) => {
                 if (response !== null) {
                     setDataListNews(response.news)
+                }
+            })
+
+        await getCommonList()
+            .then(async (response) => {
+                if (response !== null) {
+                    setDataListCommon(response)
                 }
             })
 
@@ -68,6 +76,14 @@ export default HomeScreen = () => {
         navigation.navigate('HoSoKhamScreen')
     }
 
+    const handleOpenNews = () => {
+        const showAllNewsItem = dataListCommon.find(item => item.key === 'SHOW_ALL_NEWS');
+
+        if (showAllNewsItem) {
+            navigation.navigate('WebViewScreen', { url: showAllNewsItem.article_link });
+        }
+    }
+
     // ------------------------------------------------------------------[ HomeNews ]------------------------------------------------------------------- \\
     const keyExtractor = (item, index) => `${item.id}_${index}`;
 
@@ -77,8 +93,11 @@ export default HomeScreen = () => {
         // Kiểm tra xem imageLink có giá trị hợp lệ hay không
         const imageSource = imageLink ? { uri: imageLink } : defaultAvatarSource;
 
+        // Xác định phong cách cho mục hiện tại
+        const itemStyle = index === 0 ? { marginRight: 16 } : index === dataListNews.length - 1 ? { marginLeft: 16 } : { marginHorizontal: 8 };
+
         return (
-            <View style={{ backgroundColor: colors.white, borderWidth: 1, borderColor: colors.sLine, borderRadius: 8, marginEnd: 16, padding: 8 }}>
+            <View style={{ ...itemStyle, backgroundColor: colors.white, borderWidth: 1, borderColor: colors.sLine, borderRadius: 8, padding: 8 }}>
                 <Image
                     style={{ width: 250, height: 134, borderRadius: 8 }}
                     source={imageSource}
@@ -94,7 +113,7 @@ export default HomeScreen = () => {
                         setDataListNews(newDataList);
                     }}
                 />
-                <Text style={[stylesBase.P1Strong, { color: colors.ink500, marginTop: 12, width: 250 }]}>{item.title}</Text>
+                <Text numberOfLines={2} ellipsizeMode="tail" style={[stylesBase.P1Strong, { color: colors.ink500, marginTop: 12, width: 250 }]}>{item.title}</Text>
             </View >
         );
     };
@@ -123,58 +142,69 @@ export default HomeScreen = () => {
             </View>
 
             <ScrollView>
-                <View style={{ flex: 1, backgroundColor: colors.sBackground, alignItems: "center" }}>
-                    <View style={{ flexDirection: 'row', margin: 16 }}>
+                <View style={{ flex: 1, backgroundColor: colors.sBackground, marginTop: 16 }}>
+                    <View style={{ backgroundColor: colors.white }}>
+                        <View style={{ flexDirection: 'row', margin: 16 }}>
+                            <TouchableOpacity
+                                style={{ flex: 1, height: 80, flexDirection: 'row', paddingStart: 10, paddingEnd: 10, borderRadius: 8, backgroundColor: colors.primary, alignItems: "center", justifyContent: "space-between" }}
+                                onPress={() => navigateToHoSoKhamScreen()}>
+                                <Text style={[stylesBase.H5Strong, { color: colors.white, width: 54 }]}>Tư vấn Online</Text>
+                                <Image
+                                    style={{ width: 48, height: 48 }}
+                                    source={require('../../images/ic_home_dat_lich_online.png')} resizeMode="stretch" />
+                            </TouchableOpacity>
+
+                            <TouchableOpacity
+                                style={{ flex: 1, height: 80, flexDirection: 'row', paddingStart: 10, paddingEnd: 10, borderRadius: 8, backgroundColor: colors.primary, alignItems: "center", justifyContent: "space-between", marginStart: 16 }}
+                                onPress={() => navigateToHoSoKhamScreen()}>
+                                <Text style={[stylesBase.H5Strong, { color: colors.white, width: 68 }]}>Đặt lịch tại CSYT</Text>
+                                <Image
+                                    style={{ width: 48, height: 48 }}
+                                    source={require('../../images/ic_home_dat_lich_offline.png')} resizeMode="stretch" />
+                            </TouchableOpacity>
+                        </View>
+
+                        {/* Tin tức */}
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginStart: 16, marginEnd: 16 }}>
+                            <Text style={[stylesBase.H4Strong, { color: colors.ink500 }]}>Tin tức</Text>
+                            <TouchableOpacity
+                                onPress={() => handleOpenNews()}>
+                                <Text style={[stylesBase.P1, { color: colors.primaryB500 }]}>Xem thêm</Text>
+                            </TouchableOpacity>
+                        </View>
+
+                        <View style={{ flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: colors.white, margin: 16 }}>
+                            {dataListNews && (
+                                <FlatList
+                                    data={dataListNews}
+                                    horizontal
+                                    renderItem={renderItem}
+                                    keyExtractor={keyExtractor}
+                                    onRefresh={refreshData}
+                                    refreshing={refreshing}
+                                />
+                            )}
+                        </View>
+
                         <TouchableOpacity
-                            style={{ flex: 1, height: 80, flexDirection: 'row', paddingStart: 10, paddingEnd: 10, borderRadius: 8, backgroundColor: colors.primary, alignItems: "center", justifyContent: "space-between" }}
-                            onPress={() => navigateToHoSoKhamScreen()}>
-                            <Text style={[stylesBase.H5Strong, { color: colors.white, width: 54 }]}>Tư vấn Online</Text>
-                            <Image
-                                style={{ width: 48, height: 48 }}
-                                source={require('../../images/ic_home_dat_lich_online.png')} resizeMode="stretch" />
+                            style={{ width: 200, height: 40, borderWidth: 1, borderRadius: 12, marginTop: 24, justifyContent: 'center', alignItems: 'center', backgroundColor: '#4D8D6E' }}
+                            onPress={() => callLogin()}>
+                            <Text style={{ color: '#FFFFFF' }}>Login</Text>
                         </TouchableOpacity>
 
                         <TouchableOpacity
-                            style={{ flex: 1, height: 80, flexDirection: 'row', paddingStart: 10, paddingEnd: 10, borderRadius: 8, backgroundColor: colors.primary, alignItems: "center", justifyContent: "space-between", marginStart: 16 }}
-                            onPress={() => navigateToHoSoKhamScreen()}>
-                            <Text style={[stylesBase.H5Strong, { color: colors.white, width: 68 }]}>Đặt lịch tại CSYT</Text>
-                            <Image
-                                style={{ width: 48, height: 48 }}
-                                source={require('../../images/ic_home_dat_lich_offline.png')} resizeMode="stretch" />
+                            style={{ width: 200, height: 40, borderWidth: 1, borderRadius: 12, marginTop: 24, justifyContent: 'center', alignItems: 'center', backgroundColor: '#4D8D6E' }}
+                            onPress={() => refresh()}>
+                            <Text style={{ color: '#FFFFFF' }}>refresh</Text>
                         </TouchableOpacity>
+
+                        <TouchableOpacity
+                            style={{ width: 200, height: 40, borderWidth: 1, borderRadius: 12, marginTop: 24, marginBottom: 40, justifyContent: 'center', alignItems: 'center', backgroundColor: '#4D8D6E' }}
+                            onPress={() => handleShowToast()}>
+                            <Text style={{ color: '#FFFFFF' }}>show Toast</Text>
+                        </TouchableOpacity>
+
                     </View>
-
-                    <View style={{ flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: colors.white, marginTop: 16, padding: 16 }}>
-                        {dataListNews && (
-                            <FlatList
-                                data={dataListNews}
-                                horizontal
-                                renderItem={renderItem}
-                                keyExtractor={keyExtractor}
-                                onRefresh={refreshData}
-                                refreshing={refreshing}
-                            />
-                        )}
-                    </View>
-
-                    <TouchableOpacity
-                        style={{ width: 200, height: 40, borderWidth: 1, borderRadius: 12, marginTop: 24, justifyContent: 'center', alignItems: 'center', backgroundColor: '#4D8D6E' }}
-                        onPress={() => callLogin()}>
-                        <Text style={{ color: '#FFFFFF' }}>Login</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                        style={{ width: 200, height: 40, borderWidth: 1, borderRadius: 12, marginTop: 24, justifyContent: 'center', alignItems: 'center', backgroundColor: '#4D8D6E' }}
-                        onPress={() => refresh()}>
-                        <Text style={{ color: '#FFFFFF' }}>refresh</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                        style={{ width: 200, height: 40, borderWidth: 1, borderRadius: 12, marginTop: 24, marginBottom: 40, justifyContent: 'center', alignItems: 'center', backgroundColor: '#4D8D6E' }}
-                        onPress={() => handleShowToast()}>
-                        <Text style={{ color: '#FFFFFF' }}>show Toast</Text>
-                    </TouchableOpacity>
-
                 </View>
             </ScrollView>
         </SafeAreaView>

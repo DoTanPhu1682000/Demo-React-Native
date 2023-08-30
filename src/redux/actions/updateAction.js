@@ -536,3 +536,17 @@ export const getHomeNews = async () => {
         throw error;
     };
 };
+
+// getCommonList
+export const getCommonList = async () => {
+    try {
+        const response = await api.get(`/${Constants.UTILS_COMMON_LIST}`);
+        console.log(response.data);
+
+        return response.data;
+    }
+    catch (error) {
+        console.log('==> Error getCommonList:', error);
+        throw error;
+    };
+};

@@ -19,6 +19,7 @@ import AppointmentServiceScreen from "../screens/service/list/AppointmentService
 import AppointmentServiceDetailScreen from "../screens/service/detail/AppointmentServiceDetailScreen"
 import BookingOfflineScreen from "../screens/booking/offline/BookingOfflineScreen"
 import PaymentAppointmentScreen from "../screens/booking/payment/PaymentAppointmentScreen"
+import WebViewScreen from "../screens/common/webView/WebViewScreen"
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -66,6 +67,7 @@ export default function AppNavigator() {
                     <Stack.Screen name="AppointmentServiceDetailScreen" component={AppointmentServiceDetailScreen} />
                     <Stack.Screen name="BookingOfflineScreen" component={BookingOfflineScreen} />
                     <Stack.Screen name="PaymentAppointmentScreen" component={PaymentAppointmentScreen} />
+                    <Stack.Screen name="WebViewScreen" component={WebViewScreen} />
                 </Stack.Navigator>
             </NavigationContainer>
             {/* bắt buộc Toast phải nằm dưới NavigationContainer */}
