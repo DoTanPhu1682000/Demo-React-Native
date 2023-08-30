@@ -537,26 +537,20 @@ export const order = async (patientRecord, site, appointmentService, key, appoin
     };
 };
 
-// getUserLoginQrCode
-export const getUserLoginQrCode = () => {
-    return async (dispatch) => {
-        try {
-            // Lấy accessToken từ AsyncStorage
-            const accessToken = await AsyncStorage.getItem(KEY_ACCESS_TOKEN);
-            console.log("==> getUserLoginQrCode accessToken: ", accessToken);
+// getHomeNews
+export const getHomeNews = async () => {
+    try {
+        const queryParams = {
+            [KEY_LANGUAGE]: "vi",
+        };
 
-            await axios.get('https://sandboxapi.365medihome.com.vn/auth/user/get-login-qrcode',
-                {
-                    headers: {
-                        [KEY_CONTENT_TYPE]: APPLICATION_JSON,
-                        [KEY_AUTHORIZATION]: `Bearer ${accessToken}`,
-                    }
-                })
-                .then((response) => {
-                    console.log(response.data)
-                })
-        } catch (error) {
-            console.log(error);
-        }
+        const response = await api.get(`/${Constants.UTILS_HOME_NEWS}`, { params: queryParams });
+        console.log(response.data);
+
+        return response.data;
+    }
+    catch (error) {
+        console.log('==> Error getHomeNews:', error);
+        throw error;
     };
 };
