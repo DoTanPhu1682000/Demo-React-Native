@@ -27,6 +27,7 @@
     "react-native-reanimated": "^3.3.0",
     "react-native-safe-area-context": "^4.7.1",
     "react-native-screens": "^3.22.1",
+    "react-native-swiper": "^1.6.0",
     "react-native-toast-message": "^2.1.6",
     "react-native-webview": "^13.5.1",
     "react-navigation": "^4.4.4",
