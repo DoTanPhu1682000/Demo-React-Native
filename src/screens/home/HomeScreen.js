@@ -1,5 +1,5 @@
 import React, { Component, useState, useEffect } from "react";
-import { StyleSheet, Text, View, TouchableOpacity, TextInput, SafeAreaView, Dimensions, ScrollView, Image, FlatList, StatusBar } from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, SafeAreaView, Dimensions, ScrollView, Image, FlatList, StatusBar, ImageBackground } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useDispatch, useSelector } from 'react-redux';
 import { login, getRefreshToken, getHomeNews, getCommonList } from '../../redux/actions/updateAction'
@@ -263,25 +263,77 @@ export default HomeScreen = () => {
                             </View>
                         </View>
 
-                        {/* Đặt lịch */}
                         <View style={{ flexDirection: 'row', margin: 16 }}>
+                            {/* Đặt lịch */}
                             <TouchableOpacity
-                                style={{ flex: 1, height: 80, flexDirection: 'row', paddingStart: 10, paddingEnd: 10, borderRadius: 8, backgroundColor: colors.primary, alignItems: "center", justifyContent: "space-between" }}
+                                style={{ flex: 1, height: 174, marginEnd: 16, borderRadius: 8 }}
                                 onPress={() => navigateToHoSoKhamScreen()}>
-                                <Text style={[stylesBase.H5Strong, { color: colors.white, width: 54 }]}>Tư vấn Online</Text>
-                                <Image
-                                    style={{ width: 48, height: 48 }}
-                                    source={require('../../images/ic_home_dat_lich_online.png')} resizeMode="stretch" />
+                                <ImageBackground
+                                    style={{ flex: 1 }}
+                                    source={require('../../images/img_background_booking.png')} resizeMode="stretch">
+                                    <Text style={[stylesBase.H5Strong, { color: colors.white, marginStart: 12, marginTop: 8, marginBottom: 4 }]}>Đặt lịch khám</Text>
+                                    <View
+                                        style={{ flexDirection: 'row', marginStart: 12, backgroundColor: '#FFB280', maxWidth: 70, alignItems: 'center', borderRadius: 4, paddingStart: 4, paddingEnd: 4 }}>
+                                        <Text style={[stylesBase.P2, { color: colors.white }]}>Đặt ngay </Text>
+                                        <Image
+                                            style={{ width: 10, height: 10, tintColor: colors.white }}
+                                            source={require('../../images/ic_arrow_right.png')} resizeMode="stretch" />
+                                    </View>
+                                    <View style={{ flex: 1, alignItems: 'flex-end', marginTop: 10 }}>
+                                        <Image
+                                            style={{ width: 102, height: 107 }}
+                                            source={require('../../images/ic_booking.png')} resizeMode="stretch" />
+                                    </View>
+                                </ImageBackground>
                             </TouchableOpacity>
 
-                            <TouchableOpacity
-                                style={{ flex: 1, height: 80, flexDirection: 'row', paddingStart: 10, paddingEnd: 10, borderRadius: 8, backgroundColor: colors.primary, alignItems: "center", justifyContent: "space-between", marginStart: 16 }}
-                                onPress={() => navigateToHoSoKhamScreen()}>
-                                <Text style={[stylesBase.H5Strong, { color: colors.white, width: 68 }]}>Đặt lịch tại CSYT</Text>
-                                <Image
-                                    style={{ width: 48, height: 48 }}
-                                    source={require('../../images/ic_home_dat_lich_offline.png')} resizeMode="stretch" />
-                            </TouchableOpacity>
+                            <View style={{ flex: 1 }}>
+                                {/* Lịch hẹn */}
+                                <TouchableOpacity style={{ flex: 1, height: 81, borderRadius: 8, marginBottom: 16 }}>
+                                    <ImageBackground
+                                        style={{ flex: 1, flexDirection: 'row' }}
+                                        source={require('../../images/img_background_lich_hen.png')} resizeMode="stretch">
+                                        <View>
+                                            <Text style={[stylesBase.H5Strong, { color: colors.white, marginStart: 12, marginTop: 8, marginBottom: 4 }]}>Lịch hẹn</Text>
+                                            <View
+                                                style={{ flexDirection: 'row', marginStart: 12, backgroundColor: '#F39A9A', maxWidth: 60, alignItems: 'center', borderRadius: 4, paddingStart: 4, paddingEnd: 4 }}>
+                                                <Text style={[stylesBase.P2, { color: colors.white }]}>Chi tiết </Text>
+                                                <Image
+                                                    style={{ width: 10, height: 10, tintColor: colors.white }}
+                                                    source={require('../../images/ic_arrow_right.png')} resizeMode="stretch" />
+                                            </View>
+                                        </View>
+                                        <View style={{ position: 'absolute', right: 0, bottom: 0 }}>
+                                            <Image
+                                                style={{ width: 67, height: 56 }}
+                                                source={require('../../images/ic_lich_hen.png')} resizeMode="stretch" />
+                                        </View>
+                                    </ImageBackground>
+                                </TouchableOpacity>
+
+                                {/* Hồ sơ */}
+                                <TouchableOpacity style={{ flex: 1, height: 81, borderRadius: 8 }}>
+                                    <ImageBackground
+                                        style={{ flex: 1, flexDirection: 'row' }}
+                                        source={require('../../images/img_background_patient_record.png')} resizeMode="stretch">
+                                        <View>
+                                            <Text style={[stylesBase.H5Strong, { color: colors.white, marginStart: 12, marginTop: 8, marginBottom: 4 }]}>Hồ sơ</Text>
+                                            <View
+                                                style={{ flexDirection: 'row', marginStart: 12, backgroundColor: '#82B3F4', maxWidth: 60, alignItems: 'center', borderRadius: 4, paddingStart: 4, paddingEnd: 4 }}>
+                                                <Text style={[stylesBase.P2, { color: colors.white }]}>Chi tiết </Text>
+                                                <Image
+                                                    style={{ width: 10, height: 10, tintColor: colors.white }}
+                                                    source={require('../../images/ic_arrow_right.png')} resizeMode="stretch" />
+                                            </View>
+                                        </View>
+                                        <View style={{ position: 'absolute', right: 0, bottom: 0 }}>
+                                            <Image
+                                                style={{ width: 62, height: 57 }}
+                                                source={require('../../images/ic_ho_so.png')} resizeMode="stretch" />
+                                        </View>
+                                    </ImageBackground>
+                                </TouchableOpacity>
+                            </View>
                         </View>
 
                         <View style={{ alignItems: 'center' }}>
