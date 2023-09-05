@@ -77,7 +77,7 @@ export default HomeScreen = () => {
         const showAllNewsItem = dataListCommon.find(item => item.key === 'SHOW_ALL_NEWS');
 
         if (showAllNewsItem) {
-            navigation.navigate('WebViewScreen', { url: showAllNewsItem.article_link });
+            navigation.navigate('WebViewScreen', { url: showAllNewsItem.article_link, title: showAllNewsItem.article_link });
         }
     }
 
@@ -85,7 +85,7 @@ export default HomeScreen = () => {
         const showAllNewsItem = dataListCommon.find(item => item.key === 'SHOW_ALL_PROMOTION_NEWS');
 
         if (showAllNewsItem) {
-            navigation.navigate('WebViewScreen', { url: showAllNewsItem.article_link });
+            navigation.navigate('WebViewScreen', { url: showAllNewsItem.article_link, title: showAllNewsItem.article_link });
         }
     }
 
@@ -93,14 +93,20 @@ export default HomeScreen = () => {
         const showAllNewsItem = dataListCommon.find(item => item.key === 'SHOW_ALL_DRBINH_PACKAGE');
 
         if (showAllNewsItem) {
-            navigation.navigate('WebViewScreen', { url: showAllNewsItem.article_link });
+            navigation.navigate('WebViewScreen', { url: showAllNewsItem.article_link, title: showAllNewsItem.article_link });
         }
     }
 
     const handlePressHomeNews = (index) => {
-        console.log("==> title:", dataListNews[index].title);
-        console.log("==> url:", dataListNews[index].article_link);
-        console.log("==> index:", dataListNews[index].id);
+        navigation.navigate('WebViewScreen', { url: dataListNews[index].article_link, title: dataListNews[index].title });
+    }
+
+    const handlePressPromotionNews = (index) => {
+        navigation.navigate('WebViewScreen', { url: dataListPromotionNews[index].article_link, title: dataListPromotionNews[index].title });
+    }
+
+    const handlePressDrBinhPackage = (index) => {
+        navigation.navigate('WebViewScreen', { url: dataListDrBinhPackage[index].article_link, title: dataListDrBinhPackage[index].title });
     }
 
     // ------------------------------------------------------------------[ HomeNews ]------------------------------------------------------------------- \\
@@ -152,7 +158,9 @@ export default HomeScreen = () => {
         const itemStyle = index === 0 ? { marginRight: 16 } : index === dataListPromotionNews.length - 1 ? { marginLeft: 16 } : { marginHorizontal: 8 };
 
         return (
-            <View style={{ ...itemStyle, backgroundColor: colors.white, borderWidth: 1, borderColor: colors.sLine, borderRadius: 8, padding: 8 }}>
+            <TouchableOpacity
+                style={{ ...itemStyle, backgroundColor: colors.white, borderWidth: 1, borderColor: colors.sLine, borderRadius: 8, padding: 8 }}
+                onPress={() => handlePressPromotionNews(index)}>
                 <Image
                     style={{ width: 250, height: 134, borderRadius: 8 }}
                     source={imageSource}
@@ -169,7 +177,7 @@ export default HomeScreen = () => {
                     }}
                 />
                 <Text numberOfLines={2} ellipsizeMode="tail" style={[stylesBase.P1Strong, { color: colors.ink500, marginTop: 12, width: 250 }]}>{item.title}</Text>
-            </View >
+            </TouchableOpacity >
         );
     };
 
@@ -186,7 +194,9 @@ export default HomeScreen = () => {
         const itemStyle = index === 0 ? { marginRight: 16 } : index === dataListDrBinhPackage.length - 1 ? { marginLeft: 16 } : { marginHorizontal: 8 };
 
         return (
-            <View style={{ ...itemStyle, backgroundColor: colors.white, borderWidth: 1, borderColor: colors.sLine, borderRadius: 8, padding: 8 }}>
+            <TouchableOpacity
+                style={{ ...itemStyle, backgroundColor: colors.white, borderWidth: 1, borderColor: colors.sLine, borderRadius: 8, padding: 8 }}
+                onPress={() => handlePressDrBinhPackage(index)}>
                 <Image
                     style={{ width: 250, height: 134, borderRadius: 8 }}
                     source={imageSource}
@@ -203,7 +213,7 @@ export default HomeScreen = () => {
                     }}
                 />
                 <Text numberOfLines={2} ellipsizeMode="tail" style={[stylesBase.P1Strong, { color: colors.ink500, marginTop: 12, width: 250 }]}>{item.title}</Text>
-            </View >
+            </TouchableOpacity >
         );
     };
 
@@ -240,7 +250,7 @@ export default HomeScreen = () => {
                                 <Swiper
                                     autoplay
                                     loop
-                                    autoplayTimeout={5}
+                                    autoplayTimeout={3}
                                     dotStyle={{ backgroundColor: colors.ink200 }}
                                     activeDotStyle={{ backgroundColor: colors.primary }}
                                 >

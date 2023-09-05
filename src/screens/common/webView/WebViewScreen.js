@@ -7,7 +7,7 @@ import stylesBase from '../../../configs/styles/styles';
 import colors from '../../../configs/colors/colors';
 
 export default WebViewScreen = ({ route }) => {
-    const { url } = route.params;
+    const { url, title } = route.params;
     const navigation = useNavigation()
     const dispatch = useDispatch()
 
@@ -33,7 +33,8 @@ export default WebViewScreen = ({ route }) => {
                         style={{ width: 24, height: 24, tintColor: colors.ink500 }}
                         source={require('../../../images/ic_close.png')} resizeMode="stretch" />
                 </TouchableOpacity>
-                <Text numberOfLines={1} ellipsizeMode="tail" style={[stylesBase.H5Strong, { color: colors.ink500, marginStart: 8, marginEnd: 8, flex: 1 }]}>{url}</Text>
+                <Text numberOfLines={1} ellipsizeMode="tail"
+                    style={[stylesBase.H5Strong, { color: colors.ink500, flex: 1, textAlign: 'center', paddingStart: 8, paddingEnd: 8 }]}>{title}</Text>
                 <TouchableOpacity
                     onPress={() => openSearchInBrowser()}>
                     <Image
