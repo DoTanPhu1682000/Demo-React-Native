@@ -18,6 +18,7 @@ export default HenKhamScreen = () => {
     const [loadingMore, setLoadingMore] = useState(false);
     const [currentPage, setCurrentPage] = useState(0);
     const [dataList, setDataList] = useState([]);
+    const [dataListHenKham, setDataListHenKham] = useState([]);
 
     useEffect(() => {
         console.log("Create HenKhamScreen")
@@ -37,10 +38,28 @@ export default HenKhamScreen = () => {
             .then(async (response) => {
                 if (response !== null) {
                     setDataList(response.content_page);
+                    setDataListHenKham(response)
                 }
             })
         setCurrentPage(0);
         setRefreshing(false);
+    };
+
+    const loadMoreData = async () => {
+        if (!loadingMore && currentPage < dataListHenKham.total_page - 1) {
+            console.log("==> loadMoreData");
+            setLoadingMore(true);
+            const nextPage = currentPage + 1;
+            getMyAppointment(nextPage)
+                .then(async (response) => {
+                    if (response !== null) {
+                        setDataList((prevDataList) => [...prevDataList, ...response.content_page]);
+                        console.log(" ==> dataList:", [...dataList, ...response.content_page]);
+                    }
+                })
+            setCurrentPage(nextPage);
+            setLoadingMore(false);
+        }
     };
 
     // ------------------------------------------------------------------[ HenKham ]------------------------------------------------------------------- \\
@@ -172,8 +191,8 @@ export default HenKhamScreen = () => {
                         keyExtractor={keyExtractor}
                         onRefresh={refreshData}
                         refreshing={refreshing}
-                    // onEndReached={loadMoreData}
-                    // onEndReachedThreshold={0.1}
+                        onEndReached={loadMoreData}
+                        onEndReachedThreshold={0.1}
                     />
                 )}
             </View>
@@ -183,7 +202,7 @@ export default HenKhamScreen = () => {
 
 const styles = StyleSheet.create({
     card: {
-        width: 80, alignItems: 'center', borderRadius: 20, paddingStart: 8, paddingEnd: 8, backgroundColor: colors.primaryB100
+        width: 90, alignItems: 'center', borderRadius: 20, paddingStart: 8, paddingEnd: 8, backgroundColor: colors.primaryB100
     },
     pending: {
         backgroundColor: colors.green100,
