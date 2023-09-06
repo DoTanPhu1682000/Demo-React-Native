@@ -219,25 +219,30 @@ export default HomeScreen = () => {
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: colors.sBackground }}>
-            <StatusBar barStyle="dark-content" backgroundColor={colors.white} />
+            <StatusBar barStyle="light-content" backgroundColor={colors.primary} />
             {/* TaskBar */}
-            <View style={{ width: '100%', height: '6%', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: colors.white }}>
-                <TouchableOpacity
-                    style={{ height: '100%', aspectRatio: 1.5, alignItems: 'center', flexDirection: 'row', marginStart: 12 }}>
-                    <Image
-                        style={{ width: 24, height: 24, }}
-                        source={require('../../images/ic_menu.png')} resizeMode="stretch" />
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                    style={{ height: '100%', aspectRatio: 1.5, alignItems: 'center', flexDirection: 'row', justifyContent: 'flex-end', marginEnd: 12 }}
-                    onPress={() => {
-                        navigation.navigate('SettingsScreen')
+            <View style={{ width: '100%', height: '6%', flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', backgroundColor: colors.primary }}>
+                <View
+                    style={{
+                        flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.20)', borderRadius: 14, marginTop: 8, marginBottom: 8,
+                        marginStart: 16, marginEnd: 16, paddingStart: 10, paddingEnd: 10, paddingTop: 5, paddingBottom: 5
                     }}>
-                    <Image
-                        style={{ width: 24, height: 24, }}
-                        source={require('../../images/ic_setting.png')} resizeMode="stretch" />
-                </TouchableOpacity>
+                    <TouchableOpacity
+                        style={{ height: '100%', alignItems: 'center', flexDirection: 'row', justifyContent: 'flex-end' }}>
+                        <Image
+                            style={{ width: 16, height: 16, tintColor: colors.white }}
+                            source={require('../../images/ic_more_horizontal.png')} resizeMode="stretch" />
+                    </TouchableOpacity>
+
+                    <View style={{ width: 1, height: 16, backgroundColor: colors.white, marginStart: 10, marginEnd: 10 }} />
+
+                    <TouchableOpacity
+                        style={{ height: '100%', alignItems: 'center', flexDirection: 'row', justifyContent: 'flex-end' }}>
+                        <Image
+                            style={{ width: 16, height: 16, }}
+                            source={require('../../images/ic_close_momo.png')} resizeMode="stretch" />
+                    </TouchableOpacity>
+                </View>
             </View>
 
             <ScrollView>

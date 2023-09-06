@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Image } from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, SafeAreaView, Dimensions, ScrollView, Image, FlatList, StatusBar, ImageBackground } from "react-native";
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import 'react-native-gesture-handler';
@@ -10,7 +10,7 @@ import { store } from '../redux/store';
 import Toast from 'react-native-toast-message';
 import LoginScreen from "../screens/login/LoginScreen";
 import HomeScreen from "../screens/home/HomeScreen";
-import SettingsScreen from "../screens/settings/SettingsScreen";
+import HenKhamScreen from "../screens/lichhen/HenKhamScreen";
 import ProfileScreen from "../screens/profile/ProfileScreen";
 import HoSoKhamScreen from "../screens/common/HoSoKhamScreen"
 import HoSoKhamAddScreen from "../screens/common/add/HoSoKhamAddScreen"
@@ -20,6 +20,8 @@ import AppointmentServiceDetailScreen from "../screens/service/detail/Appointmen
 import BookingOfflineScreen from "../screens/booking/offline/BookingOfflineScreen"
 import PaymentAppointmentScreen from "../screens/booking/payment/PaymentAppointmentScreen"
 import WebViewScreen from "../screens/common/webView/WebViewScreen"
+import colors from '../configs/colors/colors'
+import stylesBase from '../configs/styles/styles'
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -27,28 +29,56 @@ const Tab = createBottomTabNavigator();
 
 function HomeTabs() {
     return (
-        <Tab.Navigator screenOptions={{ headerShown: false }}>
-            <Tab.Screen name="HomeScreen" component={HomeScreen} options={{
-                tabBarIcon: () => (
-                    <Image
-                        style={{ width: 24, height: 24, }}
-                        source={require('../images/ic_home.png')} resizeMode="stretch" />
-                )
-            }} />
-            <Tab.Screen name="SettingsScreen" component={SettingsScreen} options={{
-                tabBarIcon: () => (
-                    <Image
-                        style={{ width: 24, height: 24, }}
-                        source={require('../images/ic_setting.png')} resizeMode="stretch" />
-                )
-            }} />
-            <Tab.Screen name="ProfileScreen" component={ProfileScreen} options={{
-                tabBarIcon: () => (
-                    <Image
-                        style={{ width: 24, height: 24, }}
-                        source={require('../images/ic_user.png')} resizeMode="stretch" />
-                )
-            }} />
+        <Tab.Navigator
+            screenOptions={({ route }) => ({
+                headerShown: false, // Ẩn tiêu đề
+                tabBarIcon: ({ focused }) => {
+                    let iconName;
+                    let iconColor;
+                    let labelColor;
+
+                    if (route.name === 'Trang chủ') {
+                        iconName = focused ? require('../images/ic_home_active.png') : require('../images/ic_home.png');
+                        iconColor = focused ? colors.primary : colors.ink200;
+                        labelColor = focused ? colors.primary : colors.ink200;
+                    } else if (route.name === 'Lịch hẹn') {
+                        iconName = focused ? require('../images/ic_lich_hen_tab_active.png') : require('../images/ic_lich_hen_tab.png');
+                        iconColor = focused ? colors.primary : colors.ink200;
+                        labelColor = focused ? colors.primary : colors.ink200;
+                    } else if (route.name === 'Thông báo') {
+                        iconName = focused ? require('../images/ic_noti_active.png') : require('../images/ic_noti.png');
+                        iconColor = focused ? colors.primary : colors.ink200;
+                        labelColor = focused ? colors.primary : colors.ink200;
+                    }
+
+                    return (
+                        <Image
+                            source={iconName}
+                            style={{ width: 20, height: 20, tintColor: iconColor, marginTop: 4 }}
+                            resizeMode="stretch"
+                        />
+                    );
+                },
+                tabBarLabel: ({ focused }) => {
+                    let labelColor;
+
+                    if (route.name === 'Trang chủ') {
+                        labelColor = focused ? colors.primary : colors.ink200;
+                    } else if (route.name === 'Lịch hẹn') {
+                        labelColor = focused ? colors.primary : colors.ink200;
+                    } else if (route.name === 'Thông báo') {
+                        labelColor = focused ? colors.primary : colors.ink200;
+                    }
+
+                    return (
+                        <Text style={[stylesBase.P3Strong, { color: labelColor }]}>{route.name}</Text>
+                    );
+                },
+            })}
+        >
+            <Tab.Screen name="Trang chủ" component={HomeScreen} />
+            <Tab.Screen name="Lịch hẹn" component={HenKhamScreen} />
+            <Tab.Screen name="Thông báo" component={ProfileScreen} />
         </Tab.Navigator>
     );
 }

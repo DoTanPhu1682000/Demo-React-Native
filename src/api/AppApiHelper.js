@@ -15,5 +15,6 @@ export const DOCTOR_TIME_TABLE = 'doctor/time-table/get-all-by-doctor-code-and-d
 export const DOCTOR_CALCULATE_FEE = 'doctor/appointment/calculate-fee'
 export const DOCTOR_APPOINTMENT_CHECK_EXISTED = 'doctor/appointment/check-existed'
 export const DOCTOR_APPOINTMENT = 'doctor/appointment/'
+export const DOCTOR_MY_APPOINTMENT = 'doctor/appointment/my-appointment'
 export const UTILS_HOME_NEWS = 'utils/home/list'
 export const UTILS_COMMON_LIST = 'utils/common/list'

@@ -550,3 +550,22 @@ export const getCommonList = async () => {
         throw error;
     };
 };
+
+// getMyAppointment
+export const getMyAppointment = async (page) => {
+    try {
+        const queryParams = {
+            "page": page.toString(),
+            "size": 20,
+        };
+
+        const response = await api.get(`/${Constants.DOCTOR_MY_APPOINTMENT}`, { params: queryParams });
+        console.log(response.data);
+
+        return response.data;
+    }
+    catch (error) {
+        console.log('==> Error getMyAppointment:', error);
+        throw error;
+    };
+};
