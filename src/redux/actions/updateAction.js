@@ -591,3 +591,17 @@ export const getAppointment = async (appointmentId) => {
         throw error;
     };
 };
+
+// getAppointmentRating
+export const getAppointmentRating = async (appointmentId) => {
+    try {
+        const response = await api.get(`/${Constants.DOCTOR_GET_APPOINTMENT_RATING}/${appointmentId}`)
+        console.log(response.data);
+
+        return response.data;
+    }
+    catch (error) {
+        console.log('==> Error getAppointmentRating:', error);
+        throw error;
+    };
+};

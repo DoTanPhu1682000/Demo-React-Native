@@ -17,5 +17,6 @@ export const DOCTOR_APPOINTMENT_CHECK_EXISTED = 'doctor/appointment/check-existe
 export const DOCTOR_APPOINTMENT = 'doctor/appointment/'
 export const DOCTOR_MY_APPOINTMENT = 'doctor/appointment/my-appointment'
 export const DOCTOR_GET_APPOINTMENT = 'doctor/appointment'
+export const DOCTOR_GET_APPOINTMENT_RATING = 'doctor/appointment-rating/by-appointment'
 export const UTILS_HOME_NEWS = 'utils/home/list'
 export const UTILS_COMMON_LIST = 'utils/common/list'

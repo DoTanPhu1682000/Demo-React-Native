@@ -2,7 +2,7 @@ import React, { Component, useState, useEffect } from "react";
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, SafeAreaView, Dimensions, ScrollView, Image, FlatList, StatusBar, ImageBackground } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useDispatch, useSelector } from 'react-redux';
-import { getAppointment } from '../../../redux/actions/updateAction'
+import { getAppointment, getAppointmentRating } from '../../../redux/actions/updateAction'
 import { formatDate } from '../../../utils/CalendarUtil'
 import colors from '../../../configs/colors/colors'
 import stylesBase from '../../../configs/styles/styles'
@@ -17,6 +17,8 @@ export default HenKhamDetailScreen = ({ route }) => {
     const dispatch = useDispatch()
     const [dataListHenKham, setDataListHenKham] = useState([]);
     const [selectedRating, setSelectedRating] = useState();
+    const [isVisibleSend, setIsVisibleSend] = useState(true);
+    const [isVisibleRating, setIsVisibleRating] = useState(false);
 
     useEffect(() => {
         console.log("Create HenKhamDetailScreen")
@@ -25,6 +27,44 @@ export default HenKhamDetailScreen = ({ route }) => {
             .then(async (response) => {
                 if (response !== null) {
                     setDataListHenKham(response)
+                    // Chỉ hiển thị Rating khi đã Hoàn thành
+                    if (response.status === "COMPLETED") {
+                        getAppointmentRating(response.id)
+                            .then(async (responseAppointmentRating) => {
+                                // Điều kiện hiển thị Đánh giá: Không quá 2 ngày sau khi khám, chưa từng đánh giá trước đó
+                                let isReviewExpired = true;
+                                if (response !== null && response.appointment_date) {
+                                    const timeNow = new Date().getTime();
+                                    const timeSet = new Date(response.appointment_date).getTime();
+
+                                    // Tính số ngày từ ngày hẹn khám đến ngày hiện tại
+                                    // Nếu số ngày nhỏ hơn 2 thì hiển thị Đánh giá
+                                    const day = (timeNow - timeSet) / (24 * 60 * 60 * 1000);
+
+                                    isReviewExpired = day < 0 || day > 2;
+                                    console.log("==> isReviewExpired:", isReviewExpired);
+                                }
+
+                                // Quá hạn và chưa đánh giá (lớn hơn 2 ngày)
+                                if (isReviewExpired && responseAppointmentRating.point === 0) {
+                                    console.log("==> Quá hạn");
+                                    setIsVisibleRating(false) //ẩn button đánh giá
+                                    setIsVisibleSend(false) //ẩn bSend
+                                    return
+                                }
+
+                                // Trong thời hạn và nhỏ hơn 2 này
+                                if (responseAppointmentRating.point > 0) { // Đã đánh giá rồi (và nhỏ hơn 2 ngày)
+                                    console.log("==> Đã đánh giá rồi");
+                                    setIsVisibleRating(false)
+                                    setIsVisibleSend(false)
+                                } else { // Chưa đánh giá (và nhỏ hơn 2 ngày)
+                                    console.log("==> Chưa đánh giá");
+                                    setIsVisibleRating(true)
+                                    setIsVisibleSend(false)
+                                }
+                            })
+                    }
                 }
             })
 
@@ -189,10 +229,17 @@ export default HenKhamDetailScreen = ({ route }) => {
                                 style={{ width: 20, height: 20 }}
                                 source={require('../../../images/ic_shopping_bag.png')} resizeMode="stretch" />
                             <View style={{ flex: 1 }}>
-                                <Text
-                                    numberOfLines={1} ellipsizeMode="tail"
-                                    style={[stylesBase.P1, { color: colors.ink400, marginStart: 8, marginEnd: 8 }]}>{item.appointment_used_services[0].name}
-                                </Text>
+                                {item.appointment_used_services[0] ? (
+                                    <Text
+                                        numberOfLines={1} ellipsizeMode="tail"
+                                        style={[stylesBase.P1, { color: colors.ink400, marginStart: 8, marginEnd: 8 }]}>
+                                        {item.appointment_used_services[0].name}
+                                    </Text>
+                                ) : (
+                                    <Text style={[stylesBase.P1, { color: colors.ink400, marginStart: 8, marginEnd: 8 }]}>
+                                        Mặc định
+                                    </Text>
+                                )}
                             </View>
                         </View>
                         <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 12 }}>
@@ -254,28 +301,30 @@ export default HenKhamDetailScreen = ({ route }) => {
                     </View>
 
                     {/* Gửi đánh giá */}
-                    <TouchableOpacity
-                        style={{ width: windowWidth - 32, marginBottom: 12, alignItems: 'center', backgroundColor: colors.ink100, borderRadius: 8 }}>
-                        <Text style={[stylesBase.H5, { color: colors.ink300, paddingTop: 12, paddingBottom: 12 }]}>Gửi đánh giá</Text>
-                    </TouchableOpacity>
+                    {isVisibleRating && (
+                        <TouchableOpacity
+                            style={{ width: windowWidth - 32, marginBottom: 12, alignItems: 'center', backgroundColor: colors.ink100, borderRadius: 8 }}>
+                            <Text style={[stylesBase.H5, { color: colors.ink300, paddingTop: 12, paddingBottom: 12 }]}>Gửi đánh giá</Text>
+                        </TouchableOpacity>
+                    )}
                 </ScrollView>
             </View>
             {/* Button Lưu lại */}
-            {unpaid ?
+            {isVisibleSend && (
                 <View style={{ backgroundColor: colors.white }}>
-                    <TouchableOpacity
-                        style={{ width: windowWidth - 32, marginTop: 12, marginBottom: 12, marginStart: 16, alignItems: 'center', backgroundColor: colors.primary, borderRadius: 8 }}>
-                        <Text style={[stylesBase.H5, { color: colors.white, paddingTop: 12, paddingBottom: 12 }]}>Thanh toán lại</Text>
-                    </TouchableOpacity>
+                    {unpaid ? (
+                        <TouchableOpacity
+                            style={{ width: windowWidth - 32, marginTop: 12, marginBottom: 12, marginStart: 16, alignItems: 'center', backgroundColor: colors.primary, borderRadius: 8 }}>
+                            <Text style={[stylesBase.H5, { color: colors.white, paddingTop: 12, paddingBottom: 12 }]}>Thanh toán lại</Text>
+                        </TouchableOpacity>
+                    ) : (
+                        <TouchableOpacity
+                            style={{ width: windowWidth - 32, marginTop: 12, marginBottom: 12, marginStart: 16, alignItems: 'center', backgroundColor: colors.primary, borderRadius: 8 }}>
+                            <Text style={[stylesBase.H5, { color: colors.white, paddingTop: 12, paddingBottom: 12 }]}>Hủy lịch hẹn</Text>
+                        </TouchableOpacity>
+                    )}
                 </View>
-                :
-                <View style={{ backgroundColor: colors.white }}>
-                    <TouchableOpacity
-                        style={{ width: windowWidth - 32, marginTop: 12, marginBottom: 12, marginStart: 16, alignItems: 'center', backgroundColor: colors.primary, borderRadius: 8 }}>
-                        <Text style={[stylesBase.H5, { color: colors.white, paddingTop: 12, paddingBottom: 12 }]}>Hủy lịch hẹn</Text>
-                    </TouchableOpacity>
-                </View>
-            }
+            )}
         </SafeAreaView>
     );
 }
