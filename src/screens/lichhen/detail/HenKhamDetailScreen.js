@@ -252,17 +252,30 @@ export default HenKhamDetailScreen = ({ route }) => {
                         // value={selectedNote}
                         />
                     </View>
+
+                    {/* Gửi đánh giá */}
+                    <TouchableOpacity
+                        style={{ width: windowWidth - 32, marginBottom: 12, alignItems: 'center', backgroundColor: colors.ink100, borderRadius: 8 }}>
+                        <Text style={[stylesBase.H5, { color: colors.ink300, paddingTop: 12, paddingBottom: 12 }]}>Gửi đánh giá</Text>
+                    </TouchableOpacity>
                 </ScrollView>
             </View>
             {/* Button Lưu lại */}
-            {unpaid && (
+            {unpaid ?
                 <View style={{ backgroundColor: colors.white }}>
                     <TouchableOpacity
                         style={{ width: windowWidth - 32, marginTop: 12, marginBottom: 12, marginStart: 16, alignItems: 'center', backgroundColor: colors.primary, borderRadius: 8 }}>
                         <Text style={[stylesBase.H5, { color: colors.white, paddingTop: 12, paddingBottom: 12 }]}>Thanh toán lại</Text>
                     </TouchableOpacity>
                 </View>
-            )}
+                :
+                <View style={{ backgroundColor: colors.white }}>
+                    <TouchableOpacity
+                        style={{ width: windowWidth - 32, marginTop: 12, marginBottom: 12, marginStart: 16, alignItems: 'center', backgroundColor: colors.primary, borderRadius: 8 }}>
+                        <Text style={[stylesBase.H5, { color: colors.white, paddingTop: 12, paddingBottom: 12 }]}>Hủy lịch hẹn</Text>
+                    </TouchableOpacity>
+                </View>
+            }
         </SafeAreaView>
     );
 }
