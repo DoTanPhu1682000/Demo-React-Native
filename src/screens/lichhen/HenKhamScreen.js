@@ -62,10 +62,15 @@ export default HenKhamScreen = () => {
         }
     };
 
+    const handleOpenDetail = async (item) => {
+        navigation.navigate('HenKhamDetailScreen', { item: item });
+    }
+
     // ------------------------------------------------------------------[ HenKham ]------------------------------------------------------------------- \\
     const keyExtractor = (item, index) => `${item.id}_${index}`;
 
     const renderItem = ({ item }) => {
+        const unpaid = !item.payment_status && item.status === "PENDING"
         const timestamp = item.time_table_period.period_start_time
         const date = new Date(timestamp);
 
@@ -108,7 +113,9 @@ export default HenKhamScreen = () => {
 
         return (
             <View>
-                <View style={{ backgroundColor: colors.white, borderRadius: 8, padding: 12, marginBottom: 16, alignItems: 'center', justifyContent: 'space-between' }}>
+                <TouchableOpacity
+                    style={{ backgroundColor: colors.white, borderRadius: 8, padding: 12, marginBottom: 16, alignItems: 'center', justifyContent: 'space-between' }}
+                    onPress={() => handleOpenDetail(item)}>
                     <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
                         <Image
                             style={{ width: 20, height: 20 }}
@@ -123,15 +130,27 @@ export default HenKhamScreen = () => {
                         </View>
                     </View>
                     <View style={{ width: '100%', height: 1, backgroundColor: colors.sLine, marginTop: 12, marginBottom: 12 }}></View>
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <Image
-                            style={{ width: 20, height: 20 }}
-                            source={require('../../images/ic_hospital_lich_hen.png')} resizeMode="stretch" />
-                        <View style={{ flex: 1 }}>
-                            <Text numberOfLines={1} ellipsizeMode="tail"
-                                style={[stylesBase.P1, { color: colors.ink400, marginStart: 8, marginEnd: 8 }]}>{item.site_name}</Text>
+                    {unpaid ?
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                            <Image
+                                style={{ width: 20, height: 20 }}
+                                source={require('../../images//ic_slash_circle_red.png')} resizeMode="stretch" />
+                            <View style={{ flex: 1 }}>
+                                <Text numberOfLines={1} ellipsizeMode="tail"
+                                    style={[stylesBase.P1, { color: colors.red500, marginStart: 8, marginEnd: 8 }]}>Chờ thanh toán</Text>
+                            </View>
                         </View>
-                    </View>
+                        :
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                            <Image
+                                style={{ width: 20, height: 20 }}
+                                source={require('../../images/ic_hospital_lich_hen.png')} resizeMode="stretch" />
+                            <View style={{ flex: 1 }}>
+                                <Text numberOfLines={1} ellipsizeMode="tail"
+                                    style={[stylesBase.P1, { color: colors.ink400, marginStart: 8, marginEnd: 8 }]}>{item.site_name}</Text>
+                            </View>
+                        </View>
+                    }
                     <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 12 }}>
                         <Image
                             style={{ width: 20, height: 20 }}
@@ -150,7 +169,7 @@ export default HenKhamScreen = () => {
                                 style={[stylesBase.P1, { color: colors.ink400, marginStart: 8, marginEnd: 8 }]}>{item.doctor.doctor_name}</Text>
                         </View>
                     </View>
-                </View>
+                </TouchableOpacity>
             </View>
         );
     };

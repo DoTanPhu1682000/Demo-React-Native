@@ -11,6 +11,7 @@ import Toast from 'react-native-toast-message';
 import LoginScreen from "../screens/login/LoginScreen";
 import HomeScreen from "../screens/home/HomeScreen";
 import HenKhamScreen from "../screens/lichhen/HenKhamScreen";
+import HenKhamDetailScreen from "../screens/lichhen/detail/HenKhamDetailScreen"
 import ProfileScreen from "../screens/profile/ProfileScreen";
 import HoSoKhamScreen from "../screens/common/HoSoKhamScreen"
 import HoSoKhamAddScreen from "../screens/common/add/HoSoKhamAddScreen"
@@ -98,6 +99,7 @@ export default function AppNavigator() {
                     <Stack.Screen name="BookingOfflineScreen" component={BookingOfflineScreen} />
                     <Stack.Screen name="PaymentAppointmentScreen" component={PaymentAppointmentScreen} />
                     <Stack.Screen name="WebViewScreen" component={WebViewScreen} />
+                    <Stack.Screen name="HenKhamDetailScreen" component={HenKhamDetailScreen} />
                 </Stack.Navigator>
             </NavigationContainer>
             {/* bắt buộc Toast phải nằm dưới NavigationContainer */}

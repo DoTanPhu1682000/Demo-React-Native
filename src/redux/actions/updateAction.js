@@ -522,11 +522,15 @@ export const order = async (patientRecord, site, appointmentService, key, appoin
 // getHomeNews
 export const getHomeNews = async () => {
     try {
+        const headers = {
+            [KEY_CONTENT_TYPE]: APPLICATION_JSON,
+        };
+
         const queryParams = {
             [KEY_LANGUAGE]: "vi",
         };
 
-        const response = await api.get(`/${Constants.UTILS_HOME_NEWS}`, { params: queryParams });
+        const response = await axios.get(`${Constants.URL}/${Constants.UTILS_HOME_NEWS}`, { headers: headers }, { params: queryParams });
         console.log(response.data);
 
         return response.data;
@@ -540,7 +544,11 @@ export const getHomeNews = async () => {
 // getCommonList
 export const getCommonList = async () => {
     try {
-        const response = await api.get(`/${Constants.UTILS_COMMON_LIST}`);
+        const headers = {
+            [KEY_CONTENT_TYPE]: APPLICATION_JSON,
+        };
+
+        const response = await axios.get(`${Constants.URL}/${Constants.UTILS_COMMON_LIST}`, { headers: headers });
         console.log(response.data);
 
         return response.data;
@@ -566,6 +574,20 @@ export const getMyAppointment = async (page) => {
     }
     catch (error) {
         console.log('==> Error getMyAppointment:', error);
+        throw error;
+    };
+};
+
+// getAppointment
+export const getAppointment = async (appointmentId) => {
+    try {
+        const response = await api.get(`/${Constants.DOCTOR_GET_APPOINTMENT}/${appointmentId}`)
+        console.log(response.data);
+
+        return response.data;
+    }
+    catch (error) {
+        console.log('==> Error getAppointment:', error);
         throw error;
     };
 };

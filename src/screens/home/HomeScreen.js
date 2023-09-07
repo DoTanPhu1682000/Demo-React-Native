@@ -51,8 +51,7 @@ export default HomeScreen = () => {
     }, [])
 
     const callLogin = () => {
-        // login('0356709123', '123456')
-        login('0334888893', '123456')
+        login('0356709123', '123456')
     }
 
     const refresh = () => {
@@ -68,6 +67,10 @@ export default HomeScreen = () => {
             position: 'bottom',
             bottomOffset: 60,
         });
+    }
+
+    const handleLichHen = () => {
+        navigation.navigate('Lịch hẹn')
     }
 
     const navigateToHoSoKhamScreen = () => {
@@ -356,9 +359,15 @@ export default HomeScreen = () => {
                             </TouchableOpacity>
 
                             <TouchableOpacity
-                                style={{ width: 200, height: 40, borderWidth: 1, borderRadius: 12, marginTop: 24, marginBottom: 40, justifyContent: 'center', alignItems: 'center', backgroundColor: '#4D8D6E' }}
+                                style={{ width: 200, height: 40, borderWidth: 1, borderRadius: 12, marginTop: 24, justifyContent: 'center', alignItems: 'center', backgroundColor: '#4D8D6E' }}
                                 onPress={() => handleShowToast()}>
                                 <Text style={{ color: '#FFFFFF' }}>show Toast</Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity
+                                style={{ width: 200, height: 40, borderWidth: 1, borderRadius: 12, marginTop: 24, marginBottom: 40, justifyContent: 'center', alignItems: 'center', backgroundColor: '#4D8D6E' }}
+                                onPress={() => handleLichHen()}>
+                                <Text style={{ color: '#FFFFFF' }}>Lịch hẹn</Text>
                             </TouchableOpacity>
                         </View>
 
