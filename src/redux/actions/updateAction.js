@@ -605,3 +605,22 @@ export const getAppointmentRating = async (appointmentId) => {
         throw error;
     };
 };
+
+// createAppointmentRating
+export const createAppointmentRating = async (appointmentId, point, comment) => {
+    try {
+        const item = {
+            "appointment_id": appointmentId.toString(),
+            "point": point.toString(),
+            "comment": comment,
+        };
+        const response = await api.post(`/${Constants.DOCTOR_APPOINTMENT_RATING}`, item);
+        console.log(response.data);
+
+        return response.data;
+    }
+    catch (error) {
+        console.log('==> Error createAppointmentRating:', error);
+        throw error;
+    };
+};
