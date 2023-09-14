@@ -119,15 +119,6 @@ export default HoSoKhamScreen = () => {
                             : null
                         }
                     </TouchableOpacity>
-
-                    <ConfirmationBottomSheet
-                        isVisible={isConfirmationVisible}
-                        onConfirm={handleConfirm}
-                        onCancel={handleCancel}
-                        title="Yêu cầu xác nhận"
-                        message="Bạn muốn thiết lập hồ sơ khám này là hồ sơ chính không ?"
-                        confirmText="Đồng ý"
-                        cancelText="Hủy" />
                 </View>
             </View>
         );
@@ -179,6 +170,15 @@ export default HoSoKhamScreen = () => {
                     style={{ width: 64, height: 64, }}
                     source={require('../../images/ic_add_user_patient_record.png')} resizeMode="stretch" />
             </TouchableOpacity>
+
+            <ConfirmationBottomSheet
+                isVisible={isConfirmationVisible}
+                onConfirm={handleConfirm}
+                onCancel={handleCancel}
+                title="Yêu cầu xác nhận"
+                message="Bạn muốn thiết lập hồ sơ khám này là hồ sơ chính không ?"
+                confirmText="Đồng ý"
+                cancelText="Hủy" />
         </SafeAreaView>
     );
 }

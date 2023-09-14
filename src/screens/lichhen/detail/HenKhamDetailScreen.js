@@ -1,10 +1,12 @@
-import React, { Component, useState, useEffect } from "react";
+import React, { Component, useState, useEffect, useRef } from "react";
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, SafeAreaView, Dimensions, ScrollView, Image, FlatList, StatusBar, ActivityIndicator } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useDispatch, useSelector } from 'react-redux';
-import { getAppointment, getAppointmentRating, createAppointmentRating } from '../../../redux/actions/updateAction'
+import { getAppointment, getAppointmentRating, createAppointmentRating, cancelledAppointment } from '../../../redux/actions/updateAction'
 import { formatDate } from '../../../utils/CalendarUtil'
 import BaseDialog from '../../../component/BaseDialog'
+import ConfirmationBottomSheet from '../../../component/ConfirmationBottomSheet'
+import CancelledAppointment from '../../../component/CancelledAppointment'
 import colors from '../../../configs/colors/colors'
 import stylesBase from '../../../configs/styles/styles'
 
@@ -23,6 +25,9 @@ export default HenKhamDetailScreen = ({ route }) => {
     const [isVisibleRating, setIsVisibleRating] = useState(false);
     const [selectedNote, setSelectedNote] = useState("");
     const [isDialogVisible, setDialogVisible] = useState(false);
+    const [isConfirmationVisible, setIsConfirmationVisible] = useState(false);
+    const [isCancelledAppointmentVisible, setIsCancelledAppointmentVisible] = useState(false);
+    const [selectedNoteCancelledAppointment, setSelectedNoteCancelledAppointment] = useState("");
 
     useEffect(() => {
         console.log("Create HenKhamDetailScreen")
@@ -98,6 +103,34 @@ export default HenKhamDetailScreen = ({ route }) => {
         setDialogVisible(false);
     };
 
+    const handleCancelledAppointment = () => {
+        if (!item.free && item.payment_status) {
+            console.log("Lịch khám đã được thanh toán. Bạn vui lòng liên hệ để được hỗ trợ đổi hoặc hủy lịch");
+        } else {
+            setIsConfirmationVisible(true);
+        }
+    }
+
+    const handleCancel = () => {
+        setIsConfirmationVisible(false);
+    };
+
+    const handleConfirm = async () => {
+        setIsConfirmationVisible(false);
+        setIsCancelledAppointmentVisible(true)
+    };
+
+    const handleConfirmCancelledAppointment = () => {
+        console.log("==> selectedNoteCancelledAppointment:", selectedNoteCancelledAppointment);
+        // cancelledAppointment(item.id, selectedNoteCancelledAppointment.trim())
+        //     .then(async (response) => {
+        //         if (response !== null) {
+        //             console.log("==> response:", response);
+        //         }
+        //     })
+        setIsCancelledAppointmentVisible(false)
+    }
+
     const unpaid = !dataListHenKham.payment_status && dataListHenKham.status === "PENDING"
 
     const formattedDOB = formatDate(item.patient_record.patient_dob);
@@ -139,6 +172,7 @@ export default HenKhamDetailScreen = ({ route }) => {
             break;
         default:
             statusStyle = styles.default;
+            textStyle = styles.textCancelled;
             break;
     }
 
@@ -238,8 +272,7 @@ export default HenKhamDetailScreen = ({ route }) => {
                                             style={{ width: 20, height: 20 }}
                                             source={require('../../../images/ic_hospital_lich_hen.png')} resizeMode="stretch" />
                                         <View style={{ flex: 1 }}>
-                                            <Text numberOfLines={1} ellipsizeMode="tail"
-                                                style={[stylesBase.P1, { color: colors.ink400, marginStart: 8, marginEnd: 8 }]}>{item.site_name}</Text>
+                                            <Text style={[stylesBase.P1, { color: colors.ink400, marginStart: 8, marginEnd: 8 }]}>{item.site_name}</Text>
                                         </View>
                                     </View>
                                 }
@@ -258,11 +291,7 @@ export default HenKhamDetailScreen = ({ route }) => {
                                         source={require('../../../images/ic_shopping_bag.png')} resizeMode="stretch" />
                                     <View style={{ flex: 1 }}>
                                         {item.appointment_used_services[0] ? (
-                                            <Text
-                                                numberOfLines={1} ellipsizeMode="tail"
-                                                style={[stylesBase.P1, { color: colors.ink400, marginStart: 8, marginEnd: 8 }]}>
-                                                {item.appointment_used_services[0].name}
-                                            </Text>
+                                            <Text style={[stylesBase.P1, { color: colors.ink400, marginStart: 8, marginEnd: 8 }]}>{item.appointment_used_services[0].name}</Text>
                                         ) : (
                                             <Text style={[stylesBase.P1, { color: colors.ink400, marginStart: 8, marginEnd: 8 }]}>
                                                 Mặc định
@@ -275,10 +304,7 @@ export default HenKhamDetailScreen = ({ route }) => {
                                         style={{ width: 20, height: 20 }}
                                         source={require('../../../images/ic_doctor_lich_hen.png')} resizeMode="stretch" />
                                     <View style={{ flex: 1 }}>
-                                        <Text
-                                            numberOfLines={1} ellipsizeMode="tail"
-                                            style={[stylesBase.P1, { color: colors.ink400, marginStart: 8, marginEnd: 8 }]}>{item.doctor.doctor_name}
-                                        </Text>
+                                        <Text style={[stylesBase.P1, { color: colors.ink400, marginStart: 8, marginEnd: 8 }]}>{item.doctor.doctor_name}</Text>
                                     </View>
                                 </View>
                             </View>
@@ -316,13 +342,13 @@ export default HenKhamDetailScreen = ({ route }) => {
                                     ))}
                                 </View>
                                 <TextInput
-                                    style={[stylesBase.H5, { marginTop: 12, color: colors.ink500, backgroundColor: colors.ink100, borderRadius: 8, paddingVertical: 4, paddingHorizontal: 8, }]}
+                                    style={[stylesBase.H5, { height: 115, marginTop: 12, color: colors.ink500, backgroundColor: colors.ink100, borderRadius: 8, paddingVertical: 4, paddingHorizontal: 8, }]}
                                     autoCapitalize='none'
                                     placeholder="Nhập đánh giá của bạn"
                                     placeholderTextColor={colors.ink200}
                                     multiline={true}
                                     maxLength={1000}
-                                    numberOfLines={2}
+                                    textAlignVertical="top"
                                     onChangeText={setSelectedNote}
                                     value={selectedNote} />
                             </View>
@@ -354,7 +380,8 @@ export default HenKhamDetailScreen = ({ route }) => {
                                 </View>
                             ) : (
                                 <TouchableOpacity
-                                    style={{ width: windowWidth - 32, marginTop: 12, marginBottom: 12, marginStart: 16, alignItems: 'center', backgroundColor: colors.primary, borderRadius: 8 }}>
+                                    style={{ width: windowWidth - 32, marginTop: 12, marginBottom: 12, marginStart: 16, alignItems: 'center', backgroundColor: colors.primary, borderRadius: 8 }}
+                                    onPress={() => handleCancelledAppointment()}>
                                     <Text style={[stylesBase.H5, { color: colors.white, paddingTop: 12, paddingBottom: 12 }]}>Hủy lịch hẹn</Text>
                                 </TouchableOpacity>
                             )}
@@ -365,10 +392,31 @@ export default HenKhamDetailScreen = ({ route }) => {
             <BaseDialog
                 visible={isDialogVisible}
                 title="Đánh giá thành công"
-                content="Cảm ơn bạn đã đánh giá dịch vụ của chúng tôi Mọi thắc mắc vui lòng liên hệ tới tổng đài 1900xxx"
+                content="Cảm ơn bạn đã đánh giá dịch vụ của chúng tôi Mọi thắc mắc vui lòng liên hệ tới tổng đài 19009204"
                 confirmText="Đóng"
                 onClose={closeDialog}
             />
+
+            <ConfirmationBottomSheet
+                isVisible={isConfirmationVisible}
+                onConfirm={handleConfirm}
+                onCancel={handleCancel}
+                title="Thông báo"
+                message="Bạn có chắc chắn muốn hủy lịch"
+                confirmText="Đồng ý"
+                cancelText="Đóng" />
+
+            <CancelledAppointment
+                isVisible={isCancelledAppointmentVisible}
+                onConfirm={handleConfirmCancelledAppointment}
+                title="Chọn lý do hủy"
+                message="Bạn có chắc chắn muốn hủy lịch"
+                confirmText="Đồng ý"
+                onNoteSelected={(note) => {
+                    // Tại đây, bạn có thể sử dụng giá trị selectedNote được truyền từ <CancelledAppointment>
+                    console.log("==> note:", note);
+                    setSelectedNoteCancelledAppointment(note)
+                }} />
         </SafeAreaView>
     );
 }
@@ -402,6 +450,6 @@ const styles = StyleSheet.create({
         color: "#D32F2F"
     },
     default: {
-        backgroundColor: colors.primaryB500,
+        backgroundColor: colors.red100,
     },
 });

@@ -108,6 +108,7 @@ export default HenKhamScreen = () => {
                 break;
             default:
                 statusStyle = styles.default;
+                textStyle = styles.textCancelled;
                 break;
         }
 
@@ -248,6 +249,6 @@ const styles = StyleSheet.create({
         color: "#D32F2F"
     },
     default: {
-        backgroundColor: colors.primaryB500,
+        backgroundColor: colors.red100,
     },
 });

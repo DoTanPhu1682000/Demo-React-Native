@@ -624,3 +624,21 @@ export const createAppointmentRating = async (appointmentId, point, comment) => 
         throw error;
     };
 };
+
+// cancelledAppointment
+export const cancelledAppointment = async (appointmentId, reason) => {
+    try {
+        const queryParams = {
+            "cancel_reason": reason || undefined,
+        }
+
+        const response = await api.put(`/${Constants.DOCTOR_CANCELLED_APPOINTMENT}/${appointmentId}`, { params: queryParams });
+        console.log(response.data);
+
+        return response.data;
+    }
+    catch (error) {
+        console.log('==> Error cancelledAppointment:', error);
+        throw error;
+    };
+};
