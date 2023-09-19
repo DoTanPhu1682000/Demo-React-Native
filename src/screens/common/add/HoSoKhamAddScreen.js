@@ -1,6 +1,6 @@
 import React, { Component, useState, useEffect } from "react";
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, SafeAreaView, Dimensions, ScrollView, Image, FlatList, StatusBar } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { useDispatch, useSelector } from 'react-redux';
 import { getPatientRecord, getPatientRecordAdd } from '../../../redux/actions/updateAction'
 import { formatISODateToServerDate } from '../../../utils/CalendarUtil'
@@ -14,6 +14,7 @@ const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
 export default HoSoKhamAddScreen = () => {
+    const route = useRoute();
     const navigation = useNavigation();
     const dispatch = useDispatch();
     const [selectedDefaultRecord, setSelectedDefaultRecord] = useState(false)
@@ -99,7 +100,11 @@ export default HoSoKhamAddScreen = () => {
                 height, weight, selectedPhone, selectedEthic, address))
 
             // quay lại màn hình đầu tiên
-            navigation.navigate('HoSoKhamScreen')
+            if (route.params?.fromHoSoScreen) {
+                navigation.navigate('Hồ sơ');
+            } else {
+                navigation.navigate('HoSoKhamScreen')
+            }
         }
     };
 

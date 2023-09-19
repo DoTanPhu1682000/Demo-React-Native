@@ -69,12 +69,16 @@ export default HomeScreen = () => {
         });
     }
 
+    const handleDatLich = () => {
+        navigation.navigate('HoSoKhamScreen')
+    }
+
     const handleLichHen = () => {
         navigation.navigate('Lịch hẹn')
     }
 
-    const navigateToHoSoKhamScreen = () => {
-        navigation.navigate('HoSoKhamScreen')
+    const handleHoSo = () => {
+        navigation.navigate('Hồ sơ')
     }
 
     const handleOpenNews = () => {
@@ -276,7 +280,7 @@ export default HomeScreen = () => {
                             {/* Đặt lịch */}
                             <TouchableOpacity
                                 style={{ flex: 1, height: 174, marginEnd: 16, borderRadius: 8 }}
-                                onPress={() => navigateToHoSoKhamScreen()}>
+                                onPress={() => handleDatLich()}>
                                 <ImageBackground
                                     style={{ flex: 1 }}
                                     source={require('../../images/img_background_booking.png')} resizeMode="stretch">
@@ -298,7 +302,9 @@ export default HomeScreen = () => {
 
                             <View style={{ flex: 1 }}>
                                 {/* Lịch hẹn */}
-                                <TouchableOpacity style={{ flex: 1, height: 81, borderRadius: 8, marginBottom: 16 }}>
+                                <TouchableOpacity
+                                    style={{ flex: 1, height: 81, borderRadius: 8, marginBottom: 16 }}
+                                    onPress={() => handleLichHen()}>
                                     <ImageBackground
                                         style={{ flex: 1, flexDirection: 'row' }}
                                         source={require('../../images/img_background_lich_hen.png')} resizeMode="stretch">
@@ -321,7 +327,9 @@ export default HomeScreen = () => {
                                 </TouchableOpacity>
 
                                 {/* Hồ sơ */}
-                                <TouchableOpacity style={{ flex: 1, height: 81, borderRadius: 8 }}>
+                                <TouchableOpacity
+                                    style={{ flex: 1, height: 81, borderRadius: 8 }}
+                                    onPress={() => handleHoSo()}>
                                     <ImageBackground
                                         style={{ flex: 1, flexDirection: 'row' }}
                                         source={require('../../images/img_background_patient_record.png')} resizeMode="stretch">
@@ -359,15 +367,9 @@ export default HomeScreen = () => {
                             </TouchableOpacity>
 
                             <TouchableOpacity
-                                style={{ width: 200, height: 40, borderWidth: 1, borderRadius: 12, marginTop: 24, justifyContent: 'center', alignItems: 'center', backgroundColor: '#4D8D6E' }}
+                                style={{ width: 200, height: 40, borderWidth: 1, borderRadius: 12, marginTop: 24, marginBottom: 40, justifyContent: 'center', alignItems: 'center', backgroundColor: '#4D8D6E' }}
                                 onPress={() => handleShowToast()}>
                                 <Text style={{ color: '#FFFFFF' }}>show Toast</Text>
-                            </TouchableOpacity>
-
-                            <TouchableOpacity
-                                style={{ width: 200, height: 40, borderWidth: 1, borderRadius: 12, marginTop: 24, marginBottom: 40, justifyContent: 'center', alignItems: 'center', backgroundColor: '#4D8D6E' }}
-                                onPress={() => handleLichHen()}>
-                                <Text style={{ color: '#FFFFFF' }}>Lịch hẹn</Text>
                             </TouchableOpacity>
                         </View>
 

@@ -15,6 +15,8 @@ import HenKhamDetailScreen from "../screens/lichhen/detail/HenKhamDetailScreen"
 import ProfileScreen from "../screens/profile/ProfileScreen";
 import HoSoKhamScreen from "../screens/common/HoSoKhamScreen"
 import HoSoKhamAddScreen from "../screens/common/add/HoSoKhamAddScreen"
+import HoSoScreen from "../screens/common/detail/HoSoScreen"
+import HoSoKhamDetailScreen from "../screens/common/detail/HoSoKhamDetailScreen"
 import SiteListScreen from "../screens/site/list/SiteListScreen"
 import AppointmentServiceScreen from "../screens/service/list/AppointmentServiceScreen"
 import AppointmentServiceDetailScreen from "../screens/service/detail/AppointmentServiceDetailScreen"
@@ -46,8 +48,8 @@ function HomeTabs() {
                         iconName = focused ? require('../images/ic_lich_hen_tab_active.png') : require('../images/ic_lich_hen_tab.png');
                         iconColor = focused ? colors.primary : colors.ink200;
                         labelColor = focused ? colors.primary : colors.ink200;
-                    } else if (route.name === 'Thông báo') {
-                        iconName = focused ? require('../images/ic_noti_active.png') : require('../images/ic_noti.png');
+                    } else if (route.name === 'Hồ sơ') {
+                        iconName = focused ? require('../images/ic_hoso_tab_active.png') : require('../images/ic_hoso_tab.png');
                         iconColor = focused ? colors.primary : colors.ink200;
                         labelColor = focused ? colors.primary : colors.ink200;
                     }
@@ -67,7 +69,7 @@ function HomeTabs() {
                         labelColor = focused ? colors.primary : colors.ink200;
                     } else if (route.name === 'Lịch hẹn') {
                         labelColor = focused ? colors.primary : colors.ink200;
-                    } else if (route.name === 'Thông báo') {
+                    } else if (route.name === 'Hồ sơ') {
                         labelColor = focused ? colors.primary : colors.ink200;
                     }
 
@@ -79,7 +81,7 @@ function HomeTabs() {
         >
             <Tab.Screen name="Trang chủ" component={HomeScreen} />
             <Tab.Screen name="Lịch hẹn" component={HenKhamScreen} />
-            <Tab.Screen name="Thông báo" component={ProfileScreen} />
+            <Tab.Screen name="Hồ sơ" component={HoSoScreen} />
         </Tab.Navigator>
     );
 }
@@ -93,6 +95,7 @@ export default function AppNavigator() {
                     <Stack.Screen name="HomeTabs" component={HomeTabs} />
                     <Stack.Screen name="HoSoKhamScreen" component={HoSoKhamScreen} />
                     <Stack.Screen name="HoSoKhamAddScreen" component={HoSoKhamAddScreen} />
+                    <Stack.Screen name="HoSoKhamDetailScreen" component={HoSoKhamDetailScreen} />
                     <Stack.Screen name="SiteListScreen" component={SiteListScreen} />
                     <Stack.Screen name="AppointmentServiceScreen" component={AppointmentServiceScreen} />
                     <Stack.Screen name="AppointmentServiceDetailScreen" component={AppointmentServiceDetailScreen} />

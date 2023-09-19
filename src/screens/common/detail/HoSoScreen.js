@@ -2,16 +2,16 @@ import React, { Component, useState, useEffect } from "react";
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, SafeAreaView, Dimensions, ScrollView, Image, FlatList, StatusBar } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useDispatch, useSelector } from 'react-redux';
-import { getPatientRecord, getPatientRecordDefault, setSelectedItemPatientRecord } from '../../redux/actions/updateAction'
-import { formatDate } from '../../utils/CalendarUtil'
-import colors from '../../configs/colors/colors'
-import stylesBase from '../../configs/styles/styles'
-import ConfirmationBottomSheet from '../../component/ConfirmationBottomSheet'
+import { getPatientRecord, getPatientRecordDefault, setSelectedItemPatientRecord } from '../../../redux/actions/updateAction'
+import { formatDate } from '../../../utils/CalendarUtil'
+import colors from '../../../configs/colors/colors'
+import stylesBase from '../../../configs/styles/styles'
+import ConfirmationBottomSheet from '../../../component/ConfirmationBottomSheet'
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
-export default HoSoKhamScreen = () => {
+export default HoSoScreen = () => {
     const route = useRoute();
     const navigation = useNavigation();
     const dispatch = useDispatch();
@@ -21,14 +21,14 @@ export default HoSoKhamScreen = () => {
     const [selectedItem, setSelectedItem] = useState(null);
 
     useEffect(() => {
-        console.log("Create HoSoKhamScreen")
+        console.log("Create HoSoScreen")
         // Lắng nghe sự kiện focus để tự động refresh dữ liệu
         const unsubscribe = navigation.addListener('focus', () => {
             refreshData();
         });
 
         return () => {
-            console.log("Destroy HoSoKhamScreen")
+            console.log("Destroy HoSoScreen")
             unsubscribe();
         }
     }, [])
@@ -42,11 +42,7 @@ export default HoSoKhamScreen = () => {
     const handleItemPatientRecord = async (item) => {
         await dispatch(setSelectedItemPatientRecord(item));
 
-        if (route.params?.fromBookingOfflineScreen) {
-            navigation.navigate('BookingOfflineScreen');
-        } else {
-            navigation.navigate('SiteListScreen')
-        }
+        navigation.navigate('HoSoKhamDetailScreen');
     };
 
     const handleItemPress = (item) => {
@@ -73,7 +69,7 @@ export default HoSoKhamScreen = () => {
     };
 
     const navigateToHoSoKhamAddScreen = () => {
-        navigation.navigate('HoSoKhamAddScreen')
+        navigation.navigate('HoSoKhamAddScreen', { fromHoSoScreen: true })
     }
 
     const renderItem = ({ item }) => {
@@ -87,14 +83,14 @@ export default HoSoKhamScreen = () => {
                         onPress={() => handleItemPatientRecord(item)}>
                         <Image
                             style={{ width: 60, height: 60, margin: 12, }}
-                            source={require('../../images/img_user.png')} resizeMode="stretch" />
+                            source={require('../../../images/img_user.png')} resizeMode="stretch" />
                         <View style={{ justifyContent: 'center', }}>
                             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                 <Text style={[stylesBase.H5Strong, { color: colors.ink500 }]}>{item.patient_record.patient_name}</Text>
                                 {item.patient_record.default_record === true ?
                                     <Image
                                         style={{ width: 16, height: 16, justifyContent: 'center', marginStart: 12 }}
-                                        source={require('../../images/ic_default_record.png')} resizeMode="stretch" />
+                                        source={require('../../../images/ic_default_record.png')} resizeMode="stretch" />
                                     : null
                                 }
                             </View>
@@ -115,7 +111,7 @@ export default HoSoKhamScreen = () => {
                         {item.patient_record.default_record === false ?
                             <Image
                                 style={{ width: 20, height: 20, margin: 12, }}
-                                source={require('../../images/ic_more_horizontal.png')} resizeMode="stretch" />
+                                source={require('../../../images/ic_more_horizontal.png')} resizeMode="stretch" />
                             : null
                         }
                     </TouchableOpacity>
@@ -131,15 +127,11 @@ export default HoSoKhamScreen = () => {
             <View style={{ width: '100%', height: '6%', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: colors.primary, paddingStart: 16, paddingEnd: 16, paddingTop: 8, paddingBottom: 8 }}>
                 <TouchableOpacity style={{ position: 'absolute', left: 16 }}
                     onPress={() => {
-                        if (route.params?.fromBookingOfflineScreen) {
-                            navigation.navigate('BookingOfflineScreen');
-                        } else {
-                            navigation.goBack()
-                        }
+                        navigation.goBack()
                     }}>
                     <Image
                         style={{ width: 24, height: 24, tintColor: colors.white }}
-                        source={require('../../images/ic_back.png')} resizeMode="stretch" />
+                        source={require('../../../images/ic_back.png')} resizeMode="stretch" />
                 </TouchableOpacity>
                 <Text style={[stylesBase.H5Strong, { color: colors.white }]}>Chọn hồ sơ</Text>
                 <View
@@ -150,7 +142,7 @@ export default HoSoKhamScreen = () => {
                     <TouchableOpacity>
                         <Image
                             style={{ width: 16, height: 16, tintColor: colors.white }}
-                            source={require('../../images/ic_more_horizontal.png')} resizeMode="stretch" />
+                            source={require('../../../images/ic_more_horizontal.png')} resizeMode="stretch" />
                     </TouchableOpacity>
 
                     <View style={{ width: 1, height: 16, backgroundColor: colors.white, marginStart: 10, marginEnd: 10 }} />
@@ -158,7 +150,7 @@ export default HoSoKhamScreen = () => {
                     <TouchableOpacity>
                         <Image
                             style={{ width: 16, height: 16, }}
-                            source={require('../../images/ic_close_momo.png')} resizeMode="stretch" />
+                            source={require('../../../images/ic_close_momo.png')} resizeMode="stretch" />
                     </TouchableOpacity>
                 </View>
             </View>
@@ -178,7 +170,7 @@ export default HoSoKhamScreen = () => {
                 onPress={navigateToHoSoKhamAddScreen}>
                 <Image
                     style={{ width: 64, height: 64, }}
-                    source={require('../../images/ic_add_user_patient_record.png')} resizeMode="stretch" />
+                    source={require('../../../images/ic_add_user_patient_record.png')} resizeMode="stretch" />
             </TouchableOpacity>
 
             <ConfirmationBottomSheet
